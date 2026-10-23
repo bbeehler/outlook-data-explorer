@@ -1,14 +1,14 @@
-// outlook-member-sync: gives Outlook Data Explorer access to every contact at a current AIA Canada member organisation.
+// outlook-member-sync: nightly re-check of people who registered for the Outlook Data Explorer through Insightly.
+// People get on the list by registering (outlook-register). This job only refreshes their organisation details
+// and removes anyone whose organisation's membership has lapsed. It never adds people.
 //
 // Membership rule (same as the MCE Dashboard's membership-sync):
 //   an organisation is a member when its "Last Membership Year" (Last_Membership_Year__c) is this year or later
 //   (2050 = lifetime / complimentary). Grace period: until March 31, last year's members keep access while renewals come in.
-// Every contact linked to a member organisation with an email address is put on outlook_access with source = 'insightly'.
 // Rows added by an admin (source = 'manual') are never changed or removed by this sync.
-// Contacts whose organisation lapses are removed on the next run.
 //
 // Safety: if Insightly returns fewer than MIN_MEMBER_ORGS members, nothing is changed. If a run would remove more than
-// MAX_REMOVE_SHARE of the synced list at once, removals are skipped and the run is logged for review.
+// MAX_REMOVE_SHARE of the list at once (once 20+ people have registered), removals are skipped and logged for review.
 //
 // Runs nightly from pg_cron, or on demand from the Manage access page (admins).
 // Secret needed in this project: INSIGHTLY_API_KEY (same key the MCE Dashboard project uses).
@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
     const synced = new Set(existing!.filter((r) => r.source === "insightly").map((r) => r.email));
     const stamp = now.toISOString();
 
-    const upserts = [...want].filter(([email]) => !manual.has(email)).map(([email, v]) => ({ email, ...v, source: "insightly", note: "Contact at a member organisation (Insightly)", last_synced: stamp }));
+    const upserts = [...want].filter(([email]) => !manual.has(email) && synced.has(email)).map(([email, v]) => ({ email, ...v, source: "insightly", note: "Registered; verified as a member contact in Insightly", last_synced: stamp }));
     for (let i = 0; i < upserts.length; i += 500) {
       const { error } = await db.from("outlook_access").upsert(upserts.slice(i, i + 500), { onConflict: "email" });
       if (error) throw new Error(error.message);
@@ -97,7 +97,7 @@ Deno.serve(async (req) => {
     const added = upserts.filter((u) => !synced.has(u.email)).length;
     const toRemove = [...synced].filter((e) => !want.has(e));
     let removed = 0, note = `${members.size} member organisations for ${minYear === Y ? Y : `${Y} (incl. ${Y - 1} grace period)`}`;
-    if (synced.size && toRemove.length > synced.size * MAX_REMOVE_SHARE) {
+    if (synced.size >= 20 && toRemove.length > synced.size * MAX_REMOVE_SHARE) {
       note += `; ${toRemove.length} removals skipped (over ${MAX_REMOVE_SHARE * 100}% of the list) — check Insightly before the next run`;
     } else {
       for (let i = 0; i < toRemove.length; i += 200) {

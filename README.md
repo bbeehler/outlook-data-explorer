@@ -10,8 +10,9 @@ A web version of the AIA Canada Outlook Study 2025 data visualization tool, repl
 |---|---|---|
 | The page (`index.html`, `config.js`) | This repo, served by GitHub Pages | Contains **no data**. Safe to be public. |
 | The Outlook figures | Supabase project "AIA Canada Data Portal", table `outlook_figures` | Readable only by signed-in people on the access list (row-level security). Contains licensed S&P Global Mobility and IMR data. |
-| Who can sign in | Table `outlook_access` | Filled automatically from Insightly every night (contacts at current member organisations), plus anyone an admin adds under **Manage access**. |
-| Insightly sync | Edge function `outlook-member-sync`, run nightly by pg_cron | Same membership rule as the MCE Dashboard: an organisation's **Last Membership Year** is this year or later (2050 = lifetime). Last year's members keep access until March 31. |
+| Registration | Edge function `outlook-register` | A visitor enters their work email. It is checked live in Insightly: approved if the email belongs to a contact at an organisation whose **Last Membership Year** is this year or later (2050 = lifetime; last year's members count until March 31). This is the same rule the MCE Dashboard uses. Approved people are added to `outlook_access` and sent a sign-in link. Everyone else is turned away with a contact, and no account is created. Every request is logged in `outlook_registrations`. |
+| Nightly re-check | Edge function `outlook-member-sync`, run nightly by pg_cron | Re-checks registered members and removes anyone whose organisation's membership has lapsed. It never adds people. |
+| Who can sign in | Table `outlook_access` | Registered members, plus anyone an admin adds under **Manage access**. |
 | Sign-in | Supabase Auth email link (no passwords) | Uses the Data Portal's existing auth. |
 | Ask the data | Edge function `outlook-ask` | Calls the Anthropic API with the key stored as a Supabase secret. 30 questions per person per hour, logged in `outlook_ai_log`. |
 
@@ -19,18 +20,20 @@ A web version of the AIA Canada Outlook Study 2025 data visualization tool, repl
 
 1. **GitHub Pages:** go to Settings, then Pages, then Deploy from a branch: `main` / root.
 2. **Sign-in redirect:** in Supabase, open the AIA Canada Data Portal project, then Authentication, then URL Configuration. Add `https://bbeehler.github.io/outlook-data-explorer/` under **Redirect URLs**. Without this, sign-in links send people to the portal instead of the Explorer.
-3. **Insightly key:** in Supabase, open the Data Portal project, then Edge Functions, then Secrets, and add `INSIGHTLY_API_KEY`. Use the same key the MCE Dashboard project uses. Then click **Sync from Insightly now** on the Manage access page.
+3. **Insightly key:** in Supabase, open the Data Portal project, then Edge Functions, then Secrets, and add `INSIGHTLY_API_KEY`. Use the same key the MCE Dashboard project uses. Registration doesn't work until this key is in place.
 4. **AI (optional):** in Supabase, open Edge Functions, then Secrets, and add `ANTHROPIC_API_KEY`. The Ask button appears on its own once the key is there. Optional secrets:
    - `OUTLOOK_AI_MODEL`: default `claude-sonnet-5-5`
    - `OUTLOOK_AI_HOURLY_LIMIT`: default `30`
    - `OUTLOOK_ALLOWED_ORIGINS`: add a custom domain here if you move the site
 
 ## Giving people access
-Member contacts are handled by the Insightly sync. A person gets access when their contact record in Insightly has an email address and is linked to a member organisation.
+Members register themselves. They get access when their contact record in Insightly has the same email address and is linked to a current member organisation. The contact shown to people who are turned away is `contactEmail` in `config.js`.
+
+**Manage access** shows recent requests. Tick "Show only denied requests" to see people to follow up with: member employees missing from Insightly, or non-members who are interested.
 
 For anyone else (staff, partners, a member contact missing from Insightly), sign in as a Data Portal admin, open **Manage access**, and paste their emails. People added this way are never removed by the sync.
 
-The sync has two safety limits. If Insightly returns fewer than 100 member organisations, it changes nothing. If one run would remove more than 25% of the synced list, it skips the removals and notes it on the Manage access page.
+The nightly re-check has two safety limits. If Insightly returns fewer than 100 member organisations, it changes nothing. Once 20 or more people have registered, if one run would remove more than 25% of them, it skips the removals and notes it on the Manage access page.
 
 ## Updating the data (next Outlook edition)
 1. Run `tools/charts.py` and `tools/extract.py` on the new workbook to produce `data.json`. That file is ignored by git; never commit it.

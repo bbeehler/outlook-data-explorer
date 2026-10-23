@@ -15,3 +15,6 @@
 .who button { background: none; border: 1px solid rgba(255,255,255,.35); color: #fff; padding: 5px 10px; font-size: 13px; }
 .bulk { border: 1px solid var(--line); background: var(--bg); padding: 10px; font: inherit; color: var(--ink); width: 100%; resize: vertical; }
 .panel td, .panel th { text-align: left; }
+.contact-line { display: flex; gap: 10px; align-items: center; font-weight: 700; font-size: 17px; }
+.contact-line a { color: var(--ink); }
+.gate > .act { align-self: flex-start; }
