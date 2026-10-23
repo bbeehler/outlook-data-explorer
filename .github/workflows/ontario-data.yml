@@ -1,0 +1,40 @@
+# Downloads Ontario's open "Vehicle population data" (Ministry of Transportation) and saves the raw files
+# to the `ontario-raw` branch. The site's Ontario page is built from these files.
+# Runs when this file changes, on demand (Actions tab -> Run workflow), and every month to pick up a new year.
+name: Ontario vehicle data
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/ontario-data.yml']
+  workflow_dispatch:
+  schedule:
+    - cron: '23 9 3 * *'
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download every file in the dataset
+        run: |
+          mkdir raw && cd raw
+          curl -fsSL "https://data.ontario.ca/api/3/action/package_show?id=vehicle-population-data" -o package.json
+          python3 - <<'PY'
+          import json, urllib.request, os, re
+          pkg = json.load(open('package.json'))['result']
+          for r in pkg['resources']:
+              url = r['url']; name = re.sub(r'[^A-Za-z0-9._-]+', '_', r.get('name') or os.path.basename(url))
+              ext = os.path.splitext(url.split('?')[0])[1] or '.' + (r.get('format') or 'bin').lower()
+              fn = name if name.lower().endswith(ext.lower()) else name + ext
+              print('get', fn, url)
+              urllib.request.urlretrieve(url, fn)
+          PY
+          ls -la
+      - name: Save to the ontario-raw branch
+        run: |
+          cd raw
+          git init -q -b ontario-raw
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -qm "Ontario vehicle population data, fetched $(date -u +%F)"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" ontario-raw
