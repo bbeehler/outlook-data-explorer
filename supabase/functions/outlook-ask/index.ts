@@ -75,10 +75,21 @@ Deno.serve(async (req) => {
     body: JSON.stringify({ model: MODEL, max_tokens: 1024, system: RULES, messages }),
   });
   const ok = r.ok;
+  const raw = await r.text();
+  let reason = "";
+  if (!ok) {
+    let msg = raw.slice(0, 400);
+    try { const e = JSON.parse(raw); msg = `${e?.error?.type ?? ""}: ${e?.error?.message ?? raw}`.slice(0, 400); } catch { /* keep raw */ }
+    reason = r.status === 401 || r.status === 403 ? "key_rejected"
+      : r.status === 404 || /model/i.test(msg) && r.status === 400 ? "model_unavailable"
+      : /credit|billing|balance/i.test(msg) ? "no_credit"
+      : r.status === 429 || r.status === 529 ? "busy" : "upstream";
+    console.error("Anthropic", r.status, msg);
+    await admin.from("outlook_ai_log").insert({ user_id: user.id, chars: size, ok, error: `${r.status} ${msg}` });
+    return reply(reason === "busy" ? 429 : 502, { error: reason });
+  }
   await admin.from("outlook_ai_log").insert({ user_id: user.id, chars: size, ok });
-  if (r.status === 429) return reply(429, { error: "Busy" });
-  if (!ok) return reply(502, { error: "Upstream error" });
-  const j = await r.json();
+  const j = JSON.parse(raw);
   const text = (j.content ?? []).filter((c: { type: string }) => c.type === "text").map((c: { text: string }) => c.text).join("\n").trim();
   return reply(200, { text, truncated: j.stop_reason === "max_tokens" });
 });

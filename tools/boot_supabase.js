@@ -119,7 +119,7 @@ function remoteSample() {
     if (res.status === 401) throw { code: 'session_expired', message: 'sign in' };
     if (res.status === 403) throw { code: 'not_granted', message: 'no access' };
     if (res.status === 413) throw { code: 'prompt_too_large', message: 'too large' };
-    if (!res.ok) throw { code: 'upstream_error', message: 'HTTP ' + res.status };
+    if (!res.ok) { const j = await res.json().catch(() => ({})); const map = { key_rejected: 'ai_key', no_credit: 'ai_credit', model_unavailable: 'ai_model', not_configured: 'ai_off' }; throw { code: map[j.error] || 'upstream_error', message: 'HTTP ' + res.status }; }
     const j = await res.json();
     if (!j.text) throw { code: 'empty_completion', message: 'empty' };
     if (opts.onText) opts.onText({ text: j.text, delta: j.text });

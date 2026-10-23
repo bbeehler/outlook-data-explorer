@@ -910,7 +910,11 @@ async function send(text, ds = null) {
       cancelled: 'Stopped.', rate_limited: 'Too many questions in a short time. Try again in a few minutes.',
       not_granted: 'Answers need your permission to use Claude. Reopen the page to be asked again.', session_expired: 'Your sign-in has expired. Sign in again, then ask.',
       prompt_too_large: 'That question pulled in too much data. Try something narrower.', refused: 'Claude could not answer that. Try rephrasing.',
-      tools_unavailable: 'Something went wrong. Ask again.', upstream_error: 'The connection dropped. Ask again.',
+      tools_unavailable: 'Something went wrong. Ask again.', upstream_error: 'Claude could not answer just now. Ask again in a moment.',
+      ai_key: 'The AI service rejected its API key. An admin needs to check the ANTHROPIC_API_KEY secret in Supabase.',
+      ai_credit: 'The AI service account is out of credit. An admin needs to add credit in the Claude Console.',
+      ai_model: 'The AI model set for this site is not available on the account. An admin needs to check the model setting.',
+      ai_off: 'AI answers are not switched on yet.',
     }[code] || 'Something went wrong. Ask again.';
     out.append(h('p', { class: 'status' }, msg));
     if (code === 'tools_unavailable') toolsOK = false;
@@ -1054,7 +1058,7 @@ function remoteSample() {
     if (res.status === 401) throw { code: 'session_expired', message: 'sign in' };
     if (res.status === 403) throw { code: 'not_granted', message: 'no access' };
     if (res.status === 413) throw { code: 'prompt_too_large', message: 'too large' };
-    if (!res.ok) throw { code: 'upstream_error', message: 'HTTP ' + res.status };
+    if (!res.ok) { const j = await res.json().catch(() => ({})); const map = { key_rejected: 'ai_key', no_credit: 'ai_credit', model_unavailable: 'ai_model', not_configured: 'ai_off' }; throw { code: map[j.error] || 'upstream_error', message: 'HTTP ' + res.status }; }
     const j = await res.json();
     if (!j.text) throw { code: 'empty_completion', message: 'empty' };
     if (opts.onText) opts.onText({ text: j.text, delta: j.text });
