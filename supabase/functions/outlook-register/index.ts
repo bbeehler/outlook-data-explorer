@@ -8,6 +8,8 @@
 // re-checks it and removes it if the organisation's membership lapses.
 // The page sends the sign-in link only after an approval, so non-members never get an account.
 // Every request is logged in outlook_registrations. Limits: 10 requests per IP and 5 per email per hour.
+// Admins can also send { email, check: true } to get a full diagnosis (what Insightly holds and why the email would be
+// approved or denied) without adding anyone, sending anything or logging a request.
 // Secret needed: INSIGHTLY_API_KEY.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
@@ -22,15 +24,63 @@ function cors(req: Request) {
   return { "Access-Control-Allow-Origin": ORIGINS.includes(o) ? o : ORIGINS[0], "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info", "Access-Control-Allow-Methods": "POST, OPTIONS", "Vary": "Origin" };
 }
 
+// Admin-only dry run: explains the decision for one email. Changes nothing.
+async function diagnose(req: Request, email: string, raw: string) {
+  const authz = req.headers.get("Authorization") ?? "";
+  const uc = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: authz } }, auth: { persistSession: false } });
+  const { data: isAdm } = await uc.rpc("outlook_is_admin");
+  if (isAdm !== true) return { error: "admins_only" };
+  const out: Record<string, unknown> = { email };
+  const { data: listed } = await db.from("outlook_access").select("source, organization, added_at").eq("email", email).maybeSingle();
+  out.on_list = listed ?? null;
+  const { data: adm } = await db.from("profiles").select("id").eq("email", email).eq("role", "admin").eq("membership_status", "active").maybeSingle();
+  out.portal_admin = !!adm;
+  const key = (Deno.env.get("INSIGHTLY_API_KEY") ?? "").trim();
+  if (!key) { out.insightly = "INSIGHTLY_API_KEY is not set"; out.verdict = listed || adm ? "approved" : "unavailable"; return out; }
+  try {
+    let auth = "";
+    for (const a of ["Basic " + btoa(key + ":"), "Basic " + btoa(key)]) { const r = await fetch(`${BASE}/Instance`, { headers: { Authorization: a } }); if (r.ok) { auth = a; break; } }
+    if (!auth) throw new Error("Insightly did not accept the API key");
+    const get = async (path: string) => { const r = await fetch(`${BASE}/${path}`, { headers: { Authorization: auth } }); if (r.status === 404) return null; if (!r.ok) throw new Error(`Insightly ${r.status}`); return r.json(); };
+    const found: any[] = []; const seen = new Set<number>();
+    for (const v of new Set([email, raw])) for (const c of (await get(`Contacts/Search?field_name=EMAIL_ADDRESS&field_value=${encodeURIComponent(v)}&brief=false&top=20`) ?? [])) if (!seen.has(c.CONTACT_ID)) { seen.add(c.CONTACT_ID); found.push(c); }
+    const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Toronto", year: "numeric", month: "numeric" }).formatToParts(new Date());
+    const Y = Number(parts.find((p) => p.type === "year")!.value), month = Number(parts.find((p) => p.type === "month")!.value);
+    const minYear = month <= 3 ? Y - 1 : Y;
+    out.rule = `Organisation's Last Membership Year must be ${minYear} or later`;
+    const cf = (o: any, n: string) => { const c = (o.CUSTOMFIELDS ?? []).find((x: any) => x.FIELD_NAME === n); return c?.FIELD_VALUE == null ? "" : String(c.FIELD_VALUE); };
+    const contacts = [];
+    for (const c of found.filter((c) => String(c.EMAIL_ADDRESS ?? "").trim().toLowerCase() === email)) {
+      const orgId = Number(c.ORGANISATION_ID) || 0;
+      const o = orgId ? await get(`Organisations/${orgId}`) : null;
+      const lmy = o ? Math.trunc(Number(cf(o, "Last_Membership_Year__c")) || 0) : null;
+      contacts.push({ name: [c.FIRST_NAME, c.LAST_NAME].filter(Boolean).join(" "), contact_id: c.CONTACT_ID, organisation: o ? o.ORGANISATION_NAME : null, organisation_id: orgId || null, last_membership_year: lmy, member: lmy != null && lmy >= minYear });
+    }
+    out.insightly_contacts = contacts;
+    const memberHit = contacts.find((c) => c.member);
+    out.verdict = listed || adm || memberHit ? "approved" : "denied";
+    out.reason = listed ? `Already on the access list (${listed.source === "manual" ? "added by hand" : "registered member"})`
+      : adm ? "Data Portal admin"
+      : memberHit ? `Contact at ${memberHit.organisation}, Last Membership Year ${memberHit.last_membership_year}`
+      : !contacts.length ? "No Insightly contact has this exact email address"
+      : contacts.every((c) => !c.organisation_id) ? "Insightly contact found, but it is not linked to an organisation"
+      : `Contact found, but the organisation's membership is not current (Last Membership Year ${contacts.map((c) => c.last_membership_year ?? "none").join(", ")})`;
+  } catch (e) {
+    out.insightly = String((e as Error).message ?? e); out.verdict = listed || adm ? "approved" : "unavailable";
+  }
+  return out;
+}
+
 Deno.serve(async (req) => {
   const reply = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors(req), "Content-Type": "application/json" } });
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(req) });
   if (req.method !== "POST") return reply({ error: "POST only" }, 405);
 
-  let raw = "";
-  try { raw = String((await req.json()).email ?? "").trim(); } catch { /* fall through */ }
+  let raw = "", check = false;
+  try { const b = await req.json(); raw = String(b.email ?? "").trim(); check = b.check === true; } catch { /* fall through */ }
   const email = raw.toLowerCase();
   if (!EMAIL.test(email) || email.length > 254) return reply({ status: "invalid" }, 400);
+  if (check) return reply(await diagnose(req, email, raw));
   const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim().slice(0, 64);
   const log = async (result: string, organization = "", note = "") => { await db.from("outlook_registrations").insert({ email, ip, result, organization, note }); };
 

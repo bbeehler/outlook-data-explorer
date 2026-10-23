@@ -36,6 +36,13 @@ Members register themselves. They get access when their contact record in Insigh
 
 For anyone else (staff, partners, a member contact missing from Insightly), sign in as a Data Portal admin, open **Manage access**, and paste their emails. People added this way are never removed by the sync.
 
+### Troubleshooting who gets in
+**Manage access** has two tools for when a member says they can't get in:
+- **Check an email:** type any address to get the live answer from Insightly: would they be approved or denied, why, and which contact and organisation records Insightly holds for that email (with each organisation's Last Membership Year). It doesn't add the person, email them or log a request.
+- **Member directory:** every current member organisation, plus those lapsed within the last year, with its Last Membership Year and how many of its contacts have an email that can register. Expand an organisation to see its contacts, or search for a person or email. This is a snapshot taken on each re-check (tables `outlook_member_orgs` and `outlook_member_contacts`, admins only), so recent changes in Insightly show up after **Re-check members now**.
+
+The usual causes of a denial: the email on the Insightly contact is different (an old or personal address), the contact isn't linked to the organisation, or the organisation's Last Membership Year hasn't been updated for this year.
+
 The nightly re-check has two safety limits. If Insightly returns fewer than 100 member organisations, it changes nothing. Once 20 or more people have registered, if one run would remove more than 25% of them, it skips the removals and notes it on the Manage access page.
 
 ## Updating the data (next Outlook edition)

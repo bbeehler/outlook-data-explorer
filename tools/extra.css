@@ -18,3 +18,13 @@
 .contact-line { display: flex; gap: 10px; align-items: center; font-weight: 700; font-size: 17px; }
 .contact-line a { color: var(--ink); }
 .gate > .act { align-self: flex-start; }
+/* admin troubleshooting: email check + member directory */
+.verdict { margin: 12px 0 6px; padding: 10px 12px; border-left: 4px solid var(--line); background: var(--bg); }
+.verdict-ok { border-left-color: #1baf7a; }
+.verdict-no { border-left-color: var(--accent); }
+.verdict-warn { border-left-color: var(--warn-ink); background: var(--warn-bg); }
+.facts { margin: 6px 0; padding-left: 18px; color: var(--ink-2); font-size: 14px; }
+.facts li { margin: 2px 0; overflow-wrap: anywhere; }
+.dir-contacts td { background: var(--bg); }
+.panel h3 { font-size: 15px; margin: 14px 0 6px; }
+.panel select.tsearch { width: auto; }

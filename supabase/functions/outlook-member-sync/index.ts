@@ -10,6 +10,9 @@
 // Safety: if Insightly returns fewer than MIN_MEMBER_ORGS members, nothing is changed. If a run would remove more than
 // MAX_REMOVE_SHARE of the list at once (once 20+ people have registered), removals are skipped and logged for review.
 //
+// It also saves a snapshot of the member directory (current member organisations, plus those lapsed within the last
+// year, and their contacts) to outlook_member_orgs / outlook_member_contacts, so admins can see who the app accepts.
+//
 // Runs nightly from pg_cron, or on demand from the Manage access page (admins).
 // Secret needed in this project: INSIGHTLY_API_KEY (same key the MCE Dashboard project uses).
 import { createClient } from "jsr:@supabase/supabase-js@2";
@@ -68,20 +71,37 @@ Deno.serve(async (req) => {
 
     const orgs = await pageAll("Organisations", auth);
     const members = new Map<number, string>();
+    const dirOrgs = new Map<number, { org_id: number; name: string; last_membership_year: number; status: string; contacts: number; contacts_with_email: number }>();
     for (const o of orgs) {
       const lmy = Math.trunc(Number(cf(o, "Last_Membership_Year__c")) || 0);
-      if (lmy >= minYear) members.set(Number(o.ORGANISATION_ID), String(o.ORGANISATION_NAME ?? ""));
+      const id = Number(o.ORGANISATION_ID), name = String(o.ORGANISATION_NAME ?? "");
+      if (lmy >= minYear) members.set(id, name);
+      if (lmy >= minYear - 1) dirOrgs.set(id, { org_id: id, name, last_membership_year: lmy, status: lmy >= minYear ? "current" : "lapsed", contacts: 0, contacts_with_email: 0 });
     }
     if (members.size < MIN_MEMBER_ORGS) throw new Error(`Only ${members.size} member organisations found; nothing changed (safety limit ${MIN_MEMBER_ORGS}).`);
 
     const contacts = await pageAll("Contacts", auth);
     const want = new Map<string, { full_name: string; organization: string; insightly_org_id: number }>();
+    const dirContacts: { org_id: number; email: string; full_name: string }[] = [];
     for (const c of contacts) {
       const orgId = Number(c.ORGANISATION_ID);
       const email = String(c.EMAIL_ADDRESS ?? "").trim().toLowerCase();
+      const d = dirOrgs.get(orgId);
+      if (d) {
+        d.contacts++; if (EMAIL.test(email)) d.contacts_with_email++;
+        dirContacts.push({ org_id: orgId, email: EMAIL.test(email) ? email : "", full_name: [c.FIRST_NAME, c.LAST_NAME].filter(Boolean).join(" ").trim() });
+      }
       if (!members.has(orgId) || !EMAIL.test(email)) continue;
       want.set(email, { full_name: [c.FIRST_NAME, c.LAST_NAME].filter(Boolean).join(" ").trim(), organization: members.get(orgId)!, insightly_org_id: orgId });
     }
+
+    // Member directory snapshot for admins (replaced on every run)
+    const stampDir = new Date().toISOString();
+    await db.from("outlook_member_contacts").delete().gte("id", 0);
+    await db.from("outlook_member_orgs").delete().gte("org_id", 0);
+    const orgRows = [...dirOrgs.values()].map((o) => ({ ...o, synced_at: stampDir }));
+    for (let i = 0; i < orgRows.length; i += 500) { const { error } = await db.from("outlook_member_orgs").insert(orgRows.slice(i, i + 500)); if (error) throw new Error("directory: " + error.message); }
+    for (let i = 0; i < dirContacts.length; i += 1000) { const { error } = await db.from("outlook_member_contacts").insert(dirContacts.slice(i, i + 1000).map((c) => ({ ...c, synced_at: stampDir }))); if (error) throw new Error("directory: " + error.message); }
 
     const { data: existing, error: e0 } = await db.from("outlook_access").select("email,source");
     if (e0) throw new Error(e0.message);

@@ -163,7 +163,7 @@ async function renderAccess(main) {
         const j = await res.json().catch(() => ({}));
         toast(j.ok ? `Re-check done: ${j.removed} removed for lapsed membership.` : (j.error || 'The re-check did not finish.'));
       } catch { toast('The sync did not finish. Try again in a few minutes.'); }
-      syncStatus(); list();
+      syncStatus(); list(); directory();
     } }, 'Re-check members now');
     let line;
     if (!r) line = 'The nightly re-check has not run yet. It starts once the Insightly key is set up.';
@@ -175,6 +175,111 @@ async function renderAccess(main) {
       h('p', { class: 'gate-muted' }, line), h('div', {}, btn));
   }
   syncStatus();
+
+  // Troubleshooting 1: check one email against the same rules registration uses, without adding or emailing anyone.
+  const checkBox = h('section', { class: 'panel', id: 'checkBox' });
+  const ckIn = h('input', { id: 'checkEmail', type: 'email', class: 'tsearch', placeholder: 'name@company.com', autocomplete: 'off' });
+  const ckOut = h('div', { role: 'status' });
+  const ckBtn = h('button', { type: 'button', class: 'btn-ask', onclick: async () => {
+    const email = ckIn.value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { ckOut.replaceChildren(h('p', { class: 'gate-muted' }, 'Enter a full email address.')); return; }
+    ckBtn.disabled = true; ckOut.replaceChildren(h('p', { class: 'gate-muted' }, 'Checking Insightly…'));
+    try {
+      const { data: { session } } = await SB.auth.getSession();
+      const res = await fetch(`${CFG.supabaseUrl}/functions/v1/outlook-register`, { method: 'POST', headers: { 'content-type': 'application/json', apikey: CFG.supabaseKey, Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ email, check: true }) });
+      const j = await res.json().catch(() => ({}));
+      ckOut.replaceChildren(...checkResult(j));
+    } catch { ckOut.replaceChildren(h('p', {}, 'The check did not finish. Try again.')); }
+    ckBtn.disabled = false;
+  } }, 'Check');
+  ckIn.addEventListener('keydown', e => { if (e.key === 'Enter') ckBtn.click(); });
+  function checkResult(j) {
+    if (j.error === 'admins_only') return [h('p', {}, 'Only Data Portal admins can run this check.')];
+    if (j.status === 'invalid') return [h('p', {}, 'That is not a valid email address.')];
+    const V = { approved: ['ok', 'Would be approved'], denied: ['no', 'Would be denied'], unavailable: ['warn', 'Can’t tell right now'] }[j.verdict] || ['warn', 'Unknown'];
+    const out = [h('p', { class: 'verdict verdict-' + V[0] }, h('strong', {}, V[1]), j.reason ? ' — ' + j.reason : '')];
+    if (j.insightly) out.push(h('p', { class: 'gate-muted' }, 'Insightly: ' + j.insightly));
+    if (j.rule) out.push(h('p', { class: 'gate-muted' }, 'Rule today: ' + j.rule + ' (2050 = lifetime).'));
+    const facts = [];
+    facts.push('On the access list: ' + (j.on_list ? `yes (${j.on_list.source === 'manual' ? 'added by hand' : 'registered member'}${j.on_list.organization ? ', ' + j.on_list.organization : ''})` : 'no'));
+    facts.push('Data Portal admin: ' + (j.portal_admin ? 'yes' : 'no'));
+    out.push(h('ul', { class: 'facts' }, facts.map(f => h('li', {}, f))));
+    if (Array.isArray(j.insightly_contacts)) {
+      out.push(j.insightly_contacts.length
+        ? h('div', { class: 'tbl-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['Insightly contact', 'Organisation', 'Last Membership Year', 'Counts as member'].map(c => h('th', { scope: 'col' }, c)))),
+            h('tbody', {}, j.insightly_contacts.map(c => h('tr', {}, h('th', { scope: 'row' }, c.name || '(no name)'), h('td', {}, c.organisation || 'Not linked to an organisation'), h('td', {}, c.last_membership_year == null ? '—' : String(c.last_membership_year || 'blank')), h('td', {}, c.member ? 'Yes' : 'No'))))))
+        : h('p', { class: 'gate-muted' }, 'No Insightly contact has this exact email address. Check for a typo or an old address on the contact record.'));
+    }
+    return out;
+  }
+  checkBox.append(h('h2', {}, 'Check an email'),
+    h('p', { class: 'gate-muted' }, 'Runs the same check as registration, live against Insightly, and explains the answer. It does not add the person or send them anything.'),
+    h('div', { class: 'chips' }, ckIn, ckBtn), ckOut);
+  main.insertBefore(checkBox, panel);
+
+  // Troubleshooting 2: the member directory as of the last sync (organisations and their contacts).
+  const dirBox = h('section', { class: 'panel', id: 'dirBox' });
+  main.insertBefore(dirBox, panel);
+  let dq = '', dStatus = 'current';
+  async function directory() {
+    let orgs = [];
+    for (let from = 0; ; from += 1000) {
+      const { data, error } = await SB.from('outlook_member_orgs').select('org_id, name, last_membership_year, status, contacts, contacts_with_email, synced_at').order('name').range(from, from + 999);
+      if (error) { dirBox.replaceChildren(h('h2', {}, 'Member directory'), h('p', {}, 'Could not load the directory.')); return; }
+      orgs = orgs.concat(data); if (data.length < 1000) break;
+    }
+    const cur = orgs.filter(o => o.status === 'current');
+    const synced = orgs.reduce((m, o) => o.synced_at > m ? o.synced_at : m, '');
+    const head = [h('h2', {}, 'Member directory'),
+      h('p', { class: 'gate-muted' }, orgs.length
+        ? `As of the last sync (${new Date(synced).toLocaleString('en-CA')}): ${cur.length} current member organisations, ${cur.reduce((n, o) => n + o.contacts_with_email, 0)} contacts with an email who can register. Organisations that lapsed last year are listed too, so you can see why someone is turned away.`
+        : 'Empty until the member sync runs with the Insightly key in place. Use “Re-check members now” above once the key is set.')];
+    if (!orgs.length) { dirBox.replaceChildren(...head); return; }
+    const search = h('input', { id: 'dirSearch', type: 'search', class: 'tsearch', placeholder: 'Find an organisation, person or email', value: dq });
+    const sel = h('select', { id: 'dirStatus', class: 'tsearch', onchange: e => { dStatus = e.target.value; draw(); } },
+      [['current', 'Current members'], ['lapsed', 'Lapsed'], ['all', 'All']].map(([v, t]) => h('option', { value: v, selected: v === dStatus }, t)));
+    const people = h('div', {});
+    const body = h('tbody', {});
+    const more = h('p', { class: 'gate-muted' });
+    const byId = new Map(orgs.map(o => [o.org_id, o]));
+    let seq = 0;
+    const draw = async () => {
+      const f = dq.toLowerCase().trim();
+      const rows = orgs.filter(o => (dStatus === 'all' || o.status === dStatus) && (!f || o.name.toLowerCase().includes(f)));
+      body.replaceChildren(...rows.slice(0, 300).map(orgRow));
+      more.textContent = rows.length > 300 ? `Showing 300 of ${rows.length}. Search to narrow the list.` : rows.length ? '' : 'No organisations match.';
+      const my = ++seq;
+      if (f.length < 3) { people.replaceChildren(); return; }
+      const like = `%${f.replace(/[%_,()]/g, ' ')}%`;
+      const { data } = await SB.from('outlook_member_contacts').select('org_id, email, full_name').or(`email.ilike.${like},full_name.ilike.${like}`).order('full_name').limit(50);
+      if (my !== seq) return;
+      people.replaceChildren(...(data && data.length ? [h('h3', {}, `People matching “${dq.trim()}”`), h('div', { class: 'tbl-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['Name', 'Email', 'Organisation', 'Can register'].map(c => h('th', { scope: 'col' }, c)))),
+        h('tbody', {}, data.map(c => { const o = byId.get(c.org_id); return h('tr', {}, h('th', { scope: 'row' }, c.full_name || '(no name)'), h('td', {}, c.email || 'No valid email in Insightly'), h('td', {}, o ? o.name : ''), h('td', {}, !c.email ? 'No: needs an email' : o && o.status === 'current' ? 'Yes' : 'No: membership lapsed')); }))))] : []));
+    };
+    function orgRow(o) {
+      const tr = h('tr', {});
+      const btn = h('button', { type: 'button', class: 'act', 'aria-expanded': 'false', onclick: async () => {
+        const nxt = tr.nextElementSibling;
+        if (nxt && nxt.classList.contains('dir-contacts')) { nxt.remove(); btn.setAttribute('aria-expanded', 'false'); btn.textContent = 'Contacts'; return; }
+        btn.disabled = true;
+        const { data } = await SB.from('outlook_member_contacts').select('email, full_name').eq('org_id', o.org_id).order('full_name').limit(1000);
+        btn.disabled = false; btn.setAttribute('aria-expanded', 'true'); btn.textContent = 'Hide';
+        tr.after(h('tr', { class: 'dir-contacts' }, h('td', { colspan: '5' }, (data || []).length
+          ? h('ul', { class: 'facts' }, data.map(c => h('li', {}, (c.full_name || '(no name)') + ' — ', c.email ? c.email : h('em', {}, 'no valid email, can’t register'))))
+          : h('p', { class: 'gate-muted' }, 'No contacts linked to this organisation in Insightly.'))));
+      } }, 'Contacts');
+      const yr = o.last_membership_year >= 2050 ? 'Lifetime' : String(o.last_membership_year);
+      tr.append(h('th', { scope: 'row' }, o.name), h('td', {}, o.status === 'current' ? 'Current' : 'Lapsed'), h('td', {}, yr), h('td', {}, `${o.contacts_with_email} of ${o.contacts}`), h('td', {}, btn));
+      return tr;
+    }
+    let t;
+    search.addEventListener('input', () => { dq = search.value; clearTimeout(t); t = setTimeout(draw, 250); });
+    dirBox.replaceChildren(...head, h('div', { class: 'chips' }, search, sel), people,
+      h('div', { class: 'tbl-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['Organisation', 'Status', 'Last Membership Year', 'Contacts with email', ''].map(c => h('th', { scope: 'col' }, c)))), body)), more);
+    draw();
+  }
+  directory();
+
   const reqBox = h('section', { class: 'panel' });
   main.append(reqBox);
   const LABEL = { approved_member: 'Approved: member contact', approved_list: 'Approved: already on list', approved_admin: 'Approved: portal admin', denied_not_found: 'Denied: email not in Insightly', denied_no_org: 'Denied: contact has no organisation', denied_lapsed: 'Denied: membership not current', rate_limited: 'Blocked: too many tries', error: 'Could not check' };
