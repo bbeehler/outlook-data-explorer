@@ -128,32 +128,73 @@ async function renderAccess(main) {
     const emails = [...new Set(ta.value.toLowerCase().split(/[\s,;]+/).map(s => s.trim()).filter(s => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s)))];
     if (!emails.length) { msg.textContent = 'Enter at least one valid email address.'; return; }
     add.disabled = true;
-    const { error } = await SB.from('outlook_access').upsert(emails.map(email => ({ email, organization: org.value.trim() })), { onConflict: 'email', ignoreDuplicates: true });
+    const { error } = await SB.from('outlook_access').upsert(emails.map(email => ({ email, organization: org.value.trim(), source: 'manual' })), { onConflict: 'email', ignoreDuplicates: true });
     add.disabled = false;
     if (error) { msg.textContent = 'Could not add: ' + error.message; return; }
     ta.value = ''; msg.textContent = `Added ${emails.length} ${emails.length === 1 ? 'address' : 'addresses'}. Send them the page link; they sign in with that email.`;
     list();
   } }, 'Add to list');
-  panel.append(h('h2', {}, 'Add people'), ta, h('div', { class: 'chips' }, org, add), msg);
+  panel.append(h('h2', {}, 'Add people by hand'), h('p', { class: 'gate-muted' }, 'For staff, partners or anyone not in Insightly as a member contact.'), ta, h('div', { class: 'chips' }, org, add), msg);
   const listBox = h('section', { class: 'panel' }, h('h2', {}, 'Current list'));
   main.append(panel, listBox);
+  const syncBox = h('section', { class: 'panel' });
+  main.insertBefore(syncBox, panel);
+  async function syncStatus() {
+    const { data: runs } = await SB.from('outlook_sync_log').select('started_at, finished_at, ok, member_orgs, member_emails, added, removed, note').order('started_at', { ascending: false }).limit(1);
+    const r = runs && runs[0];
+    const btn = h('button', { type: 'button', class: 'btn-ask', onclick: async () => {
+      btn.disabled = true; btn.textContent = 'Syncing\u2026 (about a minute)';
+      try {
+        const { data: { session } } = await SB.auth.getSession();
+        const res = await fetch(`${CFG.supabaseUrl}/functions/v1/outlook-member-sync`, { method: 'POST', headers: { 'content-type': 'application/json', apikey: CFG.supabaseKey, Authorization: `Bearer ${session.access_token}` }, body: '{}' });
+        const j = await res.json().catch(() => ({}));
+        toast(j.ok ? `Synced: ${j.member_emails} member contacts, ${j.added} added, ${j.removed} removed.` : (j.error || 'The sync did not finish.'));
+      } catch { toast('The sync did not finish. Try again in a few minutes.'); }
+      syncStatus(); list();
+    } }, 'Sync from Insightly now');
+    let line;
+    if (!r) line = 'No sync has run yet. Member contacts are added automatically once the Insightly key is set up.';
+    else if (!r.finished_at) line = `A sync started ${new Date(r.started_at).toLocaleString('en-CA')} and is still running.`;
+    else if (r.ok) line = `Last sync ${new Date(r.finished_at).toLocaleString('en-CA')}: ${r.member_orgs} member organisations, ${r.member_emails} contacts with access (${r.added} added, ${r.removed} removed). ${r.note.includes('skipped') ? r.note : ''}`;
+    else line = `Last sync failed ${new Date(r.started_at).toLocaleString('en-CA')}: ${r.note}`;
+    syncBox.replaceChildren(h('h2', {}, 'Members from Insightly'),
+      h('p', { style: 'margin:0;color:var(--ink-2)' }, 'Every contact at an organisation whose Last Membership Year is this year or later gets access automatically. The list refreshes every night, and people are removed when their organisation\u2019s membership lapses. People you add below stay until you remove them.'),
+      h('p', { class: 'gate-muted' }, line), h('div', {}, btn));
+  }
+  syncStatus();
+  let q = '';
   async function list() {
-    const { data, error } = await SB.from('outlook_access').select('email, full_name, organization, added_at').order('email');
+    const { data, error } = await SB.from('outlook_access').select('email, full_name, organization, added_at, source').order('organization').order('email').limit(10000);
     const usage = await SB.from('outlook_ai_log').select('id', { count: 'exact', head: true }).gte('asked_at', new Date(Date.now() - 30 * 864e5).toISOString());
-    listBox.replaceChildren(h('h2', {}, `Current list (${data ? data.length : 0})`));
+    const nIns = data ? data.filter(r => r.source === 'insightly').length : 0;
+    listBox.replaceChildren(h('h2', {}, `Current list (${data ? data.length : 0}: ${nIns} from Insightly, ${data ? data.length - nIns : 0} added by hand)`));
     if (usage.count != null) listBox.append(h('p', { class: 'gate-muted' }, `${usage.count} AI questions asked in the last 30 days.`));
     if (error) { listBox.append(h('p', {}, 'Could not load the list.')); return; }
-    listBox.append(h('div', { class: 'tbl-wrap' }, h('table', {},
-      h('thead', {}, h('tr', {}, ['Email', 'Name', 'Organization', 'Added', ''].map(c => h('th', { scope: 'col' }, c)))),
-      h('tbody', {}, data.map(r => {
-        const rm = h('button', { type: 'button', class: 'act', onclick: async () => {
-          if (rm.dataset.armed !== '1') { rm.dataset.armed = '1'; rm.textContent = 'Confirm remove'; return; }
-          rm.disabled = true;
-          const { error: e2 } = await SB.from('outlook_access').delete().eq('email', r.email);
-          if (e2) { rm.disabled = false; toast('Could not remove ' + r.email); } else list();
-        } }, 'Remove');
-        return h('tr', {}, h('th', { scope: 'row' }, r.email), h('td', {}, r.full_name), h('td', {}, r.organization), h('td', {}, new Date(r.added_at).toLocaleDateString('en-CA')), h('td', {}, rm));
-      })))));
+    const search = h('input', { id: 'accessSearch', type: 'search', class: 'tsearch', placeholder: 'Find a person or company', value: q });
+    const body = h('tbody', {});
+    const draw = () => {
+      const f = q.toLowerCase();
+      const rows = data.filter(r => !f || (r.email + ' ' + r.full_name + ' ' + r.organization).toLowerCase().includes(f));
+      body.replaceChildren(...rows.slice(0, 200).map(r => {
+        let act;
+        if (r.source === 'insightly') act = h('span', { class: 'gate-muted', title: 'Managed by the nightly Insightly sync' }, 'From Insightly');
+        else {
+          act = h('button', { type: 'button', class: 'act', onclick: async () => {
+            if (act.dataset.armed !== '1') { act.dataset.armed = '1'; act.textContent = 'Confirm remove'; return; }
+            act.disabled = true;
+            const { error: e2 } = await SB.from('outlook_access').delete().eq('email', r.email);
+            if (e2) { act.disabled = false; toast('Could not remove ' + r.email); } else list();
+          } }, 'Remove');
+        }
+        return h('tr', {}, h('th', { scope: 'row' }, r.email), h('td', {}, r.full_name), h('td', {}, r.organization), h('td', {}, new Date(r.added_at).toLocaleDateString('en-CA')), h('td', {}, act));
+      }));
+      more.textContent = rows.length > 200 ? `Showing 200 of ${rows.length}. Search to narrow the list.` : '';
+    };
+    const more = h('p', { class: 'gate-muted' });
+    search.addEventListener('input', () => { q = search.value; draw(); });
+    listBox.append(search, h('div', { class: 'tbl-wrap' }, h('table', {},
+      h('thead', {}, h('tr', {}, ['Email', 'Name', 'Organization', 'Added', ''].map(c => h('th', { scope: 'col' }, c)))), body)), more);
+    draw();
   }
   list();
 }
