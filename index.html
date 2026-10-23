@@ -761,13 +761,25 @@ function renderHome(main) {
   main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'Outlook Study 2025'),
     h('h1', {}, 'Canada’s auto care sector, in numbers'),
     h('p', {}, 'Every chart and table from the Outlook Study data tool, in one place. Filter by year or province, switch to a table, copy the data, or ask a question in plain language.')));
-  main.append(h('div', { class: 'kpis' },
-    tile('$43.9B', 'Auto care sector GDP', '2023 · up 2.6% from 2022', 'gdp-trend'),
-    tile('507,120', 'People employed', '2023 · core and non-core', 'emp-core-trend'),
-    tile('49,268', 'Auto care businesses', '2023 · 24,760 in repair', 'enterprises-industry'),
-    tile('25.1M', 'Vehicles in operation', 'Dec. 2023 · 62% light trucks', 'vio-national'),
-    tile('1.6M', 'New vehicle registrations', '2023 · up 13.1% from 2022', 'nvr-national'),
-    tile('11.7%', 'EV share of new vehicles', '2023 · forecast 65.9% by 2030', 'ev-share')));
+  const last = a => { for (let i = a.length - 1; i >= 0; i--) if (a[i] != null) return [a[i], i]; return [null, -1]; };
+  const sumAt = (d, i) => d.series.filter(x => !/^total$/i.test(x.name)).reduce((t, x) => t + (x.vals[i] || 0), 0);
+  const ch = (a, b) => `${a >= b ? 'up' : 'down'} ${Math.abs((a - b) / b * 100).toFixed(1)}%`;
+  const tiles = [];
+  try {
+    const g = BYID['gdp-trend'], n = g.cats.length - 1, gt = sumAt(g, n), gp = sumAt(g, n - 1);
+    tiles.push(tile(fmt(gt, '$B'), 'Auto care sector GDP', `${g.cats[n]} \u00b7 ${ch(gt, gp)} from ${g.cats[n - 1]}`, 'gdp-trend'));
+    const e = BYID['emp-core-trend'], en = e.cats.length - 1;
+    tiles.push(tile(Math.round(sumAt(e, en)).toLocaleString('en-CA'), 'People employed', `${e.cats[en]} \u00b7 core and non-core`, 'emp-core-trend'));
+    const b = BYID['enterprises-industry'], bt = b.cats.reduce((t, _, i) => t + sumAt(b, i), 0), bi = b.cats.findIndex(c => /repair/i.test(c));
+    tiles.push(tile(Math.round(bt).toLocaleString('en-CA'), 'Auto care businesses', `2023 \u00b7 ${Math.round(sumAt(b, bi)).toLocaleString('en-CA')} in repair`, 'enterprises-industry'));
+    const v = BYID['vio-national'], vn = v.cats.length - 1, vt = sumAt(v, vn);
+    tiles.push(tile(fmt(vt, 'vehicles'), 'Vehicles in operation', `Dec. ${v.cats[vn]} \u00b7 ${Math.round(v.series[1].vals[vn] / vt * 100)}% light trucks`, 'vio-national'));
+    const r = BYID['nvr-national'], rn = r.cats.length - 1;
+    tiles.push(tile(fmt(sumAt(r, rn), 'vehicles'), 'New vehicle registrations', `${r.cats[rn]} \u00b7 ${ch(sumAt(r, rn), sumAt(r, rn - 1))} from ${r.cats[rn - 1]}`, 'nvr-national'));
+    const s = BYID['ev-share'], [act, ai] = last(s.series[0].vals), [fc, fi] = last(s.series[1].vals);
+    tiles.push(tile(fmt(act, '%'), 'EV share of new vehicles', `${s.cats[ai]} \u00b7 forecast ${fmt(fc, '%')} by ${s.cats[fi]}`, 'ev-share'));
+  } catch (err) { console.warn('KPI tiles', err); }
+  if (tiles.length) main.append(h('div', { class: 'kpis' }, tiles));
   if (SAMPLE) {
     main.append(h('section', { class: 'panel' }, h('h2', {}, 'Ask a question'),
       h('p', { style: 'margin:0;color:var(--ink-2);font-size:14px' }, 'Answers come from the figures in this tool and name the figure they used.'),
