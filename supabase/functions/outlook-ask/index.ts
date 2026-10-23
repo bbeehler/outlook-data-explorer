@@ -6,6 +6,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const MODEL = (Deno.env.get("OUTLOOK_AI_MODEL") ?? "claude-sonnet-5-5").trim();
+const WORKSPACE = (Deno.env.get("ANTHROPIC_WORKSPACE_ID") ?? "").trim();
 const RATE_LIMIT = Number(Deno.env.get("OUTLOOK_AI_HOURLY_LIMIT") ?? "30");
 const MAX_CHARS = 70000;
 const MAX_TURNS = 16;
@@ -71,7 +72,11 @@ Deno.serve(async (req) => {
 
   const r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+    headers: {
+      "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json",
+      // Keys that aren't scoped to one workspace need the workspace named on each request.
+      ...(WORKSPACE ? { "anthropic-workspace-id": WORKSPACE } : {}),
+    },
     body: JSON.stringify({ model: MODEL, max_tokens: 1024, system: RULES, messages }),
   });
   const ok = r.ok;

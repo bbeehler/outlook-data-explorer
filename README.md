@@ -24,6 +24,7 @@ A web version of the AIA Canada Outlook Study 2025 data visualization tool, repl
 2. **Sign-in redirect:** in Supabase, open the AIA Canada Data Portal project, then Authentication, then URL Configuration. Add `https://outlook.aiacanada.com/` under **Redirect URLs**, and set **Site URL** to it if this project has no other site. Without this, sign-in links send people to the portal instead of the Explorer.
 3. **Insightly key:** in Supabase, open the Data Portal project, then Edge Functions, then Secrets, and add `INSIGHTLY_API_KEY`. Use the same key the MCE Dashboard project uses. Registration doesn't work until this key is in place.
 4. **AI (optional):** in Supabase, open Edge Functions, then Secrets, and add `ANTHROPIC_API_KEY`. The Ask button appears on its own once the key is there. Optional secrets:
+   - `ANTHROPIC_WORKSPACE_ID`: needed only if the API key is not scoped to one workspace (Claude Console → Settings → Workspaces shows the ID)
    - `OUTLOOK_AI_MODEL`: default `claude-sonnet-5-5`
    - `OUTLOOK_AI_HOURLY_LIMIT`: default `30`
    - `OUTLOOK_ALLOWED_ORIGINS`: only needed if the site moves to a new address. outlook.aiacanada.com and bbeehler.github.io are allowed by default.
