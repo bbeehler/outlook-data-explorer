@@ -5,7 +5,7 @@
 // - Each user can ask up to RATE_LIMIT questions per hour; every question is logged in outlook_ai_log.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const MODEL = Deno.env.get("OUTLOOK_AI_MODEL") ?? "claude-sonnet-5-5";
+const MODEL = (Deno.env.get("OUTLOOK_AI_MODEL") ?? "claude-sonnet-5-5").trim();
 const RATE_LIMIT = Number(Deno.env.get("OUTLOOK_AI_HOURLY_LIMIT") ?? "30");
 const MAX_CHARS = 70000;
 const MAX_TURNS = 16;
@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
   let body: { ping?: boolean; messages?: { role: string; content: string }[] };
   try { body = await req.json(); } catch { return reply(400, { error: "Bad JSON" }); }
 
-  const key = Deno.env.get("ANTHROPIC_API_KEY");
+  const key = (Deno.env.get("ANTHROPIC_API_KEY") ?? "").trim();
   if (body.ping) return reply(200, { enabled: !!key });
   if (!key) return reply(503, { error: "not_configured" });
 
