@@ -348,7 +348,7 @@ const isTotal = (ds, n) => /^total$/i.test(n) && (ds.chart === 'stacked');
 function seriesNames(ds) { return ds.kind === 'cube' ? ds.cube.series : (ds.series || []).map(s => s.name); }
 function toggleSeries(ds, name) {
   const s = st(ds);
-  if (s.on.has(name)) { if (s.on.size === 1) return; s.on.delete(name); delete s.slot[name]; }
+  if (s.on.has(name)) { if (s.on.size === 1) { toast('At least one series stays on. Turn another one on first.'); return; } s.on.delete(name); delete s.slot[name]; }
   else {
     if (s.on.size >= 8) { toast('Up to eight at a time. Turn one off first.'); return; }
     s.on.add(name);
