@@ -1,0 +1,6 @@
+# Never commit the licensed Outlook data or the source workbook
+*.xlsx
+*.xlsm
+data.json
+load*.sql
+x/

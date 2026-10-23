@@ -1,0 +1,1096 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Outlook Data Explorer | AIA Canada</title>
+<script src="config.js"></script>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400;500;600;700;800&family=Sofia+Sans+Semi+Condensed:wght@500;600&display=swap">
+<style>
+/* Layout: AIA Canada brand frame (dark-blue masthead, red edge bar, square corners), topic rail on the left, figure cards in a single readable column, AI drawer on the right. */
+:root {
+  --navy: #192b56;
+  --red: #e21c47;
+  --sky: #84c8e3;
+  --bg: #f2f7fa;
+  --surface: #ffffff;
+  --ink: #192b56;
+  --ink-2: #3d4c6e;
+  --muted: #5f6b85;
+  --line: #d9e3ec;
+  --line-soft: #e8eef4;
+  --accent: #e21c47;
+  --accent-ink: #c4123a;
+  --chip: #e6eef5;
+  --chip-on: #192b56;
+  --chip-on-ink: #ffffff;
+  --mast: #192b56;
+  --mast-ink: #ffffff;
+  --mast-2: #84c8e3;
+  --focus: #e21c47;
+  --warn-bg: #fff4e0;
+  --warn-ink: #7a4b00;
+  --s1: #2a78d6; --s2: #e21c47; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --s8: #eb6834;
+  --muted-bar: #b9c6d6;
+  --font: "Sofia Pro", "Sofia Sans", Arial, sans-serif;
+  --font-data: "Sofia Sans Semi Condensed", "Sofia Sans", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1630; --surface: #142045; --ink: #eef3f9; --ink-2: #c9d4e4; --muted: #9eadc6; --line: #26365f; --line-soft: #1d2a50;
+    --accent: #f2546f; --accent-ink: #ff7d93; --chip: #1f2d55; --chip-on: #84c8e3; --chip-on-ink: #0d1630;
+    --mast: #0a1128; --mast-ink: #ffffff; --mast-2: #84c8e3; --focus: #84c8e3; --warn-bg: #3a2c10; --warn-ink: #f5d48f;
+    --s1: #3987e5; --s2: #f2546f; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #d95926;
+    --muted-bar: #3c4d78; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1630; --surface: #142045; --ink: #eef3f9; --ink-2: #c9d4e4; --muted: #9eadc6; --line: #26365f; --line-soft: #1d2a50;
+  --accent: #f2546f; --accent-ink: #ff7d93; --chip: #1f2d55; --chip-on: #84c8e3; --chip-on-ink: #0d1630;
+  --mast: #0a1128; --mast-ink: #ffffff; --mast-2: #84c8e3; --focus: #84c8e3; --warn-bg: #3a2c10; --warn-ink: #f5d48f;
+  --s1: #3987e5; --s2: #f2546f; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #d95926;
+  --muted-bar: #3c4d78; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--mast); }
+.edge { position: fixed; top: 0; bottom: 0; left: 0; width: 6px; background: var(--red); z-index: 40; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* masthead */
+.mast { background: var(--mast); color: var(--mast-ink); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; }
+.mast-in { max-width: 1280px; margin: 0 auto; padding-left: max(22px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 12px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand { display: flex; flex-direction: column; gap: 0; min-width: 0; margin-right: auto; }
+.brand .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--mast-2); font-weight: 600; }
+.brand .name { font-size: 22px; font-weight: 800; line-height: 1.1; }
+.search { position: relative; flex: 1 1 280px; max-width: 420px; }
+.search input { width: 100%; border: 1px solid rgba(255,255,255,.28); background: rgba(255,255,255,.08); color: #fff; padding: 9px 12px 9px 34px; border-radius: 0; }
+.search input::placeholder { color: rgba(255,255,255,.7); }
+.search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; stroke: rgba(255,255,255,.8); fill: none; stroke-width: 2; }
+.btn-ask { background: var(--red); color: #fff; border: 0; padding: 10px 16px; font-weight: 700; display: inline-flex; gap: 8px; align-items: center; border-radius: 0; }
+.btn-ask:hover { filter: brightness(1.08); }
+.btn-ask svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+/* frame */
+.wrap { max-width: 1280px; margin: 0 auto; padding-left: max(22px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 60px; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 28px; }
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); align-self: start; display: flex; flex-direction: column; gap: 2px; }
+.rail button { text-align: left; background: none; border: 0; padding: 9px 12px; border-left: 3px solid transparent; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; }
+.rail button:hover { background: var(--chip); }
+.rail button[aria-current="true"] { border-left-color: var(--accent); color: var(--ink); font-weight: 700; background: var(--surface); }
+.rail .count { color: var(--muted); font-size: 12px; font-family: var(--font-data); }
+.rail .sep { height: 1px; background: var(--line); margin: 10px 0; }
+.rail .small { font-size: 12px; color: var(--muted); padding: 0 12px; }
+main { min-width: 0; display: flex; flex-direction: column; gap: 22px; }
+
+.banner { background: var(--warn-bg); color: var(--warn-ink); padding: 10px 14px; font-size: 13px; display: flex; gap: 10px; align-items: flex-start; }
+.banner b { font-weight: 700; }
+
+.topic-head { display: flex; flex-direction: column; gap: 6px; padding-top: 4px; }
+.topic-head .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); font-weight: 700; }
+.topic-head h1 { font-size: 30px; font-weight: 800; line-height: 1.15; }
+.topic-head p { margin: 0; color: var(--ink-2); max-width: 68ch; }
+
+/* KPI */
+.kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.kpi { background: var(--surface); padding: 16px 18px; display: flex; flex-direction: column; gap: 2px; text-align: left; border: 0; }
+button.kpi:hover { background: var(--chip); }
+.kpi .v { font-size: 30px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kpi .l { font-size: 13px; color: var(--ink-2); }
+.kpi .s { font-size: 12px; color: var(--muted); font-family: var(--font-data); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.panel h2 { font-size: 18px; font-weight: 800; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.qchip { border: 1px solid var(--line); background: var(--bg); padding: 8px 12px; text-align: left; font-size: 14px; color: var(--ink); }
+.qchip:hover { border-color: var(--accent); }
+.topics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.tcard { background: var(--surface); border: 1px solid var(--line); padding: 14px 16px; text-align: left; display: flex; flex-direction: column; gap: 4px; }
+.tcard:hover { border-color: var(--ink); }
+.tcard b { font-size: 16px; }
+.tcard span { font-size: 13px; color: var(--muted); }
+
+/* figure cards */
+.card { background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; scroll-margin-top: 90px; }
+.card-h { padding: 16px 18px 6px; display: flex; flex-direction: column; gap: 4px; }
+.ref { font-family: var(--font-data); font-size: 12px; color: var(--muted); letter-spacing: .02em; }
+.card-h h2 { font-size: 18px; font-weight: 700; line-height: 1.25; }
+.insight { font-size: 14px; color: var(--ink-2); }
+.insight strong { color: var(--ink); }
+.controls { padding: 6px 18px 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); }
+.seg button { border: 0; background: var(--surface); padding: 5px 10px; font-size: 13px; color: var(--ink-2); }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--chip-on); color: var(--chip-on-ink); font-weight: 600; }
+.sel { border: 1px solid var(--line); background: var(--surface); padding: 5px 8px; font-size: 13px; max-width: 100%; }
+.legend { padding: 8px 18px 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.lg { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); padding: 3px 9px; font-size: 12.5px; color: var(--ink); max-width: 100%; }
+.lg i { width: 10px; height: 10px; flex: none; border-radius: 2px; }
+.lg[aria-pressed="false"] { color: var(--muted); background: transparent; border-style: dashed; }
+.lg[aria-pressed="false"] i { background: transparent !important; outline: 1px solid var(--muted); }
+.lg span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.legend .hint { font-size: 12px; color: var(--muted); align-self: center; }
+.viz { padding: 10px 18px 6px; position: relative; }
+.viz .cv { position: relative; height: 320px; }
+.viz .cv.tall { height: 520px; }
+.viz .cv.xtall { height: 720px; }
+.multi { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.multi h3 { font-size: 13px; font-weight: 600; color: var(--ink-2); margin-bottom: 4px; }
+.multi .cv { height: 260px; }
+.tbl-wrap { overflow-x: auto; max-height: 460px; overflow-y: auto; border: 1px solid var(--line-soft); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--line-soft); white-space: nowrap; font-variant-numeric: tabular-nums; }
+th:first-child, td:first-child { text-align: left; white-space: normal; min-width: 160px; }
+thead th { position: sticky; top: 0; background: var(--surface); color: var(--ink-2); font-weight: 600; border-bottom: 1px solid var(--line); }
+thead th button { background: none; border: 0; padding: 0; font-weight: 600; color: inherit; }
+tbody tr:hover td { background: var(--bg); }
+td .bar { display: inline-block; height: 8px; background: var(--s1); vertical-align: middle; margin-right: 6px; border-radius: 0 2px 2px 0; }
+.foot { padding: 8px 18px 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; align-items: center; border-top: 1px solid var(--line-soft); margin-top: 8px; }
+.src { font-size: 12px; color: var(--muted); max-width: 70ch; }
+.src em { font-style: normal; color: var(--warn-ink); background: var(--warn-bg); padding: 0 4px; }
+.acts { display: flex; flex-wrap: wrap; gap: 6px; }
+.act { border: 1px solid var(--line); background: var(--surface); padding: 5px 10px; font-size: 12.5px; color: var(--ink-2); display: inline-flex; gap: 6px; align-items: center; }
+.act:hover { border-color: var(--ink); color: var(--ink); }
+.act.ai { border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.act svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; }
+.rank { display: flex; flex-direction: column; gap: 6px; }
+.rrow { display: grid; grid-template-columns: 26px minmax(0, 190px) minmax(0, 1fr) 84px; gap: 8px; align-items: center; font-size: 13.5px; }
+.rrow .rk { color: var(--muted); font-family: var(--font-data); text-align: right; }
+.rrow .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rrow .track { height: 14px; background: var(--line-soft); }
+.rrow .fill { height: 14px; background: var(--s1); border-radius: 0 4px 4px 0; }
+.rrow .vv { text-align: right; font-variant-numeric: tabular-nums; }
+.rrow .mv { font-size: 11px; font-family: var(--font-data); margin-left: 4px; }
+.up { color: #1a7f4b; } .dn { color: var(--accent-ink); }
+.rnote { font-size: 12px; color: var(--muted); }
+.lcards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.lcard { border: 1px solid var(--line); padding: 12px; }
+.lcard b { display: block; margin-bottom: 4px; }
+.lcard ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink-2); }
+.defs dl { margin: 0; display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px 16px; font-size: 14px; }
+.defs dt { font-weight: 700; font-family: var(--font-data); }
+.defs dd { margin: 0; color: var(--ink-2); }
+.defs h3 { font-size: 15px; margin: 8px 0; }
+.tsearch { border: 1px solid var(--line); background: var(--surface); padding: 6px 10px; font-size: 13px; width: 220px; max-width: 100%; }
+.empty { color: var(--muted); padding: 20px 0; }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--navy); color: #fff; padding: 10px 16px; font-size: 14px; z-index: 60; }
+.results-list { display: flex; flex-direction: column; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.results-list button { background: var(--surface); border: 0; text-align: left; padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; }
+.results-list button:hover { background: var(--chip); }
+.results-list .ref { font-size: 11.5px; }
+.pagefoot { font-size: 12px; color: var(--muted); max-width: 90ch; display: flex; flex-direction: column; gap: 6px; }
+
+/* AI drawer */
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(440px, 100%); background: var(--surface); border-left: 1px solid var(--line); z-index: 50; display: flex; flex-direction: column; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-right: env(safe-area-inset-right, 0px); box-shadow: -12px 0 40px rgba(10, 20, 45, .18); }
+.dr-h { background: var(--mast); color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
+.dr-h b { font-size: 16px; margin-right: auto; }
+.dr-h button { background: none; border: 1px solid rgba(255,255,255,.35); color: #fff; padding: 4px 10px; font-size: 13px; }
+.dr-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.msg { font-size: 14.5px; line-height: 1.55; }
+.msg.u { align-self: flex-end; background: var(--chip); padding: 8px 12px; max-width: 90%; }
+.msg.a { border-left: 3px solid var(--accent); padding-left: 12px; }
+.msg.a p { margin: 0 0 8px; } .msg.a ul { margin: 0 0 8px; padding-left: 18px; }
+.msg .ctx { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
+.msg .status { color: var(--muted); font-size: 13px; }
+.dr-intro { font-size: 14px; color: var(--ink-2); display: flex; flex-direction: column; gap: 10px; }
+.dr-f { border-top: 1px solid var(--line); padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+.dr-f form { display: flex; gap: 8px; }
+.dr-f textarea { flex: 1; resize: none; border: 1px solid var(--line); background: var(--bg); padding: 8px 10px; font: inherit; color: var(--ink); min-height: 44px; max-height: 120px; }
+.dr-f .send { background: var(--red); color: #fff; border: 0; padding: 0 16px; font-weight: 700; }
+.dr-f .fine { font-size: 11.5px; color: var(--muted); }
+
+/* sign-in gate and account bar */
+.wrap.gated { grid-template-columns: minmax(0, 1fr); }
+.gate { max-width: 560px; margin: 32px auto; background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--accent); padding: 28px; display: flex; flex-direction: column; gap: 14px; }
+.gate h1 { font-size: 26px; font-weight: 800; line-height: 1.2; }
+.gate p { margin: 0; color: var(--ink-2); }
+.gate .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); font-weight: 700; }
+.gate-form { display: flex; flex-direction: column; gap: 8px; }
+.gate-form label { font-weight: 600; font-size: 14px; }
+.gate-form input { border: 1px solid var(--line); background: var(--bg); padding: 11px 12px; font-size: 16px; }
+.gate-form .btn-ask { justify-content: center; padding: 12px 16px; }
+.gate-err { color: var(--accent-ink); font-weight: 600; }
+.gate-muted { font-size: 13px; color: var(--muted) !important; }
+.who { display: flex; align-items: center; gap: 10px; font-size: 13px; color: rgba(255,255,255,.85); min-width: 0; }
+.who span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
+.who button { background: none; border: 1px solid rgba(255,255,255,.35); color: #fff; padding: 5px 10px; font-size: 13px; }
+.bulk { border: 1px solid var(--line); background: var(--bg); padding: 10px; font: inherit; color: var(--ink); width: 100%; resize: vertical; }
+.panel td, .panel th { text-align: left; }
+
+@media (max-width: 960px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .rail { position: static; flex-direction: row; overflow-x: auto; gap: 6px; padding-bottom: 4px; }
+  .rail button { white-space: nowrap; border-left: 0; border-bottom: 3px solid transparent; background: var(--surface); border: 1px solid var(--line); }
+  .rail button[aria-current="true"] { border-bottom: 3px solid var(--accent); }
+  .rail .sep, .rail .small, .rail .count { display: none; }
+  .topics, .lcards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpi .v { font-size: 24px; }
+  .topics, .lcards, .multi { grid-template-columns: minmax(0, 1fr); }
+  .topic-head h1 { font-size: 24px; }
+  .viz .cv { height: 280px; } .viz .cv.tall { height: 460px; } .viz .cv.xtall { height: 640px; }
+  .rrow { grid-template-columns: 22px minmax(0, 1fr) 76px; }
+  .rrow .track { grid-column: 2 / 4; grid-row: 2; }
+  .search { order: 3; flex-basis: 100%; max-width: none; }
+  .brand .name { font-size: 19px; }
+  .defs dl { grid-template-columns: minmax(0, 1fr); gap: 2px; } .defs dd { margin-bottom: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="edge" aria-hidden="true"></div>
+<header class="mast">
+  <div class="mast-in">
+    <div class="brand">
+      <span class="eyebrow">AIA Canada · Outlook Study 2025</span>
+      <span class="name">Outlook Data Explorer</span>
+    </div>
+    <label class="search" for="q">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Find a figure: EV share, technicians, F-150…" autocomplete="off">
+    </label>
+    <div class="who" id="who" hidden><span id="whoEmail"></span><button type="button" id="signOut">Sign out</button></div>
+    <button class="btn-ask" id="askTop" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg>Ask the data</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="rail" id="rail" aria-label="Topics"></nav>
+  <main id="main"></main>
+</div>
+
+<aside class="drawer" id="drawer" hidden aria-label="Ask the data">
+  <div class="dr-h"><b>Ask the data</b><button id="drNew" type="button">New chat</button><button id="drClose" type="button">Close</button></div>
+  <div class="dr-body" id="drBody"></div>
+  <div class="dr-f">
+    <form id="drForm">
+      <textarea id="drIn" rows="2" placeholder="Ask about vehicles, jobs, EVs, repair demand…"></textarea>
+      <button class="send" id="drSend" type="submit">Ask</button>
+    </form>
+    <span class="fine">Answers come only from the Outlook Study figures in this tool and cite them. Check important numbers in the figure before you quote them.</span>
+  </div>
+</aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const CFG = window.AIA_EXPLORER_CONFIG;
+let DS = [];
+let BYID = {};
+const TOPICS = [
+  { id: 'home', name: 'Overview', blurb: '' },
+  { id: 'sector', name: 'The sector', blurb: 'How big Canada’s auto care sector is: GDP, jobs, wages, technicians, businesses and imports.' },
+  { id: 'vehicles', name: 'Vehicles on the road', blurb: 'What Canadians drive: vehicles in operation, new registrations, top makes, models and segments.' },
+  { id: 'ev', name: 'Electric vehicles', blurb: 'How fast EVs are arriving: registrations by powertrain, forecasts to 2030, top makes and what buyers think.' },
+  { id: 'demand', name: 'Demand and driving', blurb: 'What drives repair work: market size, kilometres travelled, where people get service, replacement rates and collisions.' },
+  { id: 'economy', name: 'Prices and the economy', blurb: 'The economic backdrop: provincial GDP growth, consumer and industrial prices, inflation expectations and deal activity.' },
+  { id: 'intl', name: 'Canada vs. peers', blurb: 'How Canada compares with the US, UK and Australia.' },
+  { id: 'defs', name: 'Definitions', blurb: 'What counts as the auto care sector, and the vehicle types used in this study.' },
+  { id: 'access', name: 'Manage access', blurb: '' },
+];
+const QUESTIONS = [
+  'How many vehicles are on Canadian roads, and how old are they?',
+  'Which provinces employ the most auto care workers?',
+  'How fast is EV adoption growing, and what is the 2030 forecast?',
+  'What share of Canadians use independent shops instead of dealerships?',
+  'Which parts get replaced most often on vehicles 11 to 15 years old?',
+  'How does Canada compare with the US on EV share of new sales?',
+];
+const FEATURED = ['gdp-trend', 'vio-national', 'ev-share'];
+
+/* ---------- helpers ---------- */
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') el.className = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat()) if (c != null && c !== false) el.append(c.nodeType ? c : document.createTextNode(String(c)));
+  return el;
+};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+function toast(msg) { const t = h('div', { class: 'toast', role: 'status' }, msg); document.body.append(t); setTimeout(() => t.remove(), 2400); }
+
+function compact(n) {
+  const a = Math.abs(n);
+  if (a >= 1e6) return (n / 1e6).toFixed(a >= 1e7 ? 1 : 2).replace(/\.0+$/, '') + 'M';
+  if (a >= 1e4) return Math.round(n / 1e3) + 'K';
+  if (a >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+  return String(Math.round(n * 10) / 10);
+}
+function fmt(v, unit, mode = 'short') {
+  if (v == null || isNaN(v)) return '–';
+  const full = mode === 'full';
+  switch (unit) {
+    case '%': return (v * 100).toFixed(Math.abs(v) < 0.1 && !Number.isInteger(v * 1000) ? 1 : 1) + '%';
+    case '$B': if (v === 0) return '$0'; return '$' + (Math.abs(v) < 1 ? v.toFixed(2) : v.toFixed(1)) + 'B';
+    case '$M': return full ? '$' + v.toLocaleString('en-CA', { maximumFractionDigits: 1 }) + 'M' : (Math.abs(v) >= 1000 ? '$' + (v / 1000).toFixed(1) + 'B' : '$' + Math.round(v) + 'M');
+    case '$': return '$' + Math.round(v).toLocaleString('en-CA');
+    case 'index': return Math.abs(v) >= 5 ? v.toFixed(1) : v.toFixed(2);
+    case "'000": return v.toFixed(1) + 'K';
+    case "'000 vehicles": return full ? Math.round(v * 1000).toLocaleString('en-CA') : compact(v * 1000);
+    case 'per 1,000': return v.toFixed(1);
+    case 'per vehicle per year': return v.toFixed(3);
+    default: return full ? Math.round(v).toLocaleString('en-CA') : compact(v);
+  }
+}
+const unitLabel = u => ({ '$B': 'billions of dollars', '$M': 'millions of dollars', '$': 'dollars', '%': 'per cent', 'index': 'index', "'000": 'thousands', "'000 vehicles": 'thousands of vehicles' }[u] || u || '');
+const isTime = cats => cats && cats.length > 1 && cats.every(c => /^(\d{4}|Q\d \d{4}|\d{4} Q\d|[A-Z][a-z]{2} \d{4}|\d{4}-\d{4})$/.test(String(c)));
+const pct = (a, b) => (b ? (a - b) / Math.abs(b) : null);
+
+/* ---------- palette & slots ---------- */
+const SLOTS = ['--s1', '--s2', '--s3', '--s4', '--s5', '--s6', '--s7', '--s8'];
+const RAMP = ['#b7d3f6', '#86b6ef', '#5598e7', '#2a78d6', '#1c5cab', '#104281', '#0d366b', '#0a2a55'];
+function rampFor(n) { if (n === 1) return ['--s1']; const out = []; for (let i = 0; i < n; i++) out.push(RAMP[Math.round(i * (RAMP.length - 1) / (n - 1))]); return out; }
+const colorOf = c => c.startsWith('--') ? css(c) : c;
+const ORDINAL = new Set(['enterprises-industry', 'enterprises-collision-mech', 'enterprises-naics', 'imports']);
+
+/* ---------- per-card state ---------- */
+const UI = {};
+function st(ds) {
+  if (UI[ds.id]) return UI[ds.id];
+  const s = { view: 'chart', opt: {}, on: null, slot: {}, rankYear: null, tsort: null, tq: '', band: 5 };
+  if (ds.kind === 'cube') for (const d of ds.cube.dims) s.opt[d] = ds.cube.default[d];
+  if (ds.kind === 'rank') s.rankYear = ds.years[ds.years.length - 1];
+  const names = seriesNames(ds);
+  s.on = new Set(ds.pick ? ds.pickDefault : names.filter(n => !isTotal(ds, n)).slice(0, 8));
+  if (!ORDINAL.has(ds.id)) { let i = 0; for (const n of names) if (s.on.has(n)) s.slot[n] = i++ % 8; }
+  return (UI[ds.id] = s);
+}
+const isTotal = (ds, n) => /^total$/i.test(n) && (ds.chart === 'stacked');
+function seriesNames(ds) { return ds.kind === 'cube' ? ds.cube.series : (ds.series || []).map(s => s.name); }
+function toggleSeries(ds, name) {
+  const s = st(ds);
+  if (s.on.has(name)) { if (s.on.size === 1) return; s.on.delete(name); delete s.slot[name]; }
+  else {
+    if (s.on.size >= 8) { toast('Up to eight at a time. Turn one off first.'); return; }
+    s.on.add(name);
+    if (!ORDINAL.has(ds.id)) { const used = new Set(Object.values(s.slot)); let k = 0; while (used.has(k)) k++; s.slot[name] = k; }
+  }
+}
+
+/* resolve a dataset + state into what to draw */
+function resolve(ds) {
+  const s = st(ds);
+  let cats, series;
+  if (ds.kind === 'cube') {
+    const key = s.opt[ds.cube.dims[0]];
+    cats = ds.cube.cats.slice();
+    series = ds.cube.series.map(n => ({ name: n, vals: ds.cube.data[key][n] }));
+  } else { cats = ds.cats.slice(); series = ds.series.map(x => ({ ...x })); }
+  const all = series.map(x => x.name);
+  series = series.filter(x => !isTotal(ds, x.name) && s.on.has(x.name));
+  // drop all-empty categories (e.g. NAICS rows with no businesses in a province)
+  if (ds.orient === 'h' && ds.kind === 'cube') {
+    const keep = cats.map((_, i) => series.some(x => x.vals[i]));
+    cats = cats.filter((_, i) => keep[i]); series = series.map(x => ({ ...x, vals: x.vals.filter((_, i) => keep[i]) }));
+  }
+  const ramp = ORDINAL.has(ds.id) ? rampFor(all.length) : null;
+  series.forEach(x => { x.color = ramp ? ramp[all.indexOf(x.name)] : SLOTS[s.slot[x.name] ?? 0]; });
+  if (ds.highlight && series.length === 1) series[0].colors = cats.map(c => c === ds.highlight ? '--s2' : '--s1');
+  return { cats, series, all };
+}
+
+/* auto takeaway */
+function insight(ds) {
+  if (ds.insight) return ds.insight;
+  if (['rank', 'table', 'cards', 'defs'].includes(ds.kind)) return null;
+  const R = resolve(ds); const u = ds.unit; const cats = R.cats;
+  if (!R.series.length) return null;
+  const stacked = ds.chart === 'stacked' && !(u === '%' && ds.id.startsWith('r2r'));
+  const tot = cats.map((_, i) => { let any = false, t = 0; for (const x of R.series) { const v = x.vals[i]; if (v != null) { any = true; t += v; } } return any ? t : null; });
+  if (ds.chart === 'combo') return null;
+  if (isTime(cats)) {
+    if (stacked || R.series.length === 1) {
+      const vals = stacked ? tot : R.series[0].vals;
+      let li = vals.length - 1; while (li > 0 && vals[li] == null) li--;
+      const last = vals[li], prev = vals[li - 1], first = vals.find(v => v != null), fi = vals.indexOf(first);
+      const label = stacked && R.series.length > 1 ? 'Total' : (R.series.length === 1 && R.series[0].name !== 'Value' ? R.series[0].name : 'Value');
+      let out = `<strong>${esc(label)}, ${esc(cats[li])}: ${fmt(last, u, 'full')}</strong>`;
+      if (u !== '%' && prev != null) { const c = pct(last, prev); out += ` · ${c >= 0 ? 'up' : 'down'} ${Math.abs(c * 100).toFixed(1)}% from ${esc(cats[li - 1])}`; }
+      if (u === '%' && prev != null) { const c = (last - prev) * 100; out += ` · ${c >= 0 ? 'up' : 'down'} ${Math.abs(c).toFixed(1)} points from ${esc(cats[li - 1])}`; }
+      if (u !== '%' && fi < li - 1) { const c = pct(last, first); out += ` · ${c >= 0 ? 'up' : 'down'} ${Math.abs(c * 100).toFixed(1)}% since ${esc(cats[fi])}`; }
+      return out;
+    }
+    // several series over time: who leads at the end
+    let li = cats.length - 1; while (li > 0 && R.series.every(x => x.vals[li] == null)) li--;
+    const ranked = R.series.filter(x => x.vals[li] != null).sort((a, b) => b.vals[li] - a.vals[li]);
+    if (!ranked.length) return null;
+    return `<strong>Highest in ${esc(cats[li])}: ${esc(ranked[0].name)} at ${fmt(ranked[0].vals[li], u, 'full')}</strong>` + (ranked[1] ? ` · then ${esc(ranked[1].name)} at ${fmt(ranked[1].vals[li], u, 'full')}` : '');
+  }
+  // categorical
+  if (R.series.length === 1 || stacked) {
+    const vals = stacked ? tot : R.series[0].vals;
+    let bi = 0; vals.forEach((v, i) => { if (v != null && v > vals[bi]) bi = i; });
+    const sum = vals.reduce((a, b) => a + (b || 0), 0);
+    let out = `<strong>Largest: ${esc(cats[bi])} at ${fmt(vals[bi], u, 'full')}</strong>`;
+    if (u !== '%' && u !== 'index' && u !== 'per 1,000' && cats.length > 2 && !cats.some(c => /canada|total/i.test(c))) out += ` · ${(vals[bi] / sum * 100).toFixed(0)}% of the total shown (${fmt(sum, u, 'full')})`;
+    return out;
+  }
+  if (u !== '%' && R.series.length >= 2 && isTime(R.series.map(x => x.name))) {
+    const a = R.series[R.series.length - 2], b = R.series[R.series.length - 1];
+    const ch = cats.map((c, i) => [c, a.vals[i], b.vals[i]]).filter(r => r[1] && r[2] && r[1] >= 0.02 * Math.max(...a.vals.filter(Boolean))).map(r => [r[0], (r[2] - r[1]) / r[1]]);
+    ch.sort((x, y) => y[1] - x[1]);
+    if (ch.length) return `<strong>Biggest gain, ${esc(a.name)} to ${esc(b.name)}: ${esc(ch[0][0])} (${ch[0][1] >= 0 ? '+' : ''}${(ch[0][1] * 100).toFixed(1)}%)</strong> · biggest drop: ${esc(ch[ch.length - 1][0])} (${(ch[ch.length - 1][1] * 100).toFixed(1)}%)`;
+  }
+  return null;
+}
+
+/* ---------- Chart.js ---------- */
+const CHARTS = new Map();
+Chart.defaults.font.family = '"Sofia Sans", Arial, sans-serif';
+Chart.defaults.font.size = 12;
+Chart.defaults.animation = matchMedia('(prefers-reduced-motion: reduce)').matches ? false : { duration: 250 };
+
+function drawChart(canvas, ds, R, opts = {}) {
+  const u = opts.unit || ds.unit;
+  const horiz = ds.orient === 'h';
+  const stacked = ds.chart === 'stacked';
+  const line = (opts.type || (ds.chart === 'line' ? 'line' : 'bar')) === 'line';
+  const surf = css('--surface'), ink = css('--ink-2'), muted = css('--muted'), grid = css('--line-soft');
+  const many = R.cats.length > 24;
+  const datasets = R.series.map((x, i) => {
+    const col = colorOf(x.color);
+    const base = { label: x.name, data: x.vals };
+    if (line) return { ...base, type: 'line', borderColor: col, backgroundColor: col, borderWidth: 2, pointRadius: many ? 0 : 3.5, pointHoverRadius: 5, pointBackgroundColor: col, pointBorderColor: surf, pointBorderWidth: 1.5, spanGaps: true, tension: 0 };
+    const bg = x.colors ? x.colors.map(colorOf) : col;
+    return { ...base, type: 'bar', backgroundColor: bg, borderColor: surf,
+      borderWidth: stacked ? (horiz ? { right: 2 } : { top: 2 }) : 0,
+      borderRadius: stacked ? 0 : 4, borderSkipped: 'start',
+      maxBarThickness: horiz ? 26 : 44, categoryPercentage: R.series.length > 1 && !stacked ? 0.8 : 0.72, barPercentage: R.series.length > 1 && !stacked ? 0.92 : 1 };
+  });
+  const valAxis = {
+    stacked, beginAtZero: !(u === 'index' && line) , grid: { color: grid, drawTicks: false }, border: { display: false },
+    ticks: { color: muted, padding: 6, maxTicksLimit: 6, callback: v => fmt(v, u) },
+  };
+  if (u === '%' && stacked && ds.id !== 'intl-core' && ds.id !== 'ev-penetration' && ds.id !== 'r2r-opinions') {}
+  if (['ev-penetration', 'r2r-opinions', 'intl-core'].includes(ds.id)) valAxis.max = 1;
+  const catAxis = {
+    stacked, grid: { display: false }, border: { color: css('--line') },
+    ticks: { color: ink, autoSkip: true, maxRotation: 0, autoSkipPadding: 10,
+      callback: function (v) { const l = this.getLabelForValue(v); const max = horiz ? 34 : 14; return String(l).length > max ? String(l).slice(0, max - 1) + '…' : l; } },
+  };
+  const cfg = {
+    type: line ? 'line' : 'bar',
+    data: { labels: R.cats, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: horiz ? 'y' : 'x',
+      interaction: { mode: 'index', intersect: false, axis: horiz ? 'y' : 'x' },
+      layout: { padding: { top: 4, right: 8 } },
+      scales: horiz ? { x: valAxis, y: catAxis } : { x: catAxis, y: valAxis },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: css('--mast'), titleColor: '#fff', bodyColor: '#fff', footerColor: css('--mast-2'), padding: 10, cornerRadius: 0, boxPadding: 4, usePointStyle: true,
+          titleFont: { weight: 700 }, footerFont: { weight: 600 },
+          itemSort: (a, b) => stacked ? b.datasetIndex - a.datasetIndex : 0,
+          filter: it => it.raw != null,
+          callbacks: {
+            title: items => R.cats[items[0].dataIndex],
+            label: it => ` ${it.dataset.label === 'Value' ? '' : it.dataset.label + ': '}${fmt(it.raw, u, 'full')}`,
+            footer: items => stacked && items.length > 1 ? 'Total: ' + fmt(items.reduce((a, b) => a + (b.raw || 0), 0), u, 'full') : '',
+          },
+        },
+      },
+    },
+  };
+  const old = CHARTS.get(canvas); if (old) old.destroy();
+  CHARTS.set(canvas, new Chart(canvas, cfg));
+}
+
+/* ---------- CSV / AI text ---------- */
+function tableOf(ds) {
+  if (ds.kind === 'rank') { const y = st(ds).rankYear; return { head: ['Rank', 'Name', y], rows: ds.rank[y].map((r, i) => [/other/i.test(r[0]) ? '' : i + 1, r[0], r[1]]) }; }
+  if (ds.kind === 'table') return { head: ds.columns, rows: ds.rows };
+  const R = resolve(ds);
+  const all = ds.chart === 'stacked' ? R.series : R.series;
+  return { head: ['', ...all.map(x => x.name)], rows: R.cats.map((c, i) => [c, ...all.map(x => x.vals[i])]) };
+}
+function csvOf(ds) {
+  const t = tableOf(ds);
+  const q = v => { v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const opt = ds.kind === 'cube' ? ` (${Object.values(st(ds).opt).join(', ')})` : '';
+  return [`# ${ds.title}${opt}`, `# ${ds.ref || ''} | Unit: ${unitLabel(ds.unit)}${ds.unit === '%' ? ' (as a fraction: 0.117 = 11.7%)' : ''} | Source: ${ds.source}`,
+    t.head.map(q).join(','), ...t.rows.map(r => r.map(q).join(','))].join('\n');
+}
+function textFor(ds, option) {
+  const lines = [`FIGURE ${ds.id}: ${ds.title}`, `Reference: ${ds.ref || '-'} | Unit: ${unitLabel(ds.unit) || '-'} | Source: ${ds.source}`];
+  if (ds.note) lines.push('Note: ' + ds.note);
+  if (ds.unit === '%') lines.push('Values are fractions: 0.117 means 11.7 per cent.');
+  const row = (n, vals) => `${n}: ${vals.map(v => v == null ? '-' : v).join(' | ')}`;
+  if (ds.kind === 'cube') {
+    const dim = ds.cube.dims[0];
+    const key = ds.cube[dim].includes(option) ? option : ds.cube.default[dim];
+    lines.push(`Showing ${dim} = ${key}. Other ${dim} options: ${ds.cube[dim].join(', ')}`);
+    lines.push('Categories: ' + ds.cube.cats.join(' | '));
+    for (const n of ds.cube.series) lines.push(row(n, ds.cube.data[key][n]));
+  } else if (ds.kind === 'rank') {
+    for (const y of ds.years) lines.push(`${y}: ` + ds.rank[y].map((r, i) => `${/other/i.test(r[0]) ? '' : (i + 1) + '. '}${r[0]} ${r[1]}`).join('; '));
+  } else if (ds.kind === 'table') {
+    lines.push(ds.columns.join(' | ')); for (const r of ds.rows) lines.push(r.join(' | '));
+  } else if (ds.kind === 'cards') {
+    for (const [b, items] of ds.cards) lines.push(`${b}: ${items.join('; ')}`);
+  } else if (ds.kind === 'defs') {
+    for (const r of ds.ev) lines.push(`${r[0]} (${r[1]}): ${r[2]}`);
+    for (const r of ds.sector) lines.push(`NAICS ${r[0]} ${r[1]}`);
+  } else {
+    lines.push('Categories: ' + ds.cats.join(' | '));
+    for (const x of ds.series) lines.push(row(x.name, x.vals));
+  }
+  return lines.join('\n');
+}
+async function copyText(txt, okMsg) {
+  try { await navigator.clipboard.writeText(txt); toast(okMsg); }
+  catch { const ta = h('textarea', {}, txt); ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.append(ta); ta.select(); try { document.execCommand('copy'); toast(okMsg); } catch { toast('Copy is blocked here. Use the table view and select the text.'); } ta.remove(); }
+}
+
+/* ---------- card rendering ---------- */
+const ICON = {
+  table: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16"/><path d="M3 10h18M9 4v16"/></svg>',
+  copy: '<svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12"/><path d="M16 8V4H4v12h4"/></svg>',
+  dl: '<svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M4 20h16"/></svg>',
+  ai: '<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg>',
+};
+let SAMPLE = null, DOWNLOADS = null;
+
+function card(ds) {
+  const el = h('article', { class: 'card', id: 'fig-' + ds.id });
+  paintCard(el, ds);
+  return el;
+}
+function paintCard(el, ds) {
+  const s = st(ds);
+  for (const c of el.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
+  el.replaceChildren();
+  const ins = insight(ds);
+  el.append(h('div', { class: 'card-h' },
+    ds.ref ? h('span', { class: 'ref' }, ds.ref) : null,
+    h('h2', {}, ds.title),
+    ins ? h('div', { class: 'insight', html: ins }) : null));
+
+  // controls
+  const ctr = h('div', { class: 'controls' });
+  if (ds.kind === 'cube') {
+    const dim = ds.cube.dims[0];
+    const opts = ds.cube[dim];
+    if (opts.length <= 6) {
+      ctr.append(h('div', { class: 'seg', role: 'group', 'aria-label': dim }, opts.map(o => h('button', { type: 'button', 'aria-pressed': String(s.opt[dim] === o), onclick: () => { s.opt[dim] = o; paintCard(el, ds); } }, o))));
+    } else {
+      const id = 'sel-' + ds.id;
+      const sel = h('select', { class: 'sel', id, 'aria-label': dim, onchange: e => { s.opt[dim] = e.target.value; paintCard(el, ds); } }, opts.map(o => h('option', { value: o, selected: s.opt[dim] === o }, o)));
+      ctr.append(h('label', { for: id, class: 'ref' }, dim[0].toUpperCase() + dim.slice(1)), sel);
+    }
+  }
+  if (ds.kind === 'rank') {
+    ctr.append(h('div', { class: 'seg', role: 'group', 'aria-label': 'Year' }, ds.years.map(y => h('button', { type: 'button', 'aria-pressed': String(s.rankYear === y), onclick: () => { s.rankYear = y; paintCard(el, ds); } }, y))));
+  }
+  if (ds.kind === 'table') {
+    const bands = ds.columns.slice(1);
+    ctr.append(h('span', { class: 'ref' }, 'Top 15 for'), h('div', { class: 'seg', role: 'group', 'aria-label': 'Vehicle age' }, bands.map((b, i) => h('button', { type: 'button', 'aria-pressed': String(s.band === i + 1), onclick: () => { s.band = i + 1; paintCard(el, ds); } }, b))));
+  }
+  const chartable = !['cards', 'defs'].includes(ds.kind);
+  if (chartable) {
+    ctr.append(h('div', { class: 'seg', role: 'group', 'aria-label': 'View', style: 'margin-left:auto' },
+      h('button', { type: 'button', 'aria-pressed': String(s.view === 'chart'), onclick: () => { s.view = 'chart'; paintCard(el, ds); } }, 'Chart'),
+      h('button', { type: 'button', 'aria-pressed': String(s.view === 'table'), onclick: () => { s.view = 'table'; paintCard(el, ds); } }, 'Table')));
+  }
+  if (ctr.childElementCount) el.append(ctr);
+
+  // legend (series toggles)
+  if (!['rank', 'table', 'cards', 'defs'].includes(ds.kind) && ds.chart !== 'combo') {
+    const R = resolve(ds);
+    const names = seriesNames(ds).filter(n => !isTotal(ds, n));
+    if (names.length > 1) {
+      const lg = h('div', { class: 'legend' });
+      const ramp = ORDINAL.has(ds.id) ? rampFor(seriesNames(ds).length) : null;
+      for (const n of names) {
+        const on = s.on.has(n);
+        const col = ramp ? ramp[seriesNames(ds).indexOf(n)] : (on ? SLOTS[s.slot[n]] : null);
+        lg.append(h('button', { type: 'button', class: 'lg', 'aria-pressed': String(on), title: n, onclick: () => { toggleSeries(ds, n); paintCard(el, ds); } },
+          h('i', { style: col ? `background:${colorOf(col)}` : '' }), h('span', {}, n)));
+      }
+      if (ds.pick) lg.append(h('span', { class: 'hint' }, 'Tap to compare, up to eight'));
+      el.append(lg);
+    }
+  }
+
+  const viz = h('div', { class: 'viz' });
+  el.append(viz);
+  if (ds.kind === 'cards') {
+    viz.append(h('div', { class: 'lcards' }, ds.cards.map(([b, items]) => h('div', { class: 'lcard' }, h('b', {}, b), h('ul', {}, items.map(i => h('li', {}, i)))))));
+  } else if (ds.kind === 'defs') {
+    viz.classList.add('defs');
+    viz.append(h('h3', {}, 'Vehicle types'), h('dl', {}, ds.ev.flatMap(r => [h('dt', {}, r[0]), h('dd', {}, h('b', {}, r[1] + '. '), r[2])])));
+    viz.append(h('h3', {}, 'Industries in the auto care sector (NAICS)'), h('dl', {}, ds.sector.flatMap(r => [h('dt', {}, r[0]), h('dd', {}, h('b', {}, r[1]), r[2].length && r[0].length === 4 ? '. ' + r[2][0] : (r[2].length ? '. Includes: ' + r[2].slice(0, 4).join('; ') : ''))])));
+  } else if (s.view === 'table') {
+    viz.append(renderTable(ds));
+  } else if (ds.kind === 'rank') {
+    viz.append(renderRank(ds));
+  } else if (ds.kind === 'table') {
+    const cv = h('div', { class: 'cv tall' }, h('canvas', { role: 'img', 'aria-label': ds.title }));
+    viz.append(cv);
+    requestAnimationFrame(() => {
+      const col = s.band;
+      const top = ds.rows.slice().sort((a, b) => b[col] - a[col]).slice(0, 15);
+      drawChart(cv.firstChild, { ...ds, orient: 'h', chart: 'bar', unit: 'per vehicle per year' }, { cats: top.map(r => r[0]), series: [{ name: ds.columns[col], vals: top.map(r => r[col]), color: '--s1' }] });
+    });
+  } else if (ds.chart === 'combo') {
+    const grid = h('div', { class: 'multi' });
+    ds.series.forEach((x, i) => {
+      const cv = h('div', { class: 'cv' }, h('canvas', { role: 'img', 'aria-label': x.name }));
+      grid.append(h('div', {}, h('h3', {}, x.name.replace(/ \((left|right)\)/, '') + (i === 1 && ds.rightUnit ? ` (${ds.rightUnit})` : '')), cv));
+      requestAnimationFrame(() => drawChart(cv.firstChild, { ...ds, chart: x.type === 'line' ? 'line' : 'bar' }, { cats: ds.cats, series: [{ name: x.name, vals: x.vals, color: i ? '--s2' : '--s1' }] }, { unit: i === 1 ? (ds.rightUnit === '%' ? '%' : 'index') : ds.unit, type: x.type === 'line' ? 'line' : 'bar' }));
+    });
+    viz.append(grid);
+  } else {
+    const R = resolve(ds);
+    const n = R.cats.length;
+    const cls = ds.orient === 'h' ? (n > 16 ? 'cv xtall' : n > 8 ? 'cv tall' : 'cv') : 'cv';
+    const cv = h('div', { class: cls }, h('canvas', { role: 'img', 'aria-label': ds.title + '. Switch to Table for the values.' }));
+    viz.append(cv);
+    requestAnimationFrame(() => drawChart(cv.firstChild, ds, R));
+  }
+
+  // footer
+  const src = h('div', { class: 'src' }, 'Source: ' + ds.source + '.', ds.unit && !['cards', 'defs'].includes(ds.kind) ? ` Unit: ${unitLabel(ds.unit)}.` : '');
+  if (ds.note) src.append(' ', /caution/i.test(ds.note) ? h('em', {}, ds.note) : ds.note);
+  const acts = h('div', { class: 'acts' });
+  if (chartable) {
+    acts.append(h('button', { type: 'button', class: 'act', html: ICON.copy + 'Copy data', onclick: () => copyText(csvOf(ds), 'Data copied. Paste into Excel or Sheets.') }));
+    if (DOWNLOADS) acts.append(h('button', { type: 'button', class: 'act', html: ICON.dl + 'CSV', onclick: () => saveCsv(ds) }));
+  }
+  acts.append(h('button', { type: 'button', class: 'act', html: ICON.copy + 'Copy for AI', title: 'Copies this figure and a starter prompt, to paste into any AI assistant', onclick: () => copyText(aiPack(ds), 'Copied with a starter prompt. Paste into Claude or another assistant.') }));
+  if (SAMPLE) acts.append(h('button', { type: 'button', class: 'act ai', html: ICON.ai + 'Explain', onclick: () => openDrawer({ ds, ask: 'Explain what this figure shows in plain language for an auto care business owner. Three short bullets, then one line on what it could mean for their business.' }) }));
+  el.append(h('div', { class: 'foot' }, src, acts));
+}
+function aiPack(ds) {
+  return `You are helping me understand data from the AIA Canada Outlook Study 2025 (Canada's auto care sector). Using only the data below, tell me in plain language: (1) the main takeaway, (2) the biggest change or difference, and (3) what it could mean for an auto care business. Quote numbers exactly and say if something cannot be answered from this data.\n\n${textFor(ds, st(ds).opt[(ds.cube || {}).dims?.[0]])}`;
+}
+async function saveCsv(ds) {
+  try { const r = await DOWNLOADS.save({ filename: `aia-outlook-${ds.id}.csv`, data: csvOf(ds) }); if (r.status === 'saved') toast('CSV saved.'); }
+  catch (e) { if (e && e.code === 'unavailable') { DOWNLOADS = null; render(); } else if (e && e.code !== 'cancelled' && e.code !== 'declined') toast('The file was not saved.'); }
+}
+function renderTable(ds) {
+  const s = st(ds);
+  const wrap = h('div', {});
+  let { head, rows } = tableOf(ds);
+  const u = ds.kind === 'table' ? 'per vehicle per year' : ds.unit;
+  if (ds.kind === 'table') {
+    const inp = h('input', { class: 'tsearch', id: 'ts-' + ds.id, type: 'search', placeholder: 'Filter products', value: s.tq, oninput: e => { s.tq = e.target.value; const tb = wrap.querySelector('.tbl-wrap'); tb.replaceWith(build()); } });
+    wrap.append(h('div', { style: 'margin-bottom:8px' }, inp));
+  }
+  const build = () => {
+    let rr = rows.slice();
+    if (s.tq) rr = rr.filter(r => String(r[0]).toLowerCase().includes(s.tq.toLowerCase()));
+    if (s.tsort) { const [ci, dir] = s.tsort; rr.sort((a, b) => { const x = a[ci], y = b[ci]; return (typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y))) * dir; }); }
+    const max = ds.kind === 'table' ? Math.max(...rows.map(r => r[r.length - 1])) : 0;
+    return h('div', { class: 'tbl-wrap' }, h('table', {},
+      h('thead', {}, h('tr', {}, head.map((c, i) => h('th', { scope: 'col', 'aria-sort': s.tsort && s.tsort[0] === i ? (s.tsort[1] > 0 ? 'ascending' : 'descending') : null },
+        h('button', { type: 'button', onclick: () => { s.tsort = [i, s.tsort && s.tsort[0] === i ? -s.tsort[1] : -1]; wrap.querySelector('.tbl-wrap').replaceWith(build()); } }, c || (ds.kind === 'cube' ? '' : ''),
+          s.tsort && s.tsort[0] === i ? (s.tsort[1] > 0 ? ' ↑' : ' ↓') : ''))))),
+      h('tbody', {}, rr.map(r => h('tr', {}, r.map((v, i) => {
+        if (i === 0 || typeof v !== 'number') return h(i === 0 ? 'th' : 'td', i === 0 ? { scope: 'row', style: 'font-weight:500' } : {}, v ?? '');
+        if (ds.kind === 'table' && i === r.length - 1) return h('td', {}, h('span', { class: 'bar', style: `width:${Math.round(v / max * 60)}px` }), fmt(v, u, 'full'));
+        if (ds.kind === 'rank') return h('td', {}, fmt(v, ds.unit, 'full'));
+        return h('td', {}, fmt(v, u, 'full'));
+      }))))));
+  };
+  wrap.append(build());
+  return wrap;
+}
+function renderRank(ds) {
+  const s = st(ds); const y = s.rankYear; const yi = ds.years.indexOf(y);
+  const list = ds.rank[y];
+  const top = list.filter(r => !/^(all )?others?/i.test(r[0]));
+  const rest = list.filter(r => /^(all )?others?/i.test(r[0]));
+  const max = Math.max(...top.map(r => r[1]));
+  const prev = yi > 0 ? Object.fromEntries(ds.rank[ds.years[yi - 1]].map((r, i) => [r[0].toLowerCase(), i])) : null;
+  const box = h('div', { class: 'rank' });
+  top.forEach((r, i) => {
+    let mv = null;
+    if (prev) { const p = prev[r[0].toLowerCase()]; if (p == null) mv = h('span', { class: 'mv up' }, 'new'); else if (p !== i) mv = h('span', { class: 'mv ' + (p > i ? 'up' : 'dn') }, (p > i ? '▲' : '▼') + Math.abs(p - i)); }
+    box.append(h('div', { class: 'rrow' }, h('span', { class: 'rk' }, i + 1), h('span', { class: 'nm', title: r[0] }, r[0], mv),
+      h('div', { class: 'track' }, h('div', { class: 'fill', style: `width:${(r[1] / max * 100).toFixed(1)}%` })), h('span', { class: 'vv' }, fmt(r[1], ds.unit, 'full'))));
+  });
+  if (rest.length) {
+    const total = list.reduce((a, r) => a + (/total/i.test(r[0]) ? 0 : r[1]), 0);
+    box.append(h('div', { class: 'rnote' }, `All others: ${fmt(rest[0][1], ds.unit, 'full')}. The top ${top.length} account for ${(top.reduce((a, r) => a + r[1], 0) / total * 100).toFixed(0)}% of ${y} registrations.` + (prev ? ' Arrows show rank change from ' + ds.years[yi - 1] + '.' : '')));
+  }
+  return box;
+}
+
+/* ---------- pages ---------- */
+let current = 'home';
+function render() {
+  const rail = $('#rail');
+  rail.replaceChildren(...TOPICS.filter(t => t.id !== 'access' || IS_ADMIN).map(t => h('button', { type: 'button', 'aria-current': String(current === t.id), onclick: () => go(t.id) },
+    h('span', {}, t.name), t.id !== 'home' && t.id !== 'defs' && t.id !== 'access' ? h('span', { class: 'count' }, DS.filter(d => d.topic === t.id).length) : null)),
+    h('div', { class: 'sep' }), h('div', { class: 'small' }, `${Math.max(DS.length - 1, 0)} figures from the 2025 Outlook Study data tool. Data mostly 2019–2023, with forecasts to 2030.`));
+  const main = $('#main');
+  for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
+  main.replaceChildren();
+  main.append(h('div', { class: 'banner', role: 'note' }, h('span', {}, h('b', {}, 'Member resource. '), 'Contains licensed S&P Global Mobility and IMR Inc. data. Do not redistribute outside AIA Canada membership. Figures are unaudited estimates; see the disclaimer at the bottom of the page.')));
+  const q = $('#q').value.trim();
+  if (q) return renderSearch(main, q);
+  if (current === 'home') return renderHome(main);
+  if (current === 'access') return IS_ADMIN ? renderAccess(main) : renderHome(main);
+  const t = TOPICS.find(x => x.id === current);
+  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'Outlook Study 2025'), h('h1', {}, t.name), h('p', {}, t.blurb)));
+  for (const ds of DS.filter(d => d.topic === current)) main.append(card(ds));
+  main.append(pageFoot());
+}
+function renderHome(main) {
+  const tile = (v, l, s, target) => h('button', { type: 'button', class: 'kpi', onclick: () => jump(target) }, h('span', { class: 'v' }, v), h('span', { class: 'l' }, l), h('span', { class: 's' }, s));
+  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'Outlook Study 2025'),
+    h('h1', {}, 'Canada’s auto care sector, in numbers'),
+    h('p', {}, 'Every chart and table from the Outlook Study data tool, in one place. Filter by year or province, switch to a table, copy the data, or ask a question in plain language.')));
+  main.append(h('div', { class: 'kpis' },
+    tile('$43.9B', 'Auto care sector GDP', '2023 · up 2.6% from 2022', 'gdp-trend'),
+    tile('507,120', 'People employed', '2023 · core and non-core', 'emp-core-trend'),
+    tile('49,268', 'Auto care businesses', '2023 · 24,760 in repair', 'enterprises-industry'),
+    tile('25.1M', 'Vehicles in operation', 'Dec. 2023 · 62% light trucks', 'vio-national'),
+    tile('1.6M', 'New vehicle registrations', '2023 · up 13.1% from 2022', 'nvr-national'),
+    tile('11.7%', 'EV share of new vehicles', '2023 · forecast 65.9% by 2030', 'ev-share')));
+  if (SAMPLE) {
+    main.append(h('section', { class: 'panel' }, h('h2', {}, 'Ask a question'),
+      h('p', { style: 'margin:0;color:var(--ink-2);font-size:14px' }, 'Answers come from the figures in this tool and name the figure they used.'),
+      h('div', { class: 'chips' }, QUESTIONS.map(qq => h('button', { type: 'button', class: 'qchip', onclick: () => openDrawer({ ask: qq }) }, qq)))));
+  }
+  main.append(h('div', { class: 'topics' }, TOPICS.filter(t => t.id !== 'home' && t.id !== 'access').map(t => h('button', { type: 'button', class: 'tcard', onclick: () => go(t.id) }, h('b', {}, t.name), h('span', {}, t.blurb)))));
+  for (const id of FEATURED) main.append(card(BYID[id]));
+  main.append(pageFoot());
+}
+function score(ds, q) {
+  const words = q.toLowerCase().split(/\W+/).filter(w => w.length > 1);
+  const syn = { ev: 'electric bev phev', evs: 'electric bev phev', jobs: 'employment employees', workers: 'employment employees', cars: 'vehicles', trucks: 'light truck', shops: 'businesses enterprises repair', parts: 'replacement products imports', kms: 'kilometres vkt', driving: 'kilometres vkt trip', price: 'cpi inflation ippi', prices: 'cpi inflation ippi', province: 'provincial region' };
+  const hay = (ds.title + ' ' + (ds.ref || '') + ' ' + (ds.note || '') + ' ' + ds.topic + ' ' + (ds.cats || []).join(' ') + ' ' + (ds.series || []).map(s => s.name).join(' ') + (ds.kind === 'table' ? ds.rows.map(r => r[0]).join(' ') : '') + (ds.kind === 'rank' ? Object.values(ds.rank).flat().map(r => r[0]).join(' ') : '') + (ds.cube ? ds.cube.cats.join(' ') + ' ' + ds.cube.series.join(' ') : '')).toLowerCase();
+  let sc = 0;
+  for (const w of words) {
+    const alts = [w, ...(syn[w] || '').split(' ').filter(Boolean)];
+    for (const a of alts) { if (ds.title.toLowerCase().includes(a)) sc += 3; else if (hay.includes(a)) sc += 1; }
+  }
+  return sc;
+}
+function renderSearch(main, q) {
+  const hits = DS.map(d => [d, score(d, q)]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 12);
+  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'Search'), h('h1', {}, hits.length ? `${hits.length} figure${hits.length > 1 ? 's' : ''} match “${q}”` : `No figures match “${q}”`)));
+  if (!hits.length) {
+    main.append(h('p', { class: 'empty' }, 'Try a broader word such as vehicles, employment, EV, repair or prices.' + (SAMPLE ? ' Or ask the question in plain language.' : '')));
+    if (SAMPLE) main.append(h('div', {}, h('button', { type: 'button', class: 'btn-ask', onclick: () => openDrawer({ ask: q }) }, 'Ask: ' + q)));
+    return;
+  }
+  if (SAMPLE) main.append(h('div', {}, h('button', { type: 'button', class: 'qchip', onclick: () => openDrawer({ ask: q }) }, `Ask the data: “${q}”`)));
+  for (const [d] of hits.slice(0, 4)) main.append(card(d));
+  if (hits.length > 4) main.append(h('div', { class: 'results-list' }, hits.slice(4).map(([d]) => h('button', { type: 'button', onclick: () => { $('#q').value = ''; jump(d.id); } }, h('span', { class: 'ref' }, (TOPICS.find(t => t.id === d.topic) || {}).name + (d.ref ? ' · ' + d.ref : '')), h('b', {}, d.title)))));
+}
+function pageFoot() {
+  return h('footer', { class: 'pagefoot' },
+    h('span', {}, '© 2024 AIA Canada. Data tool prepared with Ernst & Young LLP. Figures rely on unaudited data from proprietary and public sources and may be revised. AIA Canada and EY make no warranty as to accuracy or completeness.'),
+    h('span', {}, 'S&P Global Mobility materials are the copyrighted property of S&P Global Mobility, represent its data and opinions as of original publication, and should not be used for financial or investment purposes. Replacement rates © IMR Inc. All rights reserved.'));
+}
+function go(id) { current = id; $('#q').value = ''; render(); window.scrollTo({ top: 0 }); store.set('aia-topic', id); }
+function jump(dsId) {
+  const ds = BYID[dsId]; if (!ds) return;
+  current = ds.topic; render();
+  requestAnimationFrame(() => { const el = document.getElementById('fig-' + dsId); if (el) el.scrollIntoView({ block: 'start' }); });
+}
+
+/* ---------- AI drawer ---------- */
+const RULES = `You are the data assistant inside the AIA Canada Outlook Data Explorer, a tool for members of the Automotive Industries Association of Canada (AIA Canada). The data comes from the AIA Canada Outlook Study 2025 (released January 2025), prepared with EY. Most figures cover 2019 to 2023, with S&P Global Mobility forecasts to 2030.
+
+Rules:
+- Answer only from the figures you are given or fetch with the tools. Every number you state must come from that data. Never estimate or use outside knowledge for figures.
+- After each fact, cite the figure in square brackets with its reference, for example [Outlook Ch. 1, Fig. 1] or [VIO, Table 3].
+- If the data cannot answer the question, say so in one sentence and name the closest figure that might help.
+- Values with unit "per cent" are stored as fractions: 0.117 means 11.7 per cent.
+- Write in plain Canadian English for busy business owners. Lead with the answer. Keep it short: two to five sentences, or up to five bullets. Use "per cent" in sentences. Do not use the abbreviations AIA or AIAC; write AIA Canada.
+- Do not give investment advice.`;
+let chat = [], ctl = null, busy = false, pinned = null;
+
+function openDrawer({ ds = null, ask = null } = {}) {
+  if (!SAMPLE) return;
+  const d = $('#drawer'); d.hidden = false;
+  if (ds) pinned = ds;
+  if (!$('#drBody').childElementCount) intro();
+  if (ask) send(ask, ds);
+  else $('#drIn').focus();
+}
+function intro() {
+  const b = $('#drBody');
+  b.replaceChildren(h('div', { class: 'dr-intro' },
+    h('p', { style: 'margin:0' }, 'Ask about vehicles, jobs, EVs, repair demand or prices. Answers use the Outlook Study figures in this tool and name the figure behind each number.'),
+    h('div', { class: 'chips' }, QUESTIONS.slice(0, 4).map(qq => h('button', { type: 'button', class: 'qchip', onclick: () => send(qq) }, qq)))));
+}
+function md(t) {
+  const lines = esc(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').split('\n');
+  let html = '', inList = false;
+  for (const l of lines) {
+    const m = l.match(/^\s*(?:[-*•]|\d+\.)\s+(.*)/);
+    if (m) { if (!inList) { html += '<ul>'; inList = true; } html += `<li>${m[1]}</li>`; continue; }
+    if (inList) { html += '</ul>'; inList = false; }
+    if (l.trim()) html += `<p>${l.replace(/^#+\s*/, '')}</p>`;
+  }
+  if (inList) html += '</ul>';
+  return html;
+}
+function catalogue() { return DS.map(d => `${d.id}: ${d.title} [${d.ref || d.topic}]`).join('\n'); }
+const TOOLS = [
+  { name: 'find_figures', description: 'Search the Outlook Study figures by keywords. Returns up to 10 matching figures with id, title, reference and unit. Call with an empty query to list every figure.',
+    inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'Keywords, e.g. "EV share forecast" or "technicians"' } } },
+    execute: ({ query }) => { const q = String(query || '').trim(); if (!q) return catalogue(); const hits = DS.map(d => [d, score(d, q)]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 10); return hits.length ? hits.map(([d]) => `${d.id}: ${d.title} [${d.ref || d.topic}] unit: ${unitLabel(d.unit) || '-'}${d.cube ? ` (has ${d.cube.dims[0]} options)` : ''}`).join('\n') : 'No match. Call find_figures with an empty query to see every figure.'; } },
+  { name: 'get_figure', description: 'Get the full data of one figure by id: categories, series values, unit, source and notes. For figures with year or province options, pass option to choose one.',
+    inputSchema: { type: 'object', properties: { id: { type: 'string' }, option: { type: 'string', description: 'Optional year or province, e.g. "2022" or "Ontario"' } }, required: ['id'] },
+    execute: ({ id, option }) => { const d = BYID[String(id)]; if (!d) throw new Error('Unknown id. Use find_figures first.'); return textFor(d, option == null ? undefined : String(option)); } },
+];
+let toolsOK = null;
+async function send(text, ds = null) {
+  text = String(text || '').trim();
+  if (!text || busy) return;
+  const body = $('#drBody');
+  if (body.querySelector('.dr-intro')) body.replaceChildren();
+  const ctxDs = ds || null;
+  body.append(h('div', { class: 'msg u' }, ctxDs ? h('span', { class: 'ctx' }, 'About: ' + ctxDs.title) : null, text));
+  const out = h('div', { class: 'msg a' }, h('span', { class: 'status' }, 'Thinking…'));
+  const stop = h('button', { type: 'button', class: 'act', onclick: () => ctl && ctl.abort() }, 'Stop');
+  body.append(out, stop); out.scrollIntoView({ block: 'end' });
+  busy = true; $('#drSend').disabled = true;
+  ctl = new AbortController();
+  if (toolsOK === null) { try { const lim = await SAMPLE.limits(); toolsOK = !!lim.tools; } catch { toolsOK = false; } }
+  let lead = RULES;
+  if (ctxDs) lead += `\n\nThe person is looking at this figure:\n${textFor(ctxDs, st(ctxDs).opt[(ctxDs.cube || {}).dims?.[0]])}`;
+  if (!toolsOK) {
+    const hits = DS.map(d => [d, score(d, text)]).filter(x => x[1] > 0 && x[0] !== ctxDs).sort((a, b) => b[1] - a[1]).slice(0, 4).map(x => x[0]);
+    lead += `\n\nAll figures available:\n${catalogue()}\n\nData for the figures most related to the question:\n${hits.map(d => textFor(d)).join('\n\n').slice(0, 30000)}`;
+  } else lead += '\n\nUse find_figures and get_figure to look up the data before answering. Fetch only what you need.';
+  const turns = [{ role: 'user', content: lead }, ...chat.slice(-6), { role: 'user', content: text }];
+  const opts = { signal: ctl.signal, onText: ({ text: t }) => { out.innerHTML = md(t); } };
+  if (toolsOK) opts.tools = TOOLS.map(t => ({ ...t, execute: (inp) => { out.querySelector('.status') && (out.querySelector('.status').textContent = 'Looking up figures…'); return t.execute(inp || {}); } }));
+  else opts.cache = false;
+  try {
+    const r = await SAMPLE(turns, opts);
+    out.innerHTML = md(r.text);
+    if (r.truncated) out.append(h('p', { class: 'status' }, 'The answer was cut short. Try a narrower question.'));
+    chat.push({ role: 'user', content: text }, { role: 'assistant', content: r.text });
+  } catch (e) {
+    const code = e && e.code;
+    if (e && e.text) out.innerHTML = md(e.text); else out.replaceChildren();
+    const msg = {
+      cancelled: 'Stopped.', rate_limited: 'Too many questions in a short time. Try again in a few minutes.',
+      not_granted: 'Answers need your permission to use Claude. Reopen the page to be asked again.', session_expired: 'Your sign-in has expired. Sign in again, then ask.',
+      prompt_too_large: 'That question pulled in too much data. Try something narrower.', refused: 'Claude could not answer that. Try rephrasing.',
+      tools_unavailable: 'Something went wrong. Ask again.', upstream_error: 'The connection dropped. Ask again.',
+    }[code] || 'Something went wrong. Ask again.';
+    out.append(h('p', { class: 'status' }, msg));
+    if (code === 'tools_unavailable') toolsOK = false;
+    if (['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'].includes(code)) { SAMPLE = null; $('#askTop').hidden = true; }
+  } finally {
+    stop.remove(); busy = false; $('#drSend').disabled = false; ctl = null;
+    body.scrollTop = body.scrollHeight;
+  }
+}
+$('#drForm').addEventListener('submit', e => { e.preventDefault(); const v = $('#drIn').value; $('#drIn').value = ''; send(v); });
+$('#drIn').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('#drForm').requestSubmit(); } });
+$('#drClose').addEventListener('click', () => { $('#drawer').hidden = true; });
+$('#drNew').addEventListener('click', () => { if (ctl) ctl.abort(); chat = []; pinned = null; intro(); });
+$('#askTop').addEventListener('click', () => openDrawer());
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#drawer').hidden) $('#drawer').hidden = true; });
+
+/* ---------- search, theme, boot ---------- */
+let qt; $('#q').addEventListener('input', () => { clearTimeout(qt); qt = setTimeout(render, 200); });
+const rerender = () => { clearTimeout(rerender.t); rerender.t = setTimeout(render, 60); };
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerender);
+new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+/* ---------- sign-in, data loading and access management (Supabase) ---------- */
+const SB = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+let IS_ADMIN = false, LOADED_FOR = null;
+const INITIAL_HASH = (location.hash || '').slice(1);
+
+function gate(kind, info = {}) {
+  document.querySelector('.wrap').classList.add('gated');
+  $('#rail').hidden = true; $('#askTop').hidden = true; $('.search').hidden = true;
+  const main = $('#main');
+  for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
+  main.replaceChildren();
+  const box = h('section', { class: 'gate', 'aria-live': 'polite' });
+  if (kind === 'loading') {
+    box.append(h('p', { class: 'gate-muted' }, info.msg || 'Loading the Outlook data…'));
+  } else if (kind === 'signin') {
+    const form = h('form', { class: 'gate-form' },
+      h('label', { for: 'email' }, 'Work email'),
+      h('input', { id: 'email', type: 'email', required: true, autocomplete: 'email', placeholder: 'name@company.com', value: info.email || '' }),
+      h('button', { type: 'submit', class: 'btn-ask' }, 'Email me a sign-in link'));
+    const err = h('p', { class: 'gate-err', role: 'alert' }, info.error || '');
+    err.hidden = !info.error;
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = $('#email').value.trim().toLowerCase();
+      const btn = form.querySelector('button'); btn.disabled = true; btn.textContent = 'Sending…';
+      const { error } = await SB.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname } });
+      if (error) {
+        btn.disabled = false; btn.textContent = 'Email me a sign-in link';
+        err.hidden = false;
+        err.textContent = /rate|security purposes|seconds/i.test(error.message) ? 'A link was sent a moment ago. Wait a minute, then try again.' : 'The link could not be sent. Check the address and try again.';
+        return;
+      }
+      gate('sent', { email });
+    });
+    box.append(h('span', { class: 'eyebrow' }, 'Members and AIA Canada staff'),
+      h('h1', {}, 'Sign in to the Outlook Data Explorer'),
+      h('p', {}, 'Enter your work email and we’ll send you a sign-in link. No password needed. Access is limited to approved AIA Canada members and staff.'),
+      form, err,
+      h('p', { class: 'gate-muted' }, `Need access? Contact ${CFG.contactEmail}.`));
+  } else if (kind === 'sent') {
+    box.append(h('h1', {}, 'Check your email'),
+      h('p', {}, h('span', {}, 'We sent a sign-in link to '), h('strong', {}, info.email), h('span', {}, '. Open it on this device. The link works once and expires after an hour.')),
+      h('p', { class: 'gate-muted' }, 'No email after a few minutes? Check your junk folder.'),
+      h('button', { type: 'button', class: 'act', onclick: () => gate('signin', { email: info.email }) }, 'Use a different email'));
+  } else if (kind === 'denied') {
+    box.append(h('h1', {}, 'You’re signed in, but not on the access list yet'),
+      h('p', {}, h('span', {}, 'You’re signed in as '), h('strong', {}, info.email), h('span', {}, `. The Outlook data is limited to approved members and staff. Ask ${CFG.contactEmail} to add this address, then sign in again.`)),
+      h('button', { type: 'button', class: 'act', onclick: signOut }, 'Sign out'));
+  } else if (kind === 'error') {
+    box.append(h('h1', {}, 'The data could not be loaded'), h('p', {}, 'Check your connection and reload the page.'),
+      h('button', { type: 'button', class: 'act', onclick: () => location.reload() }, 'Reload'));
+  }
+  main.append(box);
+}
+
+async function signOut() { await SB.auth.signOut(); LOADED_FOR = null; IS_ADMIN = false; SAMPLE = null; $('#who').hidden = true; gate('signin'); }
+$('#signOut').addEventListener('click', signOut);
+
+async function loadApp(session) {
+  if (LOADED_FOR === session.user.id) return;
+  LOADED_FOR = session.user.id;
+  $('#whoEmail').textContent = session.user.email; $('#who').hidden = false;
+  gate('loading');
+  const { data, error } = await SB.from('outlook_figures').select('payload').eq('edition', '2025').order('sort');
+  if (error) { LOADED_FOR = null; gate('error'); return; }
+  if (!data.length) { gate('denied', { email: session.user.email }); return; }
+  DS = data.map(r => r.payload);
+  BYID = Object.fromEntries(DS.map(d => [d.id, d]));
+  const adm = await SB.rpc('outlook_is_admin'); IS_ADMIN = adm.data === true;
+  DOWNLOADS = { save: async ({ filename, data }) => {
+    const url = URL.createObjectURL(new Blob([data], { type: 'text/csv;charset=utf-8' }));
+    const a = h('a', { href: url, download: filename }); document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000); return { status: 'saved' };
+  } };
+  document.querySelector('.wrap').classList.remove('gated'); $('#rail').hidden = false; $('.search').hidden = false;
+  if (TOPICS.some(t => t.id === INITIAL_HASH)) current = INITIAL_HASH;
+  render();
+  if (BYID[INITIAL_HASH]) jump(INITIAL_HASH);
+  try {
+    const r = await askFn({ ping: true });
+    if (r.ok && (await r.json()).enabled) { SAMPLE = remoteSample(); $('#askTop').hidden = false; render(); }
+  } catch {}
+}
+
+async function askFn(body, signal) {
+  const { data: { session } } = await SB.auth.getSession();
+  return fetch(`${CFG.supabaseUrl}/functions/v1/outlook-ask`, {
+    method: 'POST', signal,
+    headers: { 'content-type': 'application/json', apikey: CFG.supabaseKey, Authorization: `Bearer ${session ? session.access_token : ''}` },
+    body: JSON.stringify(body),
+  });
+}
+
+/* Same shape as the in-Claude sample() so the rest of the page is unchanged */
+function remoteSample() {
+  const fn = async (turns, opts = {}) => {
+    const msgs = [];
+    for (const t of (typeof turns === 'string' ? [{ role: 'user', content: turns }] : turns)) {
+      const last = msgs[msgs.length - 1];
+      if (last && last.role === t.role) last.content += '\n\n' + t.content; else msgs.push({ role: t.role, content: t.content });
+    }
+    let res;
+    try { res = await askFn({ messages: msgs }, opts.signal); }
+    catch (e) { throw { code: e && e.name === 'AbortError' ? 'cancelled' : 'upstream_error', message: String(e) }; }
+    if (res.status === 429) throw { code: 'rate_limited', message: 'rate limited' };
+    if (res.status === 401) throw { code: 'session_expired', message: 'sign in' };
+    if (res.status === 403) throw { code: 'not_granted', message: 'no access' };
+    if (res.status === 413) throw { code: 'prompt_too_large', message: 'too large' };
+    if (!res.ok) throw { code: 'upstream_error', message: 'HTTP ' + res.status };
+    const j = await res.json();
+    if (!j.text) throw { code: 'empty_completion', message: 'empty' };
+    if (opts.onText) opts.onText({ text: j.text, delta: j.text });
+    return { text: j.text, truncated: !!j.truncated, modelTierApplied: 'default' };
+  };
+  fn.limits = async () => ({ maxPromptBytes: 65536 });
+  return fn;
+}
+
+/* ---------- access list (admins only) ---------- */
+async function renderAccess(main) {
+  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'Admin'), h('h1', {}, 'Manage access'),
+    h('p', {}, 'People on this list can sign in with their email and see the Outlook data. Removing someone takes effect the next time they load the page.')));
+  const panel = h('section', { class: 'panel' });
+  const ta = h('textarea', { id: 'bulk', rows: '4', class: 'bulk', placeholder: 'One or more emails, separated by commas or new lines' });
+  const org = h('input', { id: 'bulkOrg', class: 'tsearch', placeholder: 'Organization (optional)' });
+  const msg = h('p', { class: 'gate-muted', role: 'status' });
+  const add = h('button', { type: 'button', class: 'btn-ask', onclick: async () => {
+    const emails = [...new Set(ta.value.toLowerCase().split(/[\s,;]+/).map(s => s.trim()).filter(s => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s)))];
+    if (!emails.length) { msg.textContent = 'Enter at least one valid email address.'; return; }
+    add.disabled = true;
+    const { error } = await SB.from('outlook_access').upsert(emails.map(email => ({ email, organization: org.value.trim() })), { onConflict: 'email', ignoreDuplicates: true });
+    add.disabled = false;
+    if (error) { msg.textContent = 'Could not add: ' + error.message; return; }
+    ta.value = ''; msg.textContent = `Added ${emails.length} ${emails.length === 1 ? 'address' : 'addresses'}. Send them the page link; they sign in with that email.`;
+    list();
+  } }, 'Add to list');
+  panel.append(h('h2', {}, 'Add people'), ta, h('div', { class: 'chips' }, org, add), msg);
+  const listBox = h('section', { class: 'panel' }, h('h2', {}, 'Current list'));
+  main.append(panel, listBox);
+  async function list() {
+    const { data, error } = await SB.from('outlook_access').select('email, full_name, organization, added_at').order('email');
+    const usage = await SB.from('outlook_ai_log').select('id', { count: 'exact', head: true }).gte('asked_at', new Date(Date.now() - 30 * 864e5).toISOString());
+    listBox.replaceChildren(h('h2', {}, `Current list (${data ? data.length : 0})`));
+    if (usage.count != null) listBox.append(h('p', { class: 'gate-muted' }, `${usage.count} AI questions asked in the last 30 days.`));
+    if (error) { listBox.append(h('p', {}, 'Could not load the list.')); return; }
+    listBox.append(h('div', { class: 'tbl-wrap' }, h('table', {},
+      h('thead', {}, h('tr', {}, ['Email', 'Name', 'Organization', 'Added', ''].map(c => h('th', { scope: 'col' }, c)))),
+      h('tbody', {}, data.map(r => {
+        const rm = h('button', { type: 'button', class: 'act', onclick: async () => {
+          if (rm.dataset.armed !== '1') { rm.dataset.armed = '1'; rm.textContent = 'Confirm remove'; return; }
+          rm.disabled = true;
+          const { error: e2 } = await SB.from('outlook_access').delete().eq('email', r.email);
+          if (e2) { rm.disabled = false; toast('Could not remove ' + r.email); } else list();
+        } }, 'Remove');
+        return h('tr', {}, h('th', { scope: 'row' }, r.email), h('td', {}, r.full_name), h('td', {}, r.organization), h('td', {}, new Date(r.added_at).toLocaleDateString('en-CA')), h('td', {}, rm));
+      })))));
+  }
+  list();
+}
+
+/* ---------- boot ---------- */
+(async function boot() {
+  const err = new URLSearchParams(location.hash.slice(1)).get('error_description');
+  gate('loading', { msg: 'Checking your sign-in…' });
+  SB.auth.onAuthStateChange((event, session) => {
+    if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED')) loadApp(session);
+    if (event === 'SIGNED_OUT') { LOADED_FOR = null; gate('signin'); }
+  });
+  const { data: { session } } = await SB.auth.getSession();
+  if (session) loadApp(session);
+  else gate('signin', { error: err ? 'That sign-in link has expired or was already used. Request a new one.' : '' });
+})();
+</script>
+
+</body>
+</html>
