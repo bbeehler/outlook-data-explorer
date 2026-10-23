@@ -10,7 +10,7 @@ const RATE_LIMIT = Number(Deno.env.get("OUTLOOK_AI_HOURLY_LIMIT") ?? "30");
 const MAX_CHARS = 70000;
 const MAX_TURNS = 16;
 const ORIGINS = (Deno.env.get("OUTLOOK_ALLOWED_ORIGINS") ??
-  "https://bbeehler.github.io,http://localhost:8000,http://127.0.0.1:8000").split(",").map((s) => s.trim());
+  "https://outlook.aiacanada.com,https://bbeehler.github.io,http://localhost:8000,http://127.0.0.1:8000").split(",").map((s) => s.trim());
 
 const RULES = `You answer questions inside the AIA Canada Outlook Data Explorer, using only the Outlook Study 2025 figures provided in the conversation.
 Every number must come from those figures, with the figure reference in square brackets. If the figures cannot answer the question, say so.

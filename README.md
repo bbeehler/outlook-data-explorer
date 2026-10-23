@@ -2,7 +2,7 @@
 
 A web version of the AIA Canada Outlook Study 2025 data visualization tool, replacing the Excel workbook. It has all 61 figures in one place, plus year and province filters, table view, CSV download and optional "Ask the data" AI answers.
 
-**Live site:** https://bbeehler.github.io/outlook-data-explorer/
+**Live site:** https://outlook.aiacanada.com (the old bbeehler.github.io address forwards here)
 
 ## How it works
 
@@ -18,13 +18,15 @@ A web version of the AIA Canada Outlook Study 2025 data visualization tool, repl
 
 ## One-time setup
 
+0. **Custom domain:** a DNS CNAME record `outlook` → `bbeehler.github.io`, with the domain set under Settings → Pages (the `CNAME` file in this repo). Tick **Enforce HTTPS** once GitHub has checked the DNS.
+
 1. **GitHub Pages:** go to Settings, then Pages, then Deploy from a branch: `main` / root.
-2. **Sign-in redirect:** in Supabase, open the AIA Canada Data Portal project, then Authentication, then URL Configuration. Add `https://bbeehler.github.io/outlook-data-explorer/` under **Redirect URLs**. Without this, sign-in links send people to the portal instead of the Explorer.
+2. **Sign-in redirect:** in Supabase, open the AIA Canada Data Portal project, then Authentication, then URL Configuration. Add `https://outlook.aiacanada.com/` under **Redirect URLs**, and set **Site URL** to it if this project has no other site. Without this, sign-in links send people to the portal instead of the Explorer.
 3. **Insightly key:** in Supabase, open the Data Portal project, then Edge Functions, then Secrets, and add `INSIGHTLY_API_KEY`. Use the same key the MCE Dashboard project uses. Registration doesn't work until this key is in place.
 4. **AI (optional):** in Supabase, open Edge Functions, then Secrets, and add `ANTHROPIC_API_KEY`. The Ask button appears on its own once the key is there. Optional secrets:
    - `OUTLOOK_AI_MODEL`: default `claude-sonnet-5-5`
    - `OUTLOOK_AI_HOURLY_LIMIT`: default `30`
-   - `OUTLOOK_ALLOWED_ORIGINS`: add a custom domain here if you move the site
+   - `OUTLOOK_ALLOWED_ORIGINS`: only needed if the site moves to a new address. outlook.aiacanada.com and bbeehler.github.io are allowed by default.
 
 ## Giving people access
 Members register themselves. They get access when their contact record in Insightly has the same email address and is linked to a current member organisation. The contact shown to people who are turned away is `contactEmail` in `config.js`.

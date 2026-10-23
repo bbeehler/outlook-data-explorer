@@ -14,7 +14,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 const BASE = "https://api.na1.insightly.com/v3.1";
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const ORIGINS = (Deno.env.get("OUTLOOK_ALLOWED_ORIGINS") ??
-  "https://bbeehler.github.io,http://localhost:8000,http://127.0.0.1:8000").split(",").map((s) => s.trim());
+  "https://outlook.aiacanada.com,https://bbeehler.github.io,http://localhost:8000,http://127.0.0.1:8000").split(",").map((s) => s.trim());
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 
 function cors(req: Request) {
