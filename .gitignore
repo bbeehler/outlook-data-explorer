@@ -1,6 +1,7 @@
-# Never commit the licensed Outlook data or the source workbook
+# Never commit the licensed Outlook data or the source workbook (ontario/data.json is open data and is allowed)
 *.xlsx
 *.xlsm
 data.json
+!ontario/data.json
 load*.sql
 x/
