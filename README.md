@@ -45,6 +45,13 @@ The usual causes of a denial: the email on the Insightly contact is different (a
 
 The nightly re-check has two safety limits. If Insightly returns fewer than 100 member organisations, it changes nothing. Once 20 or more people have registered, if one run would remove more than 25% of them, it skips the removals and notes it on the Manage access page.
 
+## Ontario Vehicles page (`ontario/`)
+A separate, public page at https://outlook.aiacanada.com/ontario/ built from Ontario's open [Vehicle population data](https://data.ontario.ca/dataset/vehicle-population-data) (Ministry of Transportation, Open Government Licence – Ontario). It shows vehicles on the road from 2014 to the latest year, plus fuel mix, vehicle age, makes, models and counties. It holds counts only, never VINs or owner details, and needs no sign-in because the data is open. The Explorer's topic list links to it.
+
+- **Updates itself:** the "Ontario vehicle data" GitHub Action runs monthly. It downloads every file in the dataset, keeps the raw files on the `ontario-raw` branch, rebuilds `ontario/data.json` with `tools/ontario_build.py`, and commits only when the numbers change. Run it by hand from the Actions tab.
+- **Make and model names:** the Ministry publishes codes (TOYT, RV4). The names are mapped in `tools/ontario_build.py` (`MAKES`, `MODELS`). Add a model name there when a code becomes clear; codes without a name are shown as is.
+- **What "on the road" means:** passenger and commercial vehicles with fit-active status at December 31. The 2015 file is a stub and is skipped. The 2020–2023 dip reflects COVID-era sticker extensions and the 2022 end of sticker fees, as noted on the page.
+
 ## Updating the data (next Outlook edition)
 1. Run `tools/charts.py` and `tools/extract.py` on the new workbook to produce `data.json`. That file is ignored by git; never commit it.
 2. Load each figure into `outlook_figures` with a new `edition` value, and update the `.eq('edition', '2025')` filter in `tools/boot_supabase.js`.

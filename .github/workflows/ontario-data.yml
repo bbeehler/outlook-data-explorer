@@ -1,11 +1,12 @@
-# Downloads Ontario's open "Vehicle population data" (Ministry of Transportation) and saves the raw files
-# to the `ontario-raw` branch. The site's Ontario page is built from these files.
-# Runs when this file changes, on demand (Actions tab -> Run workflow), and every month to pick up a new year.
+# Keeps the Ontario Vehicles page (ontario/) up to date from Ontario's open "Vehicle population data"
+# (Ministry of Transportation). Downloads every file in the dataset, saves the raw files to the `ontario-raw`
+# branch, rebuilds ontario/data.json with tools/ontario_build.py and commits it when the numbers change.
+# Runs monthly, on demand (Actions tab -> Run workflow), and when this file changes.
 name: Ontario vehicle data
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/ontario-data.yml']
+    paths: ['.github/workflows/ontario-data.yml', 'tools/ontario_build.py']
   workflow_dispatch:
   schedule:
     - cron: '23 9 3 * *'
@@ -15,9 +16,10 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Download every file in the dataset
         run: |
-          mkdir raw && cd raw
+          mkdir -p "$RUNNER_TEMP/raw" && cd "$RUNNER_TEMP/raw"
           curl -fsSL "https://data.ontario.ca/api/3/action/package_show?id=vehicle-population-data" -o package.json
           python3 - <<'PY'
           import json, urllib.request, os, re
@@ -30,11 +32,18 @@ jobs:
               urllib.request.urlretrieve(url, fn)
           PY
           ls -la
-      - name: Save to the ontario-raw branch
+      - name: Save raw files to the ontario-raw branch
         run: |
-          cd raw
+          cd "$RUNNER_TEMP/raw"
           git init -q -b ontario-raw
           git config user.name "github-actions[bot]"
           git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
           git add -A && git commit -qm "Ontario vehicle population data, fetched $(date -u +%F)"
           git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" ontario-raw
+      - name: Rebuild ontario/data.json and commit if the numbers changed
+        run: |
+          python3 tools/ontario_build.py "$RUNNER_TEMP/raw" ontario/data.json
+          if git diff --quiet -- ontario/data.json; then echo "No change"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git add ontario/data.json && git commit -m "Update Ontario vehicle data" && git push

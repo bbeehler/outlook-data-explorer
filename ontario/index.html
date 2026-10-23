@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ontario Vehicles on the Road</title>
+<meta name="description" content="AIA Canada view of Ontario's registered vehicles, 2014 to 2025: totals, fuel mix, vehicle age, makes, models and counties, from the Ministry of Transportation's open data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400;500;600;700;800&family=Sofia+Sans+Semi+Condensed:wght@500;600&display=swap">
+<style>
+/* AIA Canada brand frame, same as the Outlook Data Explorer: dark-blue masthead, red edge bar, square corners. */
+:root {
+  --navy: #192b56; --red: #e21c47; --bg: #f2f7fa; --surface: #ffffff; --ink: #192b56; --ink-2: #3d4c6e; --muted: #5f6b85;
+  --line: #d9e3ec; --line-soft: #e8eef4; --accent: #e21c47; --accent-ink: #c4123a; --chip: #e6eef5; --chip-on: #192b56; --chip-on-ink: #fff;
+  --mast: #192b56; --mast-ink: #fff; --mast-2: #84c8e3; --focus: #e21c47; --warn-bg: #fff4e0; --warn-ink: #7a4b00;
+  --s1: #2a78d6; --s2: #e21c47; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --s8: #eb6834; --muted-bar: #b9c6d6;
+  --font: "Sofia Pro", "Sofia Sans", Arial, sans-serif; --font-data: "Sofia Sans Semi Condensed", "Sofia Sans", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1630; --surface: #142045; --ink: #eef3f9; --ink-2: #c9d4e4; --muted: #9eadc6; --line: #26365f; --line-soft: #1d2a50;
+    --accent: #f2546f; --accent-ink: #ff7d93; --chip: #1f2d55; --chip-on: #84c8e3; --chip-on-ink: #0d1630;
+    --mast: #0a1128; --focus: #84c8e3; --warn-bg: #3a2c10; --warn-ink: #f5d48f;
+    --s1: #3987e5; --s2: #f2546f; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #d95926; --muted-bar: #3c4d78; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1630; --surface: #142045; --ink: #eef3f9; --ink-2: #c9d4e4; --muted: #9eadc6; --line: #26365f; --line-soft: #1d2a50;
+  --accent: #f2546f; --accent-ink: #ff7d93; --chip: #1f2d55; --chip-on: #84c8e3; --chip-on-ink: #0d1630;
+  --mast: #0a1128; --focus: #84c8e3; --warn-bg: #3a2c10; --warn-ink: #f5d48f;
+  --s1: #3987e5; --s2: #f2546f; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #d95926; --muted-bar: #3c4d78; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; }
+.edge { position: fixed; top: 0; bottom: 0; left: 0; width: 6px; background: var(--red); z-index: 40; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+a { color: inherit; }
+.mast { background: var(--mast); color: var(--mast-ink); position: sticky; top: 0; z-index: 20; }
+.mast-in { max-width: 1100px; margin: 0 auto; padding: 12px 16px 12px 22px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand { display: flex; flex-direction: column; margin-right: auto; min-width: 0; }
+.brand .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--mast-2); font-weight: 600; }
+.brand .name { font-size: 22px; font-weight: 800; line-height: 1.1; }
+.mast a.back { color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,.35); padding: 7px 12px; font-size: 13px; }
+.mast a.back:hover { background: rgba(255,255,255,.08); }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 22px 16px 60px 22px; display: flex; flex-direction: column; gap: 22px; }
+.head { display: flex; flex-direction: column; gap: 6px; }
+.head .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); font-weight: 700; }
+.head h1 { font-size: 30px; font-weight: 800; line-height: 1.15; }
+.head p { margin: 0; color: var(--ink-2); max-width: 72ch; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.kpi { background: var(--surface); padding: 16px 18px; display: flex; flex-direction: column; gap: 2px; }
+.kpi .v { font-size: 30px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kpi .l { font-size: 13px; color: var(--ink-2); }
+.kpi .s { font-size: 12px; color: var(--muted); font-family: var(--font-data); }
+.jump { display: flex; flex-wrap: wrap; gap: 8px; }
+.jump a { border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; font-size: 14px; text-decoration: none; }
+.jump a:hover { border-color: var(--accent); }
+.card { background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; scroll-margin-top: 80px; }
+.card-h { padding: 16px 18px 6px; display: flex; flex-direction: column; gap: 4px; }
+.ref { font-family: var(--font-data); font-size: 12px; color: var(--muted); letter-spacing: .02em; text-transform: uppercase; }
+.card-h h2 { font-size: 19px; font-weight: 800; line-height: 1.25; }
+.insight { font-size: 14px; color: var(--ink-2); max-width: 80ch; }
+.insight strong { color: var(--ink); }
+.controls { padding: 8px 18px 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.controls label { font-size: 13px; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); flex-wrap: wrap; }
+.seg button { border: 0; background: var(--surface); padding: 5px 10px; font-size: 13px; color: var(--ink-2); }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--chip-on); color: var(--chip-on-ink); font-weight: 600; }
+.sel, .tsearch { border: 1px solid var(--line); background: var(--surface); padding: 5px 8px; font-size: 13px; max-width: 100%; }
+.tsearch { width: 220px; }
+.legend { padding: 8px 18px 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.lg { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); padding: 3px 9px; font-size: 12.5px; }
+.lg i { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+.chart { position: relative; height: 320px; padding: 10px 18px 0; }
+.chart.tall { height: 520px; }
+.body { padding: 10px 18px 0; }
+.tbl-wrap { overflow: auto; max-height: 440px; border: 1px solid var(--line-soft); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--line-soft); white-space: nowrap; font-variant-numeric: tabular-nums; }
+th:first-child, td:first-child { text-align: left; white-space: normal; min-width: 150px; }
+thead th { position: sticky; top: 0; background: var(--surface); color: var(--ink-2); font-weight: 600; border-bottom: 1px solid var(--line); }
+tbody tr:hover td, tbody tr:hover th { background: var(--bg); }
+tbody th { font-weight: 600; }
+tr.pick { cursor: pointer; }
+tr.pick[aria-selected="true"] th, tr.pick[aria-selected="true"] td { background: var(--chip); }
+.code { font-family: var(--font-data); color: var(--muted); font-size: 12px; margin-left: 6px; }
+.up { color: var(--s6); } .down { color: var(--accent-ink); }
+.foot { padding: 10px 18px 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; align-items: center; border-top: 1px solid var(--line-soft); margin-top: 12px; }
+.src { font-size: 12px; color: var(--muted); max-width: 75ch; }
+.act { border: 1px solid var(--line); background: var(--surface); padding: 5px 10px; font-size: 13px; }
+.act:hover { border-color: var(--ink); }
+.note { background: var(--warn-bg); color: var(--warn-ink); padding: 8px 12px; font-size: 13px; margin: 8px 18px 0; }
+.pagefoot { font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; max-width: 90ch; }
+.pagefoot h2 { font-size: 15px; color: var(--ink); }
+.loading { padding: 40px 0; color: var(--muted); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 760px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpi .v { font-size: 24px; }
+  .head h1 { font-size: 25px; }
+  .chart { height: 270px; padding: 10px 8px 0; }
+  .chart.tall { height: 460px; }
+  .card-h, .controls, .body, .foot, .legend { padding-left: 12px; padding-right: 12px; }
+  .note { margin-left: 12px; margin-right: 12px; }
+  .tsearch { width: 100%; }
+  .brand .name { font-size: 19px; }
+}
+</style>
+</head>
+<body>
+<div class="edge" aria-hidden="true"></div>
+<header class="mast"><div class="mast-in">
+  <div class="brand"><span class="eyebrow">AIA Canada · Ontario registrations</span><span class="name">Ontario Vehicles on the Road</span></div>
+  <a class="back" href="../">Outlook Data Explorer</a>
+</div></header>
+<div class="wrap">
+  <div class="head">
+    <span class="eyebrow" id="asAt">Ministry of Transportation open data</span>
+    <h1>What's on Ontario's roads</h1>
+    <p>Every vehicle registered in Ontario, counted each December 31 by the Ministry of Transportation, from 2014 to the latest year. See how big the fleet is, how old it is, what powers it, and which makes, models and counties drive it. These are counts only: no VINs or owner details.</p>
+  </div>
+  <section class="kpis" id="kpis" aria-label="Key figures"></section>
+  <nav class="jump" aria-label="Sections">
+    <a href="#fleet">Fleet size</a><a href="#fuel">Fuel mix</a><a href="#age">Vehicle age</a><a href="#makes">Makes</a><a href="#models">Models</a><a href="#county">Counties</a>
+  </nav>
+  <main id="main" style="display:flex;flex-direction:column;gap:22px"><p class="loading">Loading the data…</p></main>
+  <footer class="pagefoot">
+    <h2>About this data</h2>
+    <p>Source: Ontario Ministry of Transportation, <a href="https://data.ontario.ca/dataset/vehicle-population-data">Vehicle population data</a>, one file per year, each a snapshot as at December 31. Contains information licensed under the <a href="https://www.ontario.ca/page/open-government-licence-ontario">Open Government Licence – Ontario</a>.</p>
+    <p><b>Vehicles on the road</b> means vehicles the Ministry lists as fit with an active registration ("fit-active"). The figures cover passenger and commercial vehicles. Pickups and vans registered to a business are in the commercial class. Trailers, motorcycles, buses, off-road vehicles and snowmobiles are left out. The Ministry's 2015 file contains only a few dozen vehicles, so 2015 is skipped.</p>
+    <p><b>Makes and models</b> come as Ministry codes, such as TOYT or RV4. Make names and the model names shown are AIA Canada's reading of those codes. Model codes without a clear match are shown as is, and one model can appear under more than one code.</p>
+    <p><b>Counties</b> use the Ministry's boundaries, which predate municipal amalgamations: Metro Toronto is the City of Toronto, Ottawa-Carleton is the City of Ottawa, and Hamilton-Wentworth is the City of Hamilton. A small number of vehicles have no county.</p>
+    <p id="built"></p>
+  </footer>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') el.className = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat(Infinity)) if (c != null && c !== false) el.append(c instanceof Node ? c : String(c));
+  return el;
+};
+const nf = new Intl.NumberFormat('en-CA');
+const fmt = n => nf.format(Math.round(n));
+const pct = (n, d = 1) => (n * 100).toFixed(d) + '%';
+const chg = (a, b) => b ? (a - b) / b : null;
+const sgn = (x, d = 1) => x == null ? '—' : (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x * 100).toFixed(d) + '%';
+const cls = x => x == null ? '' : x > 0.0005 ? 'up' : x < -0.0005 ? 'down' : '';
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const big = n => n >= 1e6 ? (n / 1e6).toFixed(2).replace(/\.?0+$/, '') + 'M' : n >= 1e4 ? Math.round(n / 1e3) + 'K' : fmt(n);
+const csvCell = v => /[",\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v);
+function download(name, rows) {
+  const blob = new Blob(['﻿' + rows.map(r => r.map(csvCell).join(',')).join('\n')], { type: 'text/csv' });
+  const a = h('a', { href: URL.createObjectURL(blob), download: name }); document.body.append(a); a.click(); a.remove();
+}
+function seg(opts, val, on) {
+  const el = h('div', { class: 'seg', role: 'group' });
+  const draw = () => el.replaceChildren(...opts.map(([v, t]) => h('button', { type: 'button', 'aria-pressed': String(v === val), onclick: () => { val = v; draw(); on(v); } }, t)));
+  draw(); return el;
+}
+function legend(items) { return h('div', { class: 'legend' }, items.map(([t, c]) => h('span', { class: 'lg' }, h('i', { style: `background:${c}` }), t))); }
+
+const charts = new Map();
+function chart(id, canvasParent, cfg) {
+  if (charts.has(id)) charts.get(id).destroy();
+  const cv = h('canvas', { role: 'img', 'aria-label': cfg.label || '' });
+  canvasParent.replaceChildren(cv);
+  const ink = css('--ink-2'), grid = css('--line-soft');
+  const c = new Chart(cv, {
+    type: cfg.type, data: cfg.data,
+    options: Object.assign({
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: cfg.tip || (x => `${x.dataset.label}: ${fmt(x.parsed.y ?? x.parsed.x)}`) } } },
+      scales: {
+        x: Object.assign({ grid: { display: false }, ticks: { color: ink, font: { family: 'Sofia Sans Semi Condensed' } }, stacked: !!cfg.stacked }, cfg.x || {}),
+        y: Object.assign({ grid: { color: grid }, border: { display: false }, ticks: { color: ink, callback: cfg.ytick || (v => big(v)), font: { family: 'Sofia Sans Semi Condensed' } }, stacked: !!cfg.stacked, beginAtZero: true }, cfg.y || {}),
+      },
+    }, cfg.options || {}),
+  });
+  charts.set(id, c); return c;
+}
+function card(id, ref, title) {
+  const ins = h('p', { class: 'insight' });
+  const el = h('section', { class: 'card', id }, h('div', { class: 'card-h' }, h('span', { class: 'ref' }, ref), h('h2', {}, title), ins));
+  return { el, ins };
+}
+function foot(src, onCsv) { return h('div', { class: 'foot' }, h('span', { class: 'src' }, src), h('button', { type: 'button', class: 'act', onclick: onCsv }, 'Download CSV')); }
+
+let D, Y, L, P;
+const road = (y) => Object.values(D.makes[y]).reduce((s, [a, b]) => s + a + b, 0);
+const makeName = c => D.makeNames[c] || c;
+const modelName = (mk, md) => (D.modelNames[mk] || {})[md] || null;
+const SRC = 'Ontario Ministry of Transportation, Vehicle population data. Passenger and commercial vehicles, fit-active, as at December 31.';
+
+async function boot() {
+  const res = await fetch('data.json', { cache: 'no-cache' });
+  D = await res.json();
+  Y = D.years.map(String); L = String(D.latest); P = String(D.latest - 1);
+  $('#asAt').textContent = `Ministry of Transportation open data · as at December 31, ${L}`;
+  $('#built').textContent = `Built ${D.built} from the Ministry's files. The page checks for a new year each month.`;
+  renderAll();
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderAll);
+}
+function renderAll() {
+  const main = $('#main'); main.replaceChildren();
+  kpis(); main.append(fleet(), fuel(), age(), makes(), models(), county());
+}
+
+/* ---------- KPIs ---------- */
+function avgAge(y) { const a = D.age[y]; let n = 0, s = 0; for (const [my, c] of Object.entries(a)) { s += (y - my) * c; n += c; } return s / n; }
+function fuelShare(y, keys) { const f = D.fuel[y]; const t = Object.values(f).reduce((a, b) => a + b, 0); return keys.reduce((s, k) => s + (f[k] || 0), 0) / t; }
+const ELEC = ['Hybrid (gas-electric)', 'Plug-in hybrid or battery electric'];
+function kpis() {
+  const t = road(L), tp = road(P), a = avgAge(L), a0 = avgAge(Y[0]);
+  const e = fuelShare(L, ELEC), ep = fuelShare(L, ['Plug-in hybrid or battery electric']);
+  const old = Object.entries(D.age[L]).filter(([my]) => L - my >= 13).reduce((s, [, c]) => s + c, 0) / t;
+  $('#kpis').replaceChildren(
+    h('div', { class: 'kpi' }, h('span', { class: 'v' }, (t / 1e6).toFixed(2) + 'M'), h('span', { class: 'l' }, 'Vehicles on the road'), h('span', { class: 's' }, `${sgn(chg(t, tp))} vs ${P}`)),
+    h('div', { class: 'kpi' }, h('span', { class: 'v' }, a.toFixed(1) + ' yrs'), h('span', { class: 'l' }, 'Average vehicle age'), h('span', { class: 's' }, `${a0.toFixed(1)} yrs in ${Y[0]}`)),
+    h('div', { class: 'kpi' }, h('span', { class: 'v' }, pct(old)), h('span', { class: 'l' }, '13 years old or more'), h('span', { class: 's' }, `${fmt(old * t)} vehicles`)),
+    h('div', { class: 'kpi' }, h('span', { class: 'v' }, pct(e)), h('span', { class: 'l' }, 'Hybrid, plug-in or electric'), h('span', { class: 's' }, `${pct(ep)} plug-in or battery`)),
+  );
+}
+
+/* ---------- Fleet size ---------- */
+function fleet() {
+  const { el, ins } = card('fleet', 'Fleet size', 'Vehicles on the road, ' + Y[0] + '–' + L);
+  const pas = Y.map(y => D.makes[y] ? Object.values(D.makes[y]).reduce((s, v) => s + v[0], 0) : 0);
+  const com = Y.map(y => Object.values(D.makes[y]).reduce((s, v) => s + v[1], 0));
+  const t = Y.map((y, i) => pas[i] + com[i]);
+  ins.append(`Ontario had `, h('strong', {}, fmt(t.at(-1))), ` passenger and commercial vehicles on the road at the end of ${L}, `, h('strong', {}, sgn(chg(t.at(-1), t[0]))), ` since ${Y[0]} and ${sgn(chg(t.at(-1), t.at(-2)))} in the last year.`);
+  const box = h('div', { class: 'chart' });
+  el.append(legend([['Passenger', css('--s1')], ['Commercial', css('--s4')]]), box,
+    h('p', { class: 'note' }, 'The dip from 2020 to 2023 most likely reflects how registrations were counted, not fewer vehicles. Ontario extended expired licence-plate stickers during COVID-19 and ended sticker renewal fees in 2022, which changed how many vehicles show as active.'),
+    foot(SRC, () => download('ontario-vehicles-on-the-road.csv', [['Year', 'Passenger', 'Commercial', 'Total'], ...Y.map((y, i) => [y, pas[i], com[i], t[i]])])));
+  requestAnimationFrame(() => chart('fleet', box, { type: 'bar', stacked: true, label: 'Stacked bars of passenger and commercial vehicles by year',
+    data: { labels: Y, datasets: [{ label: 'Passenger', data: pas, backgroundColor: css('--s1') }, { label: 'Commercial', data: com, backgroundColor: css('--s4') }] },
+    options: { plugins: { legend: { display: false }, tooltip: { callbacks: { footer: it => 'Total: ' + fmt(it.reduce((s, x) => s + x.parsed.y, 0)) } } } } }));
+  return el;
+}
+
+/* ---------- Fuel ---------- */
+const FUELS = [['Plug-in hybrid or battery electric', '--s1'], ['Hybrid (gas-electric)', '--s3'], ['Diesel', '--s4'], ['Code F', '--s7'], ['Gasoline', '--muted-bar'], ['Other', '--s5']];
+function fuel() {
+  const { el, ins } = card('fuel', 'Fuel mix', 'How Ontario vehicles are powered');
+  const sh = (y, k) => fuelShare(y, [k]);
+  const e = fuelShare(L, ELEC), e0 = fuelShare(Y[0], ELEC);
+  const p = D.fuel[L]['Plug-in hybrid or battery electric'], pp = D.fuel[P]['Plug-in hybrid or battery electric'];
+  ins.append(`Hybrids, plug-ins and battery electrics made up `, h('strong', {}, pct(e)), ` of vehicles on the road in ${L}, up from ${pct(e0)} in ${Y[0]}. Plug-in and battery electric vehicles grew `, h('strong', {}, sgn(chg(p, pp), 0)), ` in the last year to ${fmt(p)}. Gasoline still powers ${pct(sh(L, 'Gasoline'))}.`);
+  let mode = 'share';
+  const box = h('div', { class: 'chart' });
+  const lg = h('div');
+  const draw = () => {
+    const keys = mode === 'share' ? FUELS.filter(([k]) => k !== 'Gasoline' && k !== 'Other') : FUELS;
+    lg.replaceChildren(legend(keys.map(([k, c]) => [k, css(c)])));
+    chart('fuel', box, { type: mode === 'share' ? 'line' : 'bar', stacked: mode === 'count', label: 'Fuel mix by year',
+      data: { labels: Y, datasets: keys.map(([k, c]) => ({ label: k, data: Y.map(y => mode === 'share' ? sh(y, k) * 100 : (D.fuel[y][k] || 0)), borderColor: css(c), backgroundColor: css(c), pointRadius: 2, borderWidth: 2 })) },
+      ytick: mode === 'share' ? (v => v + '%') : undefined,
+      tip: mode === 'share' ? (x => `${x.dataset.label}: ${x.parsed.y.toFixed(2)}%`) : undefined });
+  };
+  el.append(h('div', { class: 'controls' }, seg([['share', 'Share, excluding gasoline'], ['count', 'All vehicles']], mode, v => { mode = v; draw(); })), lg, box,
+    h('p', { class: 'note' }, 'Code F: the Ministry’s dictionary lists F as diesel-butane, but more than 600,000 vehicles carry it, far more than that fuel would explain. It is most likely flex-fuel (gasoline-ethanol), so it is shown on its own rather than guessed. "Plug-in hybrid or battery electric" is one Ministry code; the data does not split the two.'),
+    foot(SRC, () => download('ontario-fuel-mix.csv', [['Year', ...FUELS.map(f => f[0])], ...Y.map(y => [y, ...FUELS.map(([k]) => D.fuel[y][k] || 0)])])));
+  requestAnimationFrame(draw);
+  return el;
+}
+
+/* ---------- Age ---------- */
+const BANDS = [['0–3 years', 0, 3], ['4–7 years', 4, 7], ['8–12 years', 8, 12], ['13–20 years', 13, 20], ['21+ years', 21, 999]];
+function age() {
+  const { el, ins } = card('age', 'Vehicle age', 'How old Ontario’s vehicles are');
+  const band = y => BANDS.map(([, lo, hi]) => Object.entries(D.age[y]).filter(([my]) => { const a = Math.max(0, y - my); return a >= lo && a <= hi; }).reduce((s, [, c]) => s + c, 0));
+  const b = band(L), t = b.reduce((s, x) => s + x, 0), b0 = band(Y[0]), t0 = b0.reduce((s, x) => s + x, 0);
+  ins.append(`The average vehicle was `, h('strong', {}, avgAge(L).toFixed(1) + ' years'), ` old in ${L}, up from ${avgAge(Y[0]).toFixed(1)} in ${Y[0]}. Vehicles 8 years or older now make up `, h('strong', {}, pct((b[2] + b[3] + b[4]) / t)), ` of the fleet, against ${pct((b0[2] + b0[3] + b0[4]) / t0)} in ${Y[0]}.`);
+  let mode = 'bands', yr = L;
+  const box = h('div', { class: 'chart' });
+  const yrSel = h('select', { class: 'sel', 'aria-label': 'Year' }, Y.slice().reverse().map(y => h('option', { value: y }, y)));
+  yrSel.addEventListener('change', () => { yr = yrSel.value; draw(); });
+  const yrWrap = h('label', {}, 'Year', yrSel);
+  const draw = () => {
+    yrWrap.hidden = mode === 'trend';
+    if (mode === 'bands') {
+      const bb = band(yr), tt = bb.reduce((s, x) => s + x, 0);
+      chart('age', box, { type: 'bar', label: 'Vehicles by age band', data: { labels: BANDS.map(x => x[0]), datasets: [{ label: 'Vehicles', data: bb, backgroundColor: css('--s1') }] },
+        tip: x => `${fmt(x.parsed.y)} vehicles (${pct(x.parsed.y / tt)})` });
+    } else if (mode === 'year') {
+      const ys = Object.keys(D.age[yr]).map(Number).filter(m => m >= yr - 30).sort((a, b) => a - b);
+      chart('age', box, { type: 'bar', label: 'Vehicles by model year', data: { labels: ys.map(String), datasets: [{ label: 'Vehicles', data: ys.map(m => D.age[yr][m]), backgroundColor: css('--s1') }] } });
+    } else {
+      chart('age', box, { type: 'line', label: 'Average vehicle age by year', data: { labels: Y, datasets: [{ label: 'Average age', data: Y.map(y => +avgAge(y).toFixed(2)), borderColor: css('--s2'), backgroundColor: css('--s2'), pointRadius: 3, borderWidth: 2 }] },
+        ytick: v => v + ' yrs', y: { beginAtZero: false }, tip: x => `Average age: ${x.parsed.y.toFixed(1)} years` });
+    }
+  };
+  el.append(h('div', { class: 'controls' }, seg([['bands', 'Age bands'], ['year', 'By model year'], ['trend', 'Average age over time']], mode, v => { mode = v; draw(); }), yrWrap), box,
+    foot(SRC + ' Age = snapshot year minus model year.', () => download('ontario-vehicles-by-model-year.csv', [['Snapshot year', 'Model year', 'Vehicles'], ...Y.flatMap(y => Object.entries(D.age[y]).map(([m, c]) => [y, m, c]))])));
+  requestAnimationFrame(draw);
+  return el;
+}
+
+/* ---------- Makes ---------- */
+function makes() {
+  const { el, ins } = card('makes', 'Makes', 'Vehicles on the road by make');
+  let yr = L, kind = 'all', q = '';
+  const val = (y, mk, k = kind) => { const v = (D.makes[y] || {})[mk]; return v ? (k === 'pas' ? v[0] : k === 'com' ? v[1] : v[0] + v[1]) : 0; };
+  const top = Object.keys(D.makes[L]).filter(m => m !== '****').sort((a, b) => val(L, b, 'all') - val(L, a, 'all'));
+  const t = road(L);
+  const gain = top.slice(0, 40).map(m => [m, val(L, m, 'all') - val(P, m, 'all')]).sort((a, b) => b[1] - a[1])[0];
+  ins.append(h('strong', {}, makeName(top[0])), ` leads with ${pct(val(L, top[0], 'all') / t)} of vehicles on the road, followed by ${makeName(top[1])} and ${makeName(top[2])}. The biggest gain last year was `, h('strong', {}, makeName(gain[0])), ` (+${fmt(gain[1])}).`);
+  const box = h('div', { class: 'chart tall' });
+  const body = h('tbody');
+  const yrSel = h('select', { class: 'sel', 'aria-label': 'Year' }, Y.slice().reverse().map(y => h('option', { value: y }, y)));
+  yrSel.addEventListener('change', () => { yr = yrSel.value; draw(); });
+  const search = h('input', { class: 'tsearch', type: 'search', placeholder: 'Find a make', 'aria-label': 'Find a make' });
+  search.addEventListener('input', () => { q = search.value.toLowerCase(); table(); });
+  const prevY = () => Y[Y.indexOf(yr) - 1];
+  let rows = [];
+  const table = () => {
+    body.replaceChildren(...rows.filter(r => !q || (makeName(r.mk) + ' ' + r.mk).toLowerCase().includes(q)).map((r, i) =>
+      h('tr', {}, h('th', { scope: 'row' }, makeName(r.mk), h('span', { class: 'code' }, r.mk)), h('td', {}, fmt(r.v)), h('td', {}, pct(r.v / r.tot, 2)),
+        h('td', { class: cls(r.c) }, sgn(r.c)), h('td', {}, fmt(val(yr, r.mk, 'pas'))), h('td', {}, fmt(val(yr, r.mk, 'com'))))));
+  };
+  const draw = () => {
+    const tot = Object.keys(D.makes[yr]).reduce((s, m) => s + val(yr, m), 0), py = prevY();
+    rows = Object.keys(D.makes[yr]).map(mk => ({ mk, v: val(yr, mk), tot, c: py ? chg(val(yr, mk), val(py, mk)) : null })).filter(r => r.v > 0).sort((a, b) => b.v - a.v);
+    const t20 = rows.filter(r => r.mk !== '****').slice(0, 20);
+    chart('makes', box, { type: 'bar', label: 'Top 20 makes', data: { labels: t20.map(r => makeName(r.mk)), datasets: [{ label: 'Vehicles', data: t20.map(r => r.v), backgroundColor: css('--s1') }] },
+      options: { indexAxis: 'y' }, x: { grid: { color: css('--line-soft') }, ticks: { color: css('--ink-2'), callback: v => big(v) } }, y: { grid: { display: false }, ticks: { color: css('--ink-2'), autoSkip: false } },
+      tip: x => `${fmt(x.parsed.x)} vehicles (${pct(x.parsed.x / tot)})` });
+    table();
+  };
+  el.append(h('div', { class: 'controls' }, h('label', {}, 'Year', yrSel), seg([['all', 'All'], ['pas', 'Passenger'], ['com', 'Commercial']], kind, v => { kind = v; draw(); })), box,
+    h('div', { class: 'body' }, h('div', { class: 'controls', style: 'padding:0 0 8px' }, search),
+      h('div', { class: 'tbl-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['Make', 'Vehicles', 'Share', 'Change vs prior year', 'Passenger', 'Commercial'].map(c => h('th', { scope: 'col' }, c)))), body))),
+    foot(SRC + ' Make names are AIA Canada’s reading of the Ministry’s codes.', () => download(`ontario-makes-${yr}.csv`, [['Make', 'Code', 'Vehicles', 'Passenger', 'Commercial'], ...rows.map(r => [makeName(r.mk), r.mk, r.v, val(yr, r.mk, 'pas'), val(yr, r.mk, 'com')])])));
+  requestAnimationFrame(draw);
+  return el;
+}
+
+/* ---------- Models ---------- */
+function models() {
+  const { el, ins } = card('models', 'Models', `Models by make, ${L}`);
+  const all = [];
+  // Codes that map to the same model name (e.g. RV4 and RAV for the RAV4) are combined into one row.
+  for (const [mk, mds] of Object.entries(D.detail)) {
+    const by = new Map();
+    for (const [code, v] of Object.entries(mds)) {
+      const key = modelName(mk, code) || code;
+      if (!by.has(key)) by.set(key, { mk, md: code, codes: [], n: 0, prev: 0, y: {} });
+      const r = by.get(key); r.codes.push(code); r.prev += v.prev;
+      for (const [y, c] of Object.entries(v.y)) { r.y[y] = (r.y[y] || 0) + c; r.n += c; }
+    }
+    all.push(...by.values());
+  }
+  const label = r => (modelName(r.mk, r.md) ? `${makeName(r.mk)} ${modelName(r.mk, r.md)}` : `${makeName(r.mk)} ${r.md}`);
+  const top = all.filter(r => r.md !== '***' && modelName(r.mk, r.md)).sort((a, b) => b.n - a.n)[0];
+  ins.append(`Choose a make to see its models, then a model to see its vehicles by model year. Among models with a clear name, the most common is the `, h('strong', {}, label(top)), ` with ${fmt(top.n)} on the road.`);
+  const makesList = Object.keys(D.detail).filter(m => m !== '****').sort((a, b) => makeName(a).localeCompare(makeName(b)));
+  let mk = 'TOYT', pick = null;
+  const sel = h('select', { class: 'sel', 'aria-label': 'Make' }, makesList.map(m => h('option', { value: m, selected: m === mk }, makeName(m))));
+  sel.addEventListener('change', () => { mk = sel.value; pick = null; draw(); });
+  const body = h('tbody'), box = h('div', { class: 'chart' }), cap = h('p', { class: 'insight', style: 'padding:10px 18px 0;margin:0' });
+  let rows = [];
+  const draw = () => {
+    rows = all.filter(r => r.mk === mk).sort((a, b) => b.n - a.n);
+    if (!pick) pick = rows[0];
+    body.replaceChildren(...rows.map(r => {
+      const yrs = Object.entries(r.y).sort((a, b) => a[0] - b[0]); let acc = 0, med = '';
+      for (const [y, c] of yrs) { acc += c; if (acc >= r.n / 2) { med = y; break; } }
+      const tr = h('tr', { class: 'pick', tabindex: '0', 'aria-selected': String(r === pick), onclick: () => { pick = r; draw(); }, onkeydown: e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick = r; draw(); } } },
+        h('th', { scope: 'row' }, modelName(r.mk, r.md) || (r.md === '***' ? 'Not coded' : r.md), modelName(r.mk, r.md) ? h('span', { class: 'code' }, r.codes.join(', ')) : null),
+        h('td', {}, fmt(r.n)), h('td', { class: cls(chg(r.n, r.prev)) }, r.prev ? sgn(chg(r.n, r.prev)) : 'new'), h('td', {}, med));
+      return tr;
+    }));
+    const ys = Object.keys(pick.y).map(Number).sort((a, b) => a - b);
+    cap.replaceChildren(h('strong', {}, label(pick)), ` · ${fmt(pick.n)} vehicles on the road in ${L}`);
+    chart('models', box, { type: 'bar', label: 'Vehicles by model year for the selected model', data: { labels: ys.map(String), datasets: [{ label: 'Vehicles', data: ys.map(y => pick.y[y]), backgroundColor: css('--s1') }] } });
+  };
+  el.append(h('div', { class: 'controls' }, h('label', {}, 'Make', sel)),
+    h('div', { class: 'body' }, h('div', { class: 'tbl-wrap', style: 'max-height:320px' }, h('table', {}, h('thead', {}, h('tr', {}, ['Model (Ministry code)', 'Vehicles', 'Change vs ' + P, 'Median model year'].map(c => h('th', { scope: 'col' }, c)))), body))),
+    cap, box,
+    foot(SRC + ' Model names are AIA Canada’s reading of the Ministry’s 3-letter codes; unclear codes are shown as is.', () => download(`ontario-models-${makeName(mk).toLowerCase().replace(/\W+/g, '-')}-${L}.csv`,
+      [['Make', 'Model code', 'Model name', 'Model year', 'Vehicles'], ...rows.flatMap(r => Object.entries(r.y).map(([y, c]) => [makeName(r.mk), r.codes.join(' '),modelName(r.mk, r.md) || '', y, c]))])));
+  requestAnimationFrame(draw);
+  return el;
+}
+
+/* ---------- County ---------- */
+function county() {
+  const { el, ins } = card('county', 'Counties', 'Vehicles on the road by county');
+  const base = Y.includes('2019') ? '2019' : Y[0];
+  const names = Object.keys(D.county[L]);
+  const rows = names.map(c => ({ c, v: D.county[L][c], p: D.county[P][c] || 0, b: D.county[base][c] || 0 })).sort((a, b) => b.v - a.v);
+  const tot = rows.reduce((s, r) => s + r.v, 0);
+  const gtaN = ['Metro Toronto', 'Peel', 'York', 'Durham', 'Halton'];
+  const gta = rows.filter(r => gtaN.includes(r.c)).reduce((s, r) => s + r.v, 0);
+  const fast = rows.filter(r => r.v > 50000).map(r => ({ ...r, g: chg(r.v, r.b) })).sort((a, b) => b.g - a.g)[0];
+  ins.append(`The Greater Toronto Area (Toronto, Peel, York, Durham and Halton) holds `, h('strong', {}, pct(gta / tot)), ` of Ontario's vehicles. Among larger counties, `, h('strong', {}, fast.c), ` grew fastest since ${base} (${sgn(fast.g)}).`);
+  let q = '';
+  const body = h('tbody');
+  const search = h('input', { class: 'tsearch', type: 'search', placeholder: 'Find a county', 'aria-label': 'Find a county' });
+  search.addEventListener('input', () => { q = search.value.toLowerCase(); draw(); });
+  const draw = () => body.replaceChildren(...rows.filter(r => !q || r.c.toLowerCase().includes(q)).map(r =>
+    h('tr', {}, h('th', { scope: 'row' }, r.c), h('td', {}, fmt(r.v)), h('td', {}, pct(r.v / tot, 1)), h('td', { class: cls(chg(r.v, r.p)) }, sgn(chg(r.v, r.p))), h('td', { class: cls(chg(r.v, r.b)) }, sgn(chg(r.v, r.b))))));
+  const box = h('div', { class: 'chart tall' });
+  el.append(box, h('div', { class: 'body' }, h('div', { class: 'controls', style: 'padding:0 0 8px' }, search),
+    h('div', { class: 'tbl-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['County', `Vehicles ${L}`, 'Share', `Change vs ${P}`, `Change vs ${base}`].map(c => h('th', { scope: 'col' }, c)))), body))),
+    foot(SRC + ' Ministry county boundaries (pre-amalgamation names).', () => download('ontario-vehicles-by-county.csv', [['County', ...Y], ...rows.map(r => [r.c, ...Y.map(y => D.county[y][r.c] || 0)])])));
+  draw();
+  requestAnimationFrame(() => { const t = rows.slice(0, 20); chart('county', box, { type: 'bar', label: 'Top 20 counties', data: { labels: t.map(r => r.c), datasets: [{ label: 'Vehicles', data: t.map(r => r.v), backgroundColor: css('--s1') }] },
+    options: { indexAxis: 'y' }, x: { grid: { color: css('--line-soft') }, ticks: { color: css('--ink-2'), callback: v => big(v) } }, y: { grid: { display: false }, ticks: { color: css('--ink-2'), autoSkip: false } },
+    tip: x => `${fmt(x.parsed.x)} vehicles (${pct(x.parsed.x / tot)})` }); });
+  return el;
+}
+
+boot().catch(e => { $('#main').replaceChildren(h('p', { class: 'loading' }, 'The data could not be loaded. Refresh the page to try again.')); console.error(e); });
+</script>
+</body>
+</html>

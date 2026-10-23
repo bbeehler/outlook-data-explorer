@@ -88,6 +88,8 @@ h1, h2, h3 { text-wrap: balance; margin: 0; }
 .rail button:hover { background: var(--chip); }
 .rail button[aria-current="true"] { border-left-color: var(--accent); color: var(--ink); font-weight: 700; background: var(--surface); }
 .rail .count { color: var(--muted); font-size: 12px; font-family: var(--font-data); }
+.rail a.raillink { text-decoration: none; padding: 9px 12px; border-left: 3px solid transparent; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; }
+.rail a.raillink:hover { background: var(--chip); }
 .rail .sep { height: 1px; background: var(--line); margin: 10px 0; }
 .rail .small { font-size: 12px; color: var(--muted); padding: 0 12px; }
 main { min-width: 0; display: flex; flex-direction: column; gap: 22px; }
@@ -245,6 +247,7 @@ td .bar { display: inline-block; height: 8px; background: var(--s1); vertical-al
   .rail button { white-space: nowrap; border-left: 0; border-bottom: 3px solid transparent; background: var(--surface); border: 1px solid var(--line); }
   .rail button[aria-current="true"] { border-bottom: 3px solid var(--accent); }
   .rail .sep, .rail .small, .rail .count { display: none; }
+  .rail a.raillink { white-space: nowrap; border: 1px solid var(--line); background: var(--surface); }
   .topics, .lcards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) {
@@ -755,6 +758,7 @@ function render() {
   const rail = $('#rail');
   rail.replaceChildren(...TOPICS.filter(t => t.id !== 'access' || IS_ADMIN).map(t => h('button', { type: 'button', 'aria-current': String(current === t.id), onclick: () => go(t.id) },
     h('span', {}, t.name), t.id !== 'home' && t.id !== 'defs' && t.id !== 'access' ? h('span', { class: 'count' }, DS.filter(d => d.topic === t.id).length) : null)),
+    h('a', { class: 'raillink', href: 'https://outlook.aiacanada.com/ontario/' }, h('span', {}, 'Ontario vehicles'), h('span', { class: 'count' }, 'Open data')),
     h('div', { class: 'sep' }), h('div', { class: 'small' }, `${Math.max(DS.length - 1, 0)} figures from the 2025 Outlook Study data tool. Data mostly 2019–2023, with forecasts to 2030.`));
   const main = $('#main');
   for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
