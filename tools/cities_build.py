@@ -101,6 +101,8 @@ def main():
                 if k not in by_key:  # e.g. 'Belleville, Ontario' for 'Belleville - Quinte West'
                     cand = [x for x in by_key if x.startswith(k) and len(k) >= 6]
                     k = cand[0] if len(cand) == 1 else None
+                if k and "(CMA)" not in name and by_key[k]["province"].split("/")[0] not in name:
+                    k = None  # same name, other province (e.g. a Victoria outside British Columbia)
                 if k and k not in ids:
                     ids[k] = mid
         missing = [c["name"] for c in cmas if c["key"] not in ids and c["key"] not in (parts or {})]

@@ -380,6 +380,21 @@ body.is-gated .mast-link { display: none; }
 @media (max-width: 900px) { .mast-link { padding: 0 10px; } .mast-link .lbl, .mast-link svg.ext { display: none; } .menu-btn .lbl { display: none; } .menu-btn { padding: 8px 10px; } }
 @media (max-width: 640px) { .mast-in { gap: 8px; } .pbtn .chev { display: none; } .brand .name { font-size: 17px; } }
 
+/* Cities */
+.panel.cpicks { flex-direction: row; } .cpicks { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-end; }
+.cpick { display: flex; flex-direction: column; gap: 4px; min-width: 180px; flex: 1 1 180px; max-width: 320px; }
+.cpick .sel { width: 100%; }
+.tablewrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.ctable { border-collapse: collapse; width: 100%; font-size: 14px; }
+.ctable th, .ctable td { padding: 8px 10px; border-bottom: 1px solid var(--line-soft); text-align: right; vertical-align: top; }
+.ctable thead th { font-weight: 700; color: var(--ink); white-space: nowrap; }
+.ctable th[scope="row"] { text-align: left; font-weight: 600; color: var(--ink); }
+.ctable .ref { display: block; font-weight: 400; margin-top: 2px; }
+.ctable td { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ctable thead th:last-child, .ctable td:last-child { color: var(--ink-2); }
+.cnote { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
+@media (max-width: 560px) { .ctable { font-size: 13px; } .ctable th, .ctable td { padding: 7px 6px; } .cpick { max-width: none; } }
+
 @media (max-width: 960px) {
   .wrap { grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .topics, .lcards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -505,6 +520,7 @@ function fmt(v, unit, mode = 'short') {
     case "'000": return v.toFixed(1) + 'K';
     case "'000 vehicles": return full ? Math.round(v * 1000).toLocaleString('en-CA') : compact(v * 1000);
     case 'per 1,000': return v.toFixed(1);
+    case 'years': case 'minutes': return v.toFixed(1);
     case 'per vehicle per year': return v.toFixed(3);
     default: return full ? Math.round(v).toLocaleString('en-CA') : compact(v);
   }
@@ -644,8 +660,8 @@ function drawChart(canvas, ds, R, opts = {}) {
   if (['ev-penetration', 'r2r-opinions', 'intl-core'].includes(ds.id)) valAxis.max = 1;
   const catAxis = {
     stacked, grid: { display: false }, border: { color: css('--line') },
-    ticks: { color: ink, autoSkip: true, maxRotation: 0, autoSkipPadding: 10,
-      callback: function (v) { const l = this.getLabelForValue(v); const max = horiz ? 34 : 14; return String(l).length > max ? String(l).slice(0, max - 1) + '…' : l; } },
+    ticks: { color: ink, autoSkip: !(horiz && R.cats.length <= 45), maxRotation: 0, autoSkipPadding: 10, font: horiz && R.cats.length > 30 ? { size: 11 } : undefined,
+      callback: function (v) { const l = this.getLabelForValue(v); const max = horiz ? (innerWidth < 500 ? 24 : 34) : 14; return String(l).length > max ? String(l).slice(0, max - 1) + '…' : l; } },
   };
   const cfg = {
     type: line ? 'line' : 'bar',
@@ -1101,13 +1117,13 @@ const rerender = () => { clearTimeout(rerender.t); rerender.t = setTimeout(rende
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerender);
 new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-const HUB_VERSION = '2026-10-25 19:18';
+const HUB_VERSION = '2026-10-25 19:35';
 /* ---------- AIA Canada Research Hub: sections, research reports, economy, links between sources, report manager ---------- */
 const BASE_TOPICS = TOPICS.filter(t => !['home', 'access'].includes(t.id)).map(t => ({ ...t, group: 'outlook' }));
-let REPORTS = [], ECON = null;
+let REPORTS = [], ECON = null, CITIES = null;
 const OUTLOOK_TAGS = { sector: ['labour', 'technicians', 'independent-shops'], vehicles: ['vehicles-on-road', 'vehicle-sales', 'vehicle-age'],
   ev: ['ev', 'vehicle-sales'], demand: ['maintenance', 'service-choice', 'driving', 'parts'], economy: ['inflation', 'repair-prices', 'household-finances'], intl: ['ev'] };
-const sourceOf = d => d.topic === 'macro' ? 'macro' : String(d.topic).startsWith('r:') ? 'report' : 'outlook';
+const sourceOf = d => d.topic === 'macro' || d.topic === 'cities' ? 'macro' : String(d.topic).startsWith('r:') ? 'report' : 'outlook';
 const tagsOf = d => d.tags || OUTLOOK_TAGS[d.topic] || [];
 const fmtDate = s => s ? new Date(s + 'T12:00:00').toLocaleDateString('en-CA', { year: 'numeric', month: 'long' }) : '';
 QUESTIONS.splice(0, QUESTIONS.length,
@@ -1119,10 +1135,12 @@ QUESTIONS.splice(0, QUESTIONS.length,
   'What do the latest research reports say about trust in repair shops?');
 
 async function loadHub() {
-  const [rep, econ] = await Promise.all([
+  const [rep, econ, cities] = await Promise.all([
     SB.from('hub_reports').select('id,slug,title,series,published_on,summary,key_findings,source_url,status,sections').eq('status', 'published').order('published_on', { ascending: false, nullsFirst: false }),
     fetch('economy/data.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).catch(() => null),
+    fetch('cities/data.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).catch(() => null),
   ]);
+  CITIES = cities && Array.isArray(cities.cities) ? cities : null;
   REPORTS = rep.data || [];
   ECON = econ;
   let figs = [];
@@ -1147,7 +1165,7 @@ async function loadHub() {
   const topicOf = (r, p) => r._sections.length ? `r:${r.slug}~${r._keys.has(p.section) ? p.section : 'other'}` : 'r:' + r.slug;
   const reportFigs = figs.map(f => { const r = REPORTS.find(x => x.id === f.report_id); return { ...f.payload, topic: topicOf(r, f.payload), source: `AIA Canada, ${r.title}` }; });
   const macro = (ECON && ECON.datasets) || [];
-  DS = [...outlook, ...reportFigs, ...macro];
+  DS = [...outlook, ...reportFigs, ...macro, ...cityRankings()];
   const seen = new Set(); DS = DS.filter(d => !seen.has(d.id) && seen.add(d.id));
   BYID = Object.fromEntries(DS.map(d => [d.id, d]));
   TOPICS.splice(0, TOPICS.length,
@@ -1157,6 +1175,7 @@ async function loadHub() {
     { id: 'outlook', name: 'Overview', group: 'outlook-home', blurb: 'The 2025 Outlook Study, prepared with EY: the size of Canada\u2019s auto care sector, vehicles on the road, EVs, demand for repair, prices and how Canada compares.' },
     ...BASE_TOPICS,
     { id: 'macro', name: 'Economic indicators', group: 'economy', blurb: 'Prices, vehicle sales, jobs, wages and interest rates from Statistics Canada and the Bank of Canada, updated twice a month.' },
+    { id: 'cities', name: 'Cities', label: 'Economy: Cities', group: 'economy-sec', blurb: 'Population, age, jobs, income, how people get to work and EV adoption for every census metropolitan area, from Statistics Canada.' },
     { id: 'reports', name: 'Research reports', group: 'admin', blurb: '' },
     { id: 'access', name: 'Manage access', group: 'admin', blurb: '' });
 }
@@ -1206,6 +1225,7 @@ function render() {
   const t = TOPICS.find(x => x.id === current);
   if (!t || current === 'home') { current = 'home'; return renderHome(main); }
   if (current === 'macro') return renderEconomy(main);
+  if (current === 'cities') return renderCities(main);
   if (current === 'outlook') return renderOutlookOverview(main);
   if (t.section) return renderReportSection(main, t);
   if (t.report) return renderReport(main, t);
@@ -1223,7 +1243,7 @@ function reportList() {
   out.push({ id: 'outlook', kind: 'outlook', overview: 'outlook', short: 'Outlook Study 2025', title: 'Outlook Study 2025', meta: 'AIA Canada with EY \u00b7 January 2025',
     summary: TOPICS.find(t => t.id === 'outlook').blurb, sections: TOPICS.filter(t => t.group === 'outlook'), charts: DS.filter(d => sourceOf(d) === 'outlook' && d.kind !== 'defs').length });
   out.push({ id: 'macro', kind: 'economy', overview: 'macro', short: 'Economic indicators', title: 'Economic indicators', meta: `Statistics Canada and Bank of Canada${ECON && ECON.built ? ' \u00b7 updated ' + fmtDay(ECON.built) : ''}`,
-    summary: TOPICS.find(t => t.id === 'macro').blurb, sections: [], charts: DS.filter(d => d.topic === 'macro').length });
+    summary: TOPICS.find(t => t.id === 'macro').blurb + (CITIES ? ' Includes a profile of every metro area.' : ''), sections: TOPICS.filter(t => t.group === 'economy-sec'), charts: DS.filter(d => sourceOf(d) === 'macro').length });
   return out;
 }
 const fmtDay = s => new Date(s + 'T12:00:00').toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -1231,7 +1251,7 @@ function currentReport() {
   const list = reportList();
   if (current.startsWith('r:')) return list.find(r => r.id === current.split('~')[0]);
   if (current === 'outlook' || BASE_TOPICS.some(t => t.id === current)) return list.find(r => r.id === 'outlook');
-  if (current === 'macro') return list.find(r => r.id === 'macro');
+  if (current === 'macro' || current === 'cities') return list.find(r => r.id === 'macro');
   return null;
 }
 function kpiTiles(which) {
@@ -1271,7 +1291,7 @@ function renderHome(main) {
   main.append(h('div', { class: 'topics replist' }, list.map(r => h('button', { type: 'button', class: 'tcard rcard', onclick: () => go(r.overview) },
     h('span', { class: 'ref' }, r.meta), h('b', {}, r.title),
     h('span', {}, (r.summary || '').length > 200 ? r.summary.slice(0, 197) + '\u2026' : r.summary),
-    h('span', { class: 'rstats' }, [r.sections.length ? `${r.sections.length} sections` : null, `${r.charts} charts`].filter(Boolean).join(' \u00b7 '), h('span', { class: 'ropen' }, 'Open \u2192'))))));
+    h('span', { class: 'rstats' }, [r.sections.length ? `${r.sections.length} section${r.sections.length === 1 ? '' : 's'}` : null, `${r.charts} charts`].filter(Boolean).join(' \u00b7 '), h('span', { class: 'ropen' }, 'Open \u2192'))))));
   const tiles = kpiTiles();
   if (tiles) main.append(h('h2', { class: 'sec-h' }, 'At a glance'), tiles);
   if (SAMPLE) {
@@ -1334,13 +1354,149 @@ function renderEconomy(main) {
   main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'Economy'), h('h1', {}, 'The economic backdrop for auto care'),
     h('p', {}, 'Official figures on the prices, sales, jobs and rates that shape demand for repair and parts. Each chart links to research findings on the same topic.')));
   const figs = DS.filter(d => d.topic === 'macro');
+  if (CITIES) main.append(h('div', { class: 'topics secs' }, h('button', { type: 'button', class: 'tcard', onclick: () => go('cities') },
+    h('span', { class: 'ref' }, `${CITIES.cities.length} metro areas`), h('b', {}, 'Cities: compare metro areas'), h('span', {}, TOPICS.find(t => t.id === 'cities').blurb))));
   if (!figs.length) main.append(h('p', { class: 'empty' }, 'The economic data is being prepared. Check back shortly.'));
   for (const ds of figs) main.append(card(ds));
   main.append(pageFoot());
 }
+/* ---------- Cities: a profile of every census metropolitan area ---------- */
+const CITY_SRC = k => (CITIES && CITIES.sources && CITIES.sources[k]) || 'Statistics Canada';
+const cityName = c => c.key === 'canada' ? 'Canada' : c.name;
+// the numbers shown for one metro area (or Canada); null where Statistics Canada doesn't publish it
+function cityStats(c) {
+  const o = {};
+  if (c.pop && c.pop.vals.length) { const v = c.pop.vals, n = v.length; o.pop = v[n - 1]; o.popYear = c.pop.years[n - 1]; if (n > 5) { o.growth = v[n - 1] / v[n - 6] - 1; o.growthFrom = c.pop.years[n - 6]; } }
+  if (c.ages) { o.age = c.ages.median; o.young = c.ages.young; o.working = c.ages.working; o.senior = c.ages.senior; }
+  if (c.jobs) { const [v, i] = lastVal(c.jobs.unemp); o.unemp = v; o.unempMonth = c.jobs.months[i]; }
+  if (c.income) o.income = c.income.median2020;
+  if (c.commute) { o.car = c.commute.car; o.transit = c.commute.transit; o.active = c.commute.active; o.mins = c.commute.avgMin; }
+  if (c.vehicles && c.vehicles.all.length >= 4) {
+    const v = c.vehicles, k = v.all.length, sum = a => a.slice(k - 4).reduce((t, x) => t + (x || 0), 0), all = sum(v.all);
+    if (all >= 200) { o.ev = (sum(v.bev) + sum(v.phev)) / all; o.evPeriod = `${v.quarters[k - 4]} to ${v.quarters[k - 1]}`; }
+  }
+  if (c.prices) { const [v, i] = lastVal(c.prices.yoy); o.cpi = v; o.cpiMonth = c.prices.months[i]; }
+  return o;
+}
+// ranking charts across every metro area: part of the hub's data, so search and the AI can use them
+function cityRankings() {
+  if (!CITIES) return [];
+  const rows = CITIES.cities.map(c => [c.name, cityStats(c)]);
+  const ca = cityStats(CITIES.canada);
+  const any = rows.find(r => r[1].pop) || [null, {}];
+  const rank = (id, title, key, unit, src, tags, note) => {
+    const r = rows.filter(x => x[1][key] != null).sort((a, b) => b[1][key] - a[1][key]);
+    if (!r.length) return null;
+    return { id, topic: 'cities', ref: 'Cities', title, unit, chart: 'bar', orient: 'h', cats: r.map(x => x[0]), series: [{ name: title.split(',')[0], vals: r.map(x => +x[1][key].toFixed(4)) }],
+      source: src, tags: ['cities', 'regional', ...tags], note: [note, ca[key] != null ? `Canada: ${fmt(ca[key], unit, 'full')}.` : ''].filter(Boolean).join(' '), canada: ca[key] };
+  };
+  return [
+    rank('city-population', `Population by metro area, July 1, ${any[1].popYear || ''}`, 'pop', '', CITY_SRC('pop'), ['vehicles-on-road'], 'Census metropolitan areas, 2021 boundaries.'),
+    rank('city-growth', `Population growth by metro area, ${any[1].growthFrom || ''} to ${any[1].popYear || ''}`, 'growth', '%', CITY_SRC('pop'), ['vehicles-on-road', 'driving'], 'Change in population over five years. Growing areas mean more vehicles and more demand for service.'),
+    rank('city-age', 'Median age by metro area', 'age', 'years', CITY_SRC('pop'), ['vehicle-age'], `July 1, ${any[1].popYear || ''}.`),
+    rank('city-unemployment', `Unemployment rate by metro area, ${any[1].unempMonth || ''}`, 'unemp', '%', CITY_SRC('jobs'), ['labour', 'household-finances'], 'Three-month moving average, seasonally adjusted.'),
+    rank('city-income', 'Median household income by metro area, 2020', 'income', '$', CITY_SRC('income'), ['household-finances'], 'Total income of households in 2020, from the 2021 Census. 2020 incomes include pandemic benefits.'),
+    rank('city-drive', 'Share of commuters who drive to work, by metro area', 'car', '%', CITY_SRC('commute'), ['driving', 'maintenance'], 'Car, truck or van, as driver or passenger. 2021 Census, taken during the pandemic.'),
+    rank('city-transit', 'Share of commuters who take public transit, by metro area', 'transit', '%', CITY_SRC('commute'), ['driving'], '2021 Census, taken during the pandemic, when transit use was lower than usual.'),
+    rank('city-commute', 'Average commute time by metro area', 'mins', 'minutes', CITY_SRC('commute'), ['driving'], 'One way, in minutes. 2021 Census.'),
+    rank('city-ev', 'Electric share of new vehicles by metro area, past four quarters', 'ev', '%', CITY_SRC('vehicles'), ['ev', 'vehicle-sales'], `Battery electric and plug-in hybrid, as a share of all new vehicles registered${any[1].evPeriod ? ', ' + any[1].evPeriod : ''}. Not published for some areas.`),
+  ].filter(Boolean);
+}
+let CITY_SEL = null;
+function citySel() {
+  if (CITY_SEL) return CITY_SEL;
+  let s = []; try { s = JSON.parse(store.get('aia-cities') || '[]'); } catch {}
+  const keys = new Set(CITIES.cities.map(c => c.key));
+  s = (Array.isArray(s) ? s : []).filter(k => keys.has(k)).slice(0, 3);
+  if (!s.length) s = [keys.has('toronto') ? 'toronto' : CITIES.cities[0].key];
+  return (CITY_SEL = s);
+}
+function setCitySel(s) { CITY_SEL = s.filter(Boolean).filter((k, i, a) => a.indexOf(k) === i).slice(0, 3); store.set('aia-cities', JSON.stringify(CITY_SEL)); for (const k of Object.keys(UI)) if (k.startsWith('city')) delete UI[k]; render(); }
+// comparison charts for the chosen metro areas, with Canada for reference
+function cityCompare(sel) {
+  const cs = [...sel, CITIES.canada];
+  const out = [], base = { topic: 'cities', ref: 'Cities' };
+  const names = cs.map(cityName);
+  const time = (id, title, unit, src, get, note) => {
+    const sets = cs.map(c => get(c)).map(x => x || { cats: [], vals: [] });
+    const cats = [...new Set(sets.flatMap(x => x.cats))];
+    const order = c => { const m = /^(?:Q(\d) )?(?:([A-Z][a-z]{2}) )?(\d{4})$/.exec(c); return m ? +m[3] * 100 + (m[1] ? +m[1] * 3 : m[2] ? 'JanFebMarAprMayJunJulAugSepOctNovDec'.indexOf(m[2]) / 3 + 1 : 0) : 0; };
+    cats.sort((a, b) => order(a) - order(b));
+    const series = sets.map((x, i) => ({ name: names[i], vals: cats.map(c => { const j = x.cats.indexOf(c); return j < 0 ? null : x.vals[j]; }) })).filter(x => x.vals.some(v => v != null));
+    if (series.length) out.push({ ...base, id, title, unit, chart: 'line', cats, series, source: src, note });
+  };
+  time('city-cmp-pop', 'Population change since ' + ((CITIES.canada.pop || {}).years || [''])[0], '%', CITY_SRC('pop'),
+    c => c.pop && { cats: c.pop.years, vals: c.pop.vals.map(v => +(v / c.pop.vals[0] - 1).toFixed(4)) }, 'Change from the first year shown, so areas of different sizes can be compared.');
+  time('city-cmp-unemp', 'Unemployment rate', '%', CITY_SRC('jobs'), c => c.jobs && { cats: c.jobs.months, vals: c.jobs.unemp }, 'Three-month moving average, seasonally adjusted.');
+  time('city-cmp-ev', 'Electric share of new vehicle registrations', '%', CITY_SRC('vehicles'),
+    c => c.vehicles && { cats: c.vehicles.quarters, vals: c.vehicles.all.map((t, i) => t >= 50 ? +(((c.vehicles.bev[i] || 0) + (c.vehicles.phev[i] || 0)) / t).toFixed(4) : null) }, 'Battery electric and plug-in hybrid, as a share of all new vehicles registered in the quarter.');
+  time('city-cmp-cpi', 'Consumer prices, change from a year earlier', '%', CITY_SRC('prices'), c => c.prices && { cats: c.prices.months, vals: c.prices.yoy }, 'All items. Statistics Canada publishes prices for a few large cities only.');
+  const st_ = cs.map(cityStats);
+  if (st_.some(x => x.young != null)) out.push({ ...base, id: 'city-cmp-age', title: 'Age mix of the population', unit: '%', chart: 'stacked', cats: names,
+    series: [['Under 15', 'young'], ['15 to 64', 'working'], ['65 and older', 'senior']].map(([n, k]) => ({ name: n, vals: st_.map(x => x[k] != null ? +x[k].toFixed(4) : null) })), source: CITY_SRC('pop'), note: `July 1, ${st_[0].popYear || ''}.`,
+    insight: '<strong>Aged 65 and older: ' + names.map((n, i) => `${esc(n)} ${fmt(st_[i].senior, '%')}`).join(' \u00b7 ') + '</strong>' });
+  if (st_.some(x => x.income != null)) out.push({ ...base, id: 'city-cmp-income', title: 'Median household income, 2020', unit: '$', chart: 'bar', cats: names,
+    series: [{ name: 'Median household income', vals: st_.map(x => x.income ?? null) }], source: CITY_SRC('income'), note: 'Total income of households, 2021 Census.' });
+  if (st_.some(x => x.car != null)) out.push({ ...base, id: 'city-cmp-commute', title: 'How people get to work', unit: '%', chart: 'stacked', cats: names,
+    series: [['Car, truck or van', 'car'], ['Public transit', 'transit'], ['Walk or bike', 'active']].map(([n, k]) => ({ name: n, vals: st_.map(x => x[k] != null ? +x[k].toFixed(4) : null) }))
+      .concat([{ name: 'Other', vals: st_.map(x => x.car != null ? +Math.max(0, 1 - x.car - (x.transit || 0) - (x.active || 0)).toFixed(4) : null) }]), source: CITY_SRC('commute'), note: 'Main way of getting to work, 2021 Census (taken during the pandemic).',
+    insight: '<strong>Drive to work: ' + names.map((n, i) => `${esc(n)} ${fmt(st_[i].car, '%')}`).join(' \u00b7 ') + '</strong> \u00b7 transit: ' + names.map((n, i) => `${esc(n)} ${fmt(st_[i].transit, '%')}`).join(', ') });
+  return out;
+}
+function renderCities(main) {
+  main.append(h('nav', { class: 'crumbs', 'aria-label': 'Breadcrumb' }, h('button', { type: 'button', class: 'linkbtn', onclick: () => go('macro') }, 'Economic indicators'), h('span', { 'aria-hidden': 'true' }, ' / '), h('span', {}, 'Cities')));
+  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'Economy · Statistics Canada'), h('h1', {}, 'Cities'),
+    h('p', {}, 'Who lives in each metro area, how the local economy is doing, how people get around and how quickly they are switching to electric vehicles. Pick a city, and add up to two more to compare.')));
+  if (!CITIES) { main.append(h('p', { class: 'empty' }, 'The city data is being prepared. Check back shortly.')); main.append(pageFoot()); return; }
+  const sel = citySel();
+  const byKey = Object.fromEntries(CITIES.cities.map(c => [c.key, c]));
+  const provs = [...new Set(CITIES.cities.map(c => c.province))];
+  const picker = (i, label) => h('label', { class: 'cpick' }, h('span', { class: 'ref' }, label),
+    h('select', { class: 'sel', onchange: e => { const s = sel.slice(); s[i] = e.target.value; setCitySel(i === 0 ? s : s.filter(Boolean)); } },
+      i ? h('option', { value: '', selected: !sel[i] }, 'None') : null,
+      provs.map(p => h('optgroup', { label: p }, CITIES.cities.filter(c => c.province === p).map(c => h('option', { value: c.key, selected: sel[i] === c.key }, c.name))))));
+  main.append(h('div', { class: 'panel cpicks' }, picker(0, 'City'), picker(1, 'Compare with'), sel[1] ? picker(2, 'And') : null));
+  // at a glance: one column per chosen area, plus Canada
+  const cols = [...sel.map(k => byKey[k]), CITIES.canada];
+  const S = cols.map(cityStats);
+  const first = S.find(x => x.pop) || {};
+  const rowsDef = [
+    ['Population', x => fmt(x.pop, '', 'full'), `July 1, ${first.popYear || ''}`],
+    ['Growth over five years', x => x.growth == null ? '–' : (x.growth >= 0 ? '+' : '') + fmt(x.growth, '%'), `${first.growthFrom || ''} to ${first.popYear || ''}`],
+    ['Median age', x => x.age == null ? '–' : x.age.toFixed(1), ''],
+    ['Aged 65 and older', x => fmt(x.senior, '%'), ''],
+    ['Unemployment rate', x => fmt(x.unemp, '%'), first.unempMonth || ''],
+    ['Median household income', x => fmt(x.income, '$'), '2020'],
+    ['Drive to work', x => fmt(x.car, '%'), '2021 Census'],
+    ['Take public transit', x => fmt(x.transit, '%'), '2021 Census'],
+    ['Average commute', x => x.mins == null ? '–' : x.mins.toFixed(1) + ' min', 'One way'],
+    ['Electric share of new vehicles', x => fmt(x.ev, '%'), 'Past four quarters'],
+    ['Prices, change from a year earlier', x => x.cpi == null ? '–' : (x.cpi >= 0 ? '+' : '') + fmt(x.cpi, '%'), 'Large cities only'],
+  ];
+  main.append(h('section', { class: 'panel' }, h('h2', {}, 'At a glance'),
+    h('div', { class: 'tablewrap' }, h('table', { class: 'ctable' },
+      h('thead', {}, h('tr', {}, h('th', { scope: 'col' }, ''), cols.map(c => h('th', { scope: 'col' }, cityName(c), c.province ? h('span', { class: 'ref' }, c.province) : null)))),
+      h('tbody', {}, rowsDef.map(([l, f, sub]) => h('tr', {}, h('th', { scope: 'row' }, l, sub ? h('span', { class: 'ref' }, sub) : null), S.map(x => h('td', {}, f(x)))))))),
+    h('p', { class: 'cnote' }, '– means Statistics Canada doesn’t publish this for the area.')));
+  if (SAMPLE) main.append(h('div', { class: 'chips' }, h('button', { type: 'button', class: 'qchip', onclick: () => openDrawer({ ask: `What stands out about ${cols.slice(0, -1).map(cityName).join(' and ')} for an auto care business, compared with Canada? Use the city data and connect it to our research where it helps.` }) }, `Ask about ${cols.length > 2 ? 'these cities' : cityName(cols[0])}`)));
+  main.append(h('h2', { class: 'sec-h' }, 'Compare'));
+  for (const ds of cityCompare(sel.map(k => byKey[k]))) main.append(card(ds));
+  main.append(h('h2', { class: 'sec-h' }, 'All metro areas'));
+  main.append(h('p', { class: 'cnote' }, `${cityName(byKey[sel[0]])} is highlighted.`));
+  for (const ds of DS.filter(d => d.topic === 'cities')) {
+    ds.highlight = byKey[sel[0]].name;
+    const i = ds.cats.indexOf(ds.highlight), v = i < 0 ? null : ds.series[0].vals[i];
+    ds.insight = i < 0 ? `<strong>Not published for ${esc(ds.highlight)}.</strong>` : `<strong>${esc(ds.highlight)}: ${fmt(v, ds.unit, 'full')}${ds.unit === 'minutes' ? ' minutes' : ''}, ${i ? ordinal(i + 1) + ' highest' : 'the highest'} of ${ds.cats.length}</strong>` + (ds.canada != null ? ` · Canada: ${fmt(ds.canada, ds.unit, 'full')}` : '');
+    main.append(card(ds));
+  }
+  if (CITIES.built) main.append(h('p', { class: 'cnote' }, `City data last updated ${fmtDay(CITIES.built)}.`));
+  main.append(pageFoot());
+}
+const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
+
 function pageFoot() {
   const f = h('footer', { class: 'pagefoot' });
-  const src = current === 'macro' ? 'macro' : current.startsWith('r:') ? 'report' : current === 'home' ? 'all' : 'outlook';
+  const src = current === 'macro' || current === 'cities' ? 'macro' : current.startsWith('r:') ? 'report' : current === 'home' ? 'all' : 'outlook';
   if (src === 'outlook' || src === 'all') f.append(
     h('span', {}, 'Outlook Study: © 2024 AIA Canada. Data tool prepared with Ernst & Young LLP. Figures rely on unaudited data from proprietary and public sources and may be revised. AIA Canada and EY make no warranty as to accuracy or completeness.'),
     h('span', {}, 'S&P Global Mobility materials are the copyrighted property of S&P Global Mobility, represent its data and opinions as of original publication, and should not be used for financial or investment purposes. Replacement rates © IMR Inc. All rights reserved.'));

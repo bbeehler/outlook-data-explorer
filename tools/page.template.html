@@ -320,6 +320,7 @@ function fmt(v, unit, mode = 'short') {
     case "'000": return v.toFixed(1) + 'K';
     case "'000 vehicles": return full ? Math.round(v * 1000).toLocaleString('en-CA') : compact(v * 1000);
     case 'per 1,000': return v.toFixed(1);
+    case 'years': case 'minutes': return v.toFixed(1);
     case 'per vehicle per year': return v.toFixed(3);
     default: return full ? Math.round(v).toLocaleString('en-CA') : compact(v);
   }
@@ -458,8 +459,8 @@ function drawChart(canvas, ds, R, opts = {}) {
   if (['ev-penetration', 'r2r-opinions', 'intl-core'].includes(ds.id)) valAxis.max = 1;
   const catAxis = {
     stacked, grid: { display: false }, border: { color: css('--line') },
-    ticks: { color: ink, autoSkip: true, maxRotation: 0, autoSkipPadding: 10,
-      callback: function (v) { const l = this.getLabelForValue(v); const max = horiz ? 34 : 14; return String(l).length > max ? String(l).slice(0, max - 1) + '…' : l; } },
+    ticks: { color: ink, autoSkip: !(horiz && R.cats.length <= 45), maxRotation: 0, autoSkipPadding: 10, font: horiz && R.cats.length > 30 ? { size: 11 } : undefined,
+      callback: function (v) { const l = this.getLabelForValue(v); const max = horiz ? (innerWidth < 500 ? 24 : 34) : 14; return String(l).length > max ? String(l).slice(0, max - 1) + '…' : l; } },
   };
   const cfg = {
     type: line ? 'line' : 'bar',

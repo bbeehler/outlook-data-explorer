@@ -167,3 +167,18 @@ body.is-gated .mast-link { display: none; }
 @media (max-width: 1099px) { .brand .eyebrow { display: none; } .brand .name { white-space: nowrap; } }
 @media (max-width: 900px) { .mast-link { padding: 0 10px; } .mast-link .lbl, .mast-link svg.ext { display: none; } .menu-btn .lbl { display: none; } .menu-btn { padding: 8px 10px; } }
 @media (max-width: 640px) { .mast-in { gap: 8px; } .pbtn .chev { display: none; } .brand .name { font-size: 17px; } }
+
+/* Cities */
+.panel.cpicks { flex-direction: row; } .cpicks { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-end; }
+.cpick { display: flex; flex-direction: column; gap: 4px; min-width: 180px; flex: 1 1 180px; max-width: 320px; }
+.cpick .sel { width: 100%; }
+.tablewrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.ctable { border-collapse: collapse; width: 100%; font-size: 14px; }
+.ctable th, .ctable td { padding: 8px 10px; border-bottom: 1px solid var(--line-soft); text-align: right; vertical-align: top; }
+.ctable thead th { font-weight: 700; color: var(--ink); white-space: nowrap; }
+.ctable th[scope="row"] { text-align: left; font-weight: 600; color: var(--ink); }
+.ctable .ref { display: block; font-weight: 400; margin-top: 2px; }
+.ctable td { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ctable thead th:last-child, .ctable td:last-child { color: var(--ink-2); }
+.cnote { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
+@media (max-width: 560px) { .ctable { font-size: 13px; } .ctable th, .ctable td { padding: 7px 6px; } .cpick { max-width: none; } }
