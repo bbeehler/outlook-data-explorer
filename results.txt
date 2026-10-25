@@ -1,0 +1,75 @@
+webkit-desktop macro start {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":4,"ink":17740}
+webkit-desktop macro legend 1 off +150ms {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":17814}
+webkit-desktop macro legend 1 off +1.6s {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":18070}
+webkit-desktop macro legend 1 back on {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":4,"ink":17740}
+webkit-desktop macro option off, then click elsewhere on page {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":15468}
+webkit-desktop macro option off, then window loses and regains focus {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":15468}
+webkit-desktop macro option off, then scroll away and back {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":15468}
+webkit-desktop macro option off, then click the chart title {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":15468}
+webkit-desktop macro option off, then hover over the chart {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":15468}
+webkit-desktop macro option off, then click inside the chart {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":15468}
+webkit-desktop macro after Table then Chart {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":4,"ink":17740}
+webkit-desktop cities start {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":2,"ink":11414}
+webkit-desktop cities legend 1 off +150ms {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":9027}
+webkit-desktop cities legend 1 off +1.6s {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":9099}
+webkit-desktop cities legend 1 back on {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":2,"ink":11414}
+webkit-desktop cities option off, then click elsewhere on page {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":9146}
+webkit-desktop cities option off, then window loses and regains focus {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":9146}
+webkit-desktop cities option off, then scroll away and back {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":9146}
+webkit-desktop cities option off, then click the chart title {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":9146}
+webkit-desktop cities option off, then hover over the chart {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":9146}
+webkit-desktop cities option off, then click inside the chart {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":9146}
+webkit-desktop cities after Table then Chart {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":2,"ink":11414}
+webkit-desktop r:test-report~s1 start {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":29570}
+webkit-desktop r:test-report~s1 after Table then Chart {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":26017}
+webkit-desktop errors []
+webkit-iphone macro start {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":4,"ink":7315}
+webkit-iphone macro legend 1 off +150ms {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":3,"ink":7313}
+webkit-iphone macro legend 1 off +1.6s {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":3,"ink":7645}
+webkit-iphone macro legend 1 back on {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":4,"ink":7315}
+webkit-iphone macro option off, then click elsewhere on page {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":3,"ink":6502}
+webkit-iphone macro option off, then window loses and regains focus {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":3,"ink":6502}
+webkit-iphone macro option off, then scroll away and back {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":3,"ink":6502}
+webkit-iphone macro option off, then click the chart title {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":3,"ink":6502}
+webkit-iphone macro option off, then hover over the chart {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":3,"ink":25349}
+webkit-iphone macro option off, then click inside the chart {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":3,"ink":25349}
+webkit-iphone macro after Table then Chart {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":4,"ink":7315}
+webkit-iphone cities start {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":2,"ink":4777}
+webkit-iphone cities legend 1 off +150ms {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":1,"ink":3802}
+webkit-iphone cities legend 1 off +1.6s {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":1,"ink":3825}
+webkit-iphone cities legend 1 back on {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":2,"ink":4777}
+webkit-iphone cities option off, then click elsewhere on page {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":1,"ink":3878}
+webkit-iphone cities option off, then window loses and regains focus {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":1,"ink":3878}
+webkit-iphone cities option off, then scroll away and back {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":1,"ink":3878}
+webkit-iphone cities option off, then click the chart title {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":1,"ink":3878}
+webkit-iphone cities option off, then hover over the chart {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":1,"ink":9675}
+webkit-iphone cities option off, then click inside the chart {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":1,"ink":9675}
+webkit-iphone cities after Table then Chart {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":2,"ink":4777}
+webkit-iphone r:test-report~s1 start {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":1,"ink":19848}
+webkit-iphone r:test-report~s1 after Table then Chart {"drawn":true,"w":628,"h":560,"cssW":314,"cssH":280,"datasets":1,"ink":17041}
+webkit-iphone errors []
+chromium-desktop macro start {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":4,"ink":16965}
+chromium-desktop macro legend 1 off +150ms {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":17231}
+chromium-desktop macro legend 1 off +1.6s {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":17357}
+chromium-desktop macro legend 1 back on {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":4,"ink":16965}
+chromium-desktop macro option off, then click elsewhere on page {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":14760}
+chromium-desktop macro option off, then window loses and regains focus {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":14760}
+chromium-desktop macro option off, then scroll away and back {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":14760}
+chromium-desktop macro option off, then click the chart title {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":14760}
+chromium-desktop macro option off, then hover over the chart {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":14760}
+chromium-desktop macro option off, then click inside the chart {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":3,"ink":14760}
+chromium-desktop macro after Table then Chart {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":4,"ink":16965}
+chromium-desktop cities start {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":2,"ink":10953}
+chromium-desktop cities legend 1 off +150ms {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":8737}
+chromium-desktop cities legend 1 off +1.6s {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":8714}
+chromium-desktop cities legend 1 back on {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":2,"ink":10953}
+chromium-desktop cities option off, then click elsewhere on page {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":8779}
+chromium-desktop cities option off, then window loses and regains focus {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":8779}
+chromium-desktop cities option off, then scroll away and back {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":8779}
+chromium-desktop cities option off, then click the chart title {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":8779}
+chromium-desktop cities option off, then hover over the chart {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":8779}
+chromium-desktop cities option off, then click inside the chart {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":8779}
+chromium-desktop cities after Table then Chart {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":2,"ink":10953}
+chromium-desktop r:test-report~s1 start {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":25283}
+chromium-desktop r:test-report~s1 after Table then Chart {"drawn":true,"w":1912,"h":640,"cssW":956,"cssH":320,"datasets":1,"ink":25283}
+chromium-desktop errors ["Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently","Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently","Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently","Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently"]
