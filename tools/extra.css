@@ -156,3 +156,14 @@ details.howto[open] > summary { margin-bottom: 12px; }
 .cv-fail { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 16px; margin: 0; font-size: 14px; color: var(--muted); background: var(--bg); }
 .rep-store { margin: -8px 0 0; font-size: 14px; color: var(--ink-2); }
 .rep-store a { color: var(--accent-ink); font-weight: 600; }
+/* top bar link to aiacanada.com/reports */
+.mast-link { display: inline-flex; align-items: center; gap: 7px; color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,.35); padding: 0 12px; min-height: 40px; font-size: 14px; font-weight: 600; white-space: nowrap; flex: none; }
+.mast-link:hover { background: rgba(255,255,255,.08); }
+.mast-link svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.mast-link svg.ext { width: 13px; height: 13px; opacity: .8; }
+body.is-gated .mast-link { display: none; }
+@media (max-width: 1099px) { .mast-link { margin-left: auto; } .mast-in > .who { margin-left: 0; } }
+@media (max-width: 640px) { .mast-link { padding: 0 10px; } .mast-link .lbl, .mast-link svg.ext { display: none; } }
+@media (max-width: 1099px) { .brand .eyebrow { display: none; } .brand .name { white-space: nowrap; } }
+@media (max-width: 900px) { .mast-link { padding: 0 10px; } .mast-link .lbl, .mast-link svg.ext { display: none; } .menu-btn .lbl { display: none; } .menu-btn { padding: 8px 10px; } }
+@media (max-width: 640px) { .mast-in { gap: 8px; } .pbtn .chev { display: none; } .brand .name { font-size: 17px; } }
