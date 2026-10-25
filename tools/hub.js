@@ -89,7 +89,8 @@ function render() {
     items.push(h('div', { class: 'rgroup' }, 'All reports'));
     for (const r of list) items.push(railButton({ ...TOPICS.find(t => t.id === r.overview), name: r.short }, null, r.charts));
   }
-  items.push(h('div', { class: 'sep' }), h('a', { class: 'raillink', href: 'https://outlook.aiacanada.com/ontario/' }, h('span', {}, 'Ontario vehicles'), h('span', { class: 'count' }, 'Open data')));
+  items.push(h('div', { class: 'sep' }), h('a', { class: 'raillink', href: 'https://outlook.aiacanada.com/ontario/' }, h('span', {}, 'Ontario vehicles'), h('span', { class: 'count' }, 'Open data')),
+    h('a', { class: 'raillink', href: 'https://www.aiacanada.com/reports/', target: '_blank', rel: 'noopener', title: 'Opens aiacanada.com/reports in a new tab' }, h('span', {}, 'All AIA Canada reports'), h('span', { class: 'count', 'aria-hidden': 'true' }, '\u2197')));
   rail.replaceChildren(...items);
   renderProfile();
   const main = $('#main');
@@ -163,6 +164,7 @@ function renderHome(main) {
       step('6', 'Search everything', 'Type a topic such as repair prices, EV owners or technicians in the search box to find matching charts in every report.'))));
   // reports
   main.append(h('h2', { class: 'sec-h' }, `Reports in the hub (${list.length})`));
+  main.append(h('p', { class: 'rep-store' }, 'Full reports and executive summaries are available from ', h('a', { href: 'https://www.aiacanada.com/reports/', target: '_blank', rel: 'noopener' }, 'aiacanada.com/reports'), '.'));
   main.append(h('div', { class: 'topics replist' }, list.map(r => h('button', { type: 'button', class: 'tcard rcard', onclick: () => go(r.overview) },
     h('span', { class: 'ref' }, r.meta), h('b', {}, r.title),
     h('span', {}, (r.summary || '').length > 200 ? r.summary.slice(0, 197) + '\u2026' : r.summary),
