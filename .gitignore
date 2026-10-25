@@ -3,5 +3,6 @@
 *.xlsm
 data.json
 !ontario/data.json
+!economy/data.json
 load*.sql
 x/

@@ -1,0 +1,29 @@
+# Keeps the Research Hub's Economy section current: pulls Statistics Canada (Web Data Service) and Bank of Canada
+# (Valet) series with tools/economy_build.py and commits economy/data.json when the numbers change.
+# Runs on the 12th of each month (after most monthly releases), on demand, and when the builder changes.
+name: Economy data
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/economy-data.yml', 'tools/economy_build.py']
+  workflow_dispatch:
+  schedule:
+    - cron: '41 10 12 * *'
+    - cron: '41 10 28 * *'
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build economy/data.json
+        run: python3 tools/economy_build.py economy/data.json
+      - name: Commit if changed
+        run: |
+          git add -N economy/data.json || true
+          if git diff --quiet -- economy/data.json; then echo "No change"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git pull -q --rebase
+          git add economy/data.json && git commit -m "Update economy data" && git push
