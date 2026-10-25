@@ -71,7 +71,7 @@ function railReport(t) {
 }
 function render() {
   RSEQ++;
-  if (typeof lazyIO !== 'undefined' && lazyIO) lazyIO.disconnect();
+  if (typeof lazyIO !== 'undefined' && lazyIO) { lazyIO.disconnect(); freeIO.disconnect(); }
   const rail = $('#rail');
   const pick = currentReport();
   const list = reportList();
@@ -631,20 +631,34 @@ document.addEventListener('click', e => { if (!$('#profileMenu').hidden && !e.ta
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#profileMenu').hidden) closeProfile(true); });
 $('#signOut').addEventListener('click', () => closeProfile());
 
-/* ---------- lazy charts: only charts near the screen exist; ones scrolled far away are freed ---------- */
+/* ---------- lazy charts: draw well before a chart scrolls into view, free it only when it is far away ---------- */
 const LAZY = new WeakMap();
-const lazyIO = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+const lazyIO = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {   // draws
   for (const e of entries) {
     const el = e.target, fn = LAZY.get(el), cv = el.querySelector('canvas');
     if (!fn || !cv) { lazyIO.unobserve(el); continue; }
     if (!el.isConnected) { if (el.dataset.seen) lazyIO.unobserve(el); continue; } // not on the page yet, or removed
     el.dataset.seen = '1';
-    const ch = CHARTS.get(cv);
-    if (e.isIntersecting) { if (!ch) fn(); }
-    else if (ch) { ch.destroy(); CHARTS.delete(cv); }
+    if (e.isIntersecting && !CHARTS.get(cv)) fn();
   }
-}, { rootMargin: '800px 0px' }) : null;
+}, { rootMargin: '1500px 0px' }) : null;
+const freeIO = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {   // frees far-away charts
+  for (const e of entries) {
+    const el = e.target, cv = el.querySelector('canvas');
+    if (!el.isConnected) { if (el.dataset.seenFar) freeIO.unobserve(el); continue; }
+    el.dataset.seenFar = '1';
+    const ch = cv && CHARTS.get(cv);
+    if (!e.isIntersecting && ch) { ch.destroy(); CHARTS.delete(cv); }
+  }
+}, { rootMargin: '5000px 0px' }) : null;
 function lazyChart(el, fn) {
   if (!lazyIO) return requestAnimationFrame(fn);
-  LAZY.set(el, fn); lazyIO.observe(el);
+  LAZY.set(el, fn); lazyIO.observe(el); freeIO.observe(el);
 }
+// iPhone Safari can wipe chart drawings when the tab goes to the background; redraw when the page is shown again
+function redrawCharts() {
+  for (const [cv, ch] of CHARTS) { if (!cv.isConnected) continue; try { ch.resize(); ch.update('none'); } catch { /* ignore */ } }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') setTimeout(redrawCharts, 150); });
+window.addEventListener('pageshow', () => setTimeout(redrawCharts, 150));
+window.addEventListener('focus', () => setTimeout(redrawCharts, 150));
