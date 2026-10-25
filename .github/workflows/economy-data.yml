@@ -25,5 +25,5 @@ jobs:
           if git diff --quiet -- economy/data.json; then echo "No change"; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
-          git pull -q --rebase
-          git add economy/data.json && git commit -m "Update economy data" && git push
+          git add economy/data.json && git commit -m "Update economy data"
+          git pull -q --rebase && git push

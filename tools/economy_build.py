@@ -194,7 +194,7 @@ def main():
                    "Bank of Canada, Valet API (series V39079, target for the overnight rate)", "Rate at the end of each month.")
 
     def fx():
-        s = OrderedDict([("US dollars per Canadian dollar", OrderedDict((k, round(1 / v, 4)) for k, v in monthly_mean(boc("FXUSDCAD", since)).items()))])
+        s = OrderedDict([("US cents per Canadian dollar", OrderedDict((k, round(100 / v, 2)) for k, v in monthly_mean(boc("FXUSDCAD", since)).items()))])
         cats, series = align(s, month_label, since)
         return fig("econ-cad-usd", "Canadian dollar in US cents", cats, series, "index", ["parts", "repair-prices"],
                    "Bank of Canada, Valet API (series FXUSDCAD, monthly average)", "Most replacement parts are priced in US dollars, so a weaker Canadian dollar tends to raise parts costs.")
