@@ -71,7 +71,7 @@ function railReport(t) {
 }
 function render() {
   RSEQ++;
-  if (typeof lazyIO !== 'undefined' && lazyIO) { lazyIO.disconnect(); freeIO.disconnect(); }
+  LAZY.clear();
   const rail = $('#rail');
   const pick = currentReport();
   const list = reportList();
@@ -633,29 +633,59 @@ document.addEventListener('click', e => { if (!$('#profileMenu').hidden && !e.ta
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#profileMenu').hidden) closeProfile(true); });
 $('#signOut').addEventListener('click', () => closeProfile());
 
-/* ---------- lazy charts: draw well before a chart scrolls into view, free it only when it is far away ---------- */
-const LAZY = new WeakMap();
-const lazyIO = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {   // draws
-  for (const e of entries) {
-    const el = e.target, fn = LAZY.get(el), cv = el.querySelector('canvas');
-    if (!fn || !cv) { lazyIO.unobserve(el); continue; }
-    if (!el.isConnected) { if (el.dataset.seen) lazyIO.unobserve(el); continue; } // not on the page yet, or removed
+/* ---------- lazy charts: on every scroll, draw charts near the screen and free ones far away ---------- */
+const LAZY = new Map();   // chart box -> draw function
+let lazyRaf = 0;
+function lazyChart(el, fn) { LAZY.set(el, fn); scheduleLazy(); }
+function scheduleLazy() { if (!lazyRaf) lazyRaf = requestAnimationFrame(runLazy); }
+function runLazy() {
+  lazyRaf = 0;
+  const H = innerHeight;
+  for (const [el, fn] of LAZY) {
+    const cv = el.querySelector('canvas');
+    if (!cv) { LAZY.delete(el); continue; }
+    if (!el.isConnected) { if (el.dataset.seen) LAZY.delete(el); continue; } // not on the page yet, or removed
     el.dataset.seen = '1';
-    if (e.isIntersecting && !CHARTS.get(cv)) fn();
+    const r = el.getBoundingClientRect();
+    if (!r.width) continue; // hidden
+    const ch = CHARTS.get(cv);
+    if (!ch && r.bottom > -1000 && r.top < H + 1000) { try { fn(); } catch (e) { hubLog('draw-error', el, { message: String(e && e.message || e) }); } }
+    else if (ch && (r.bottom < -4000 || r.top > H + 4000)) freeChart(cv);
   }
-}, { rootMargin: '1500px 0px' }) : null;
-const freeIO = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {   // frees far-away charts
-  for (const e of entries) {
-    const el = e.target, cv = el.querySelector('canvas');
-    if (!el.isConnected) { if (el.dataset.seenFar) freeIO.unobserve(el); continue; }
-    el.dataset.seenFar = '1';
-    const ch = cv && CHARTS.get(cv);
-    if (!e.isIntersecting && ch) freeChart(cv);
+}
+addEventListener('scroll', scheduleLazy, { passive: true });
+addEventListener('resize', scheduleLazy);
+// watchdog: a chart on screen that is still not drawn after a moment is redrawn, and the problem is logged
+setInterval(() => {
+  if (document.visibilityState !== 'visible') return;
+  const H = innerHeight;
+  for (const [el, fn] of LAZY) {
+    if (!el.isConnected) continue;
+    const r = el.getBoundingClientRect(); if (!r.width || r.bottom < 0 || r.top > H) continue;
+    const cv = el.querySelector('canvas'); if (!cv) continue;
+    const ch = CHARTS.get(cv);
+    const blank = !ch || !cv.width || !cv.height;
+    if (!blank) { delete el.dataset.blankSince; continue; }
+    const now = Date.now();
+    if (!el.dataset.blankSince) { el.dataset.blankSince = String(now); continue; }
+    if (now - Number(el.dataset.blankSince) < 1500) continue;
+    hubLog('blank-chart', el, { hadChart: !!ch, canvasW: cv.width, canvasH: cv.height, boxW: Math.round(r.width), boxH: Math.round(r.height), live: CHARTS.size });
+    delete el.dataset.blankSince;
+    if (ch) freeChart(cv);
+    try { fn(); } catch (e) { hubLog('draw-error', el, { message: String(e && e.message || e) }); }
   }
-}, { rootMargin: '5000px 0px' }) : null;
-function lazyChart(el, fn) {
-  if (!lazyIO) return requestAnimationFrame(fn);
-  LAZY.set(el, fn); lazyIO.observe(el); freeIO.observe(el);
+}, 1000);
+const HUB_LOGGED = new Set();
+function hubLog(event, el, details) {
+  try {
+    const card = el && el.closest && el.closest('article.card');
+    const figure = card ? card.id.replace(/^fig-/, '') : '';
+    const key = event + '|' + figure + '|' + current;
+    if (HUB_LOGGED.has(key) || HUB_LOGGED.size > 40) return; HUB_LOGGED.add(key);
+    console.warn('[Research Hub]', event, figure, details);
+    SB.from('hub_client_log').insert({ version: typeof HUB_VERSION !== 'undefined' ? HUB_VERSION : '', page: current, figure, event,
+      details: { ...details, ua: navigator.userAgent, dpr: devicePixelRatio, w: innerWidth, h: innerHeight } }).then(() => {}, () => {});
+  } catch { /* never break the page for logging */ }
 }
 // iPhone Safari can wipe chart drawings when the tab goes to the background; redraw when the page is shown again
 function redrawCharts() {
@@ -686,6 +716,7 @@ function ensureCanvas(cv) {
   if (!ctx) { for (const c of [...CHARTS.keys()]) if (c !== cv && off(c)) freeChart(c); try { ctx = cv.getContext('2d'); } catch { /* none */ } }
   if (ctx) { const f = cv.closest('.cv')?.querySelector('.cv-fail'); if (f) f.remove(); return true; }
   const box = cv.closest('.cv');
+  hubLog('no-canvas-memory', box || cv, { live: CHARTS.size });
   if (box && !box.querySelector('.cv-fail')) box.append(h('p', { class: 'cv-fail' }, 'This chart could not be drawn on this device right now. Tap Table to see the numbers, or reload the page.'));
   return false;
 }
