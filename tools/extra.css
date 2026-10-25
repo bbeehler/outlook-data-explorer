@@ -11,8 +11,23 @@
 .gate-err { color: var(--accent-ink); font-weight: 600; }
 .gate-muted { font-size: 13px; color: var(--muted) !important; }
 .who { display: flex; align-items: center; gap: 10px; font-size: 13px; color: rgba(255,255,255,.85); min-width: 0; }
-.who span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
-.who button { background: none; border: 1px solid rgba(255,255,255,.35); color: #fff; padding: 5px 10px; font-size: 13px; }
+.who { position: relative; }
+.pbtn { display: inline-flex; align-items: center; gap: 8px; background: none; border: 1px solid rgba(255,255,255,.35); color: #fff; padding: 5px 10px 5px 5px; max-width: 280px; min-height: 40px; }
+.pbtn:hover { background: rgba(255,255,255,.08); }
+.avatar { width: 30px; height: 30px; flex: none; display: grid; place-items: center; background: var(--mast-2); color: var(--navy); font-weight: 800; font-size: 12.5px; letter-spacing: .02em; }
+.pbtn-email { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; font-size: 13px; }
+.chev { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; }
+.pmenu { position: absolute; right: 0; top: calc(100% + 6px); min-width: 260px; max-width: calc(100vw - 24px); background: var(--surface); color: var(--ink); border: 1px solid var(--line); box-shadow: 0 12px 32px rgba(10, 20, 45, .22); z-index: 80; display: flex; flex-direction: column; padding: 6px 0; }
+.pm-head { display: flex; flex-direction: column; gap: 2px; padding: 8px 14px 10px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+.pm-head b { font-size: 14px; overflow-wrap: anywhere; }
+.pm-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.pm-sec { padding: 8px 14px 4px; }
+.pm-role { font-size: 12px; color: var(--accent-ink); font-weight: 700; }
+.pm-item { background: none; border: 0; text-align: left; padding: 0 14px; min-height: 44px; font-size: 15px; color: var(--ink); border-left: 3px solid transparent; }
+.pm-item:hover, .pm-item:focus-visible { background: var(--chip); }
+.pm-item[aria-current="true"] { border-left-color: var(--accent); font-weight: 700; }
+#pmAdmin { display: flex; flex-direction: column; }
+#pmAdmin:not(:empty) { border-bottom: 1px solid var(--line); padding-bottom: 4px; margin-bottom: 4px; }
 .bulk { border: 1px solid var(--line); background: var(--bg); padding: 10px; font: inherit; color: var(--ink); width: 100%; resize: vertical; }
 .panel td, .panel th { text-align: left; }
 .contact-line { display: flex; gap: 10px; align-items: center; font-weight: 700; font-size: 17px; }
@@ -72,11 +87,13 @@ body.is-gated .navpanel, body.is-gated .menu-btn { display: none !important; }
 @media (max-width: 1099px) {
   .wrap { grid-template-columns: minmax(0, 1fr); }
   .menu-btn { display: inline-flex; }
-  .mast .who { display: none; }
+  .pbtn-email { display: none; }
+  .pbtn { padding: 5px; }
+  .mast-in > .who { margin-left: auto; }
   .mast-in { flex-wrap: nowrap; }
   .mast .search { flex: 1 1 160px; min-width: 0; max-width: 420px; }
   .brand { margin-right: 0; flex: 0 1 auto; min-width: 0; }
-  .mast-in > .btn-ask { margin-left: auto; flex: none; }
+  .mast-in > .btn-ask { flex: none; }
   .navpanel { position: fixed; top: 0; left: 0; bottom: 0; width: min(340px, 88vw); max-height: none; z-index: 70; background: var(--surface);
     border-right: 1px solid var(--line); box-shadow: 12px 0 40px rgba(10, 20, 45, .2); display: flex; flex-direction: column;
     padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
@@ -92,14 +109,12 @@ body.is-gated .navpanel, body.is-gated .menu-btn { display: none !important; }
   .navpanel .rail { padding: 6px 8px 12px; gap: 0; }
   .navpanel .rail button, .navpanel .rail a.raillink { min-height: 44px; align-items: center; }
   .rail .rname { display: block; -webkit-line-clamp: unset; }
-  .nav-acct { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
-  .nav-acct span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .navpanel { transition: none !important; } }
 @media (max-width: 640px) {
   .mast-in { gap: 10px; padding-block: 8px; }
   .mast .search { display: none; }
-  .brand .eyebrow { font-size: 10.5px; }
+  .brand .eyebrow { display: none; }
   .brand .name { font-size: 18px; }
   .menu-btn { padding: 8px 10px; }
   .menu-btn .lbl, #askTop .lbl { display: none; }

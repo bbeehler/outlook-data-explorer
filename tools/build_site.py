@@ -13,7 +13,7 @@ let BYID = {};""")
 rep("  const K = DATA.kpi;\n","")
 rep('<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>',
  '<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>\n<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>')
-rep("""    <button class="btn-ask" id="askTop" hidden>""","""    <div class="who" id="who" hidden><span id="whoEmail"></span><button type="button" id="signOut">Sign out</button></div>
+rep("""    <button class="btn-ask" id="askTop" hidden>""","""    <div class="who" id="who" hidden><button type="button" class="pbtn" id="profileBtn" aria-haspopup="true" aria-expanded="false" aria-controls="profileMenu" aria-label="Your account"><span class="avatar" id="avatar" aria-hidden="true"></span><span class="pbtn-email" id="whoEmail"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="pmenu" id="profileMenu" hidden><div class="pm-head"><span class="pm-label">Signed in as</span><b id="pmEmail"></b><span class="pm-role" id="pmRole"></span></div><div id="pmAdmin"></div><button type="button" class="pm-item" id="signOut">Sign out</button></div></div>
     <button class="btn-ask" id="askTop" hidden>""")
 rep("""  { id: 'defs', name: 'Definitions', blurb: 'What counts as the auto care sector, and the vehicle types used in this study.' },""",
 """  { id: 'defs', name: 'Definitions', blurb: 'What counts as the auto care sector, and the vehicle types used in this study.' },
@@ -62,7 +62,6 @@ rep('<nav class="rail" id="rail" aria-label="Topics"></nav>', '''<div class="nav
     <div class="nav-head"><b>Research Hub</b><button type="button" class="act" id="navClose">Close</button></div>
     <label class="nav-search" for="q2"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q2" type="search" placeholder="Search reports and data" autocomplete="off"></label>
     <nav class="rail" id="rail" aria-label="Sections"></nav>
-    <div class="nav-acct"><span id="navEmail"></span><button type="button" class="act" id="navSignOut">Sign out</button></div>
   </div>
   <div class="scrim" id="navScrim" hidden></div>''')
 for line in ["  .rail { position: static; flex-direction: row; overflow-x: auto; gap: 6px; padding-bottom: 4px; }\n",

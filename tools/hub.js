@@ -61,9 +61,8 @@ function render() {
     h('div', { class: 'rgroup' }, 'Outlook Study 2025'), ...grp('outlook').map(railButton),
     h('div', { class: 'rgroup' }, 'Economy'), ...grp('economy').map(railButton),
     h('a', { class: 'raillink', href: 'https://outlook.aiacanada.com/ontario/' }, h('span', {}, 'Ontario vehicles'), h('span', { class: 'count' }, 'Open data')),
-    IS_ADMIN ? h('div', { class: 'rgroup' }, 'Admin') : null, ...(IS_ADMIN ? grp('admin').map(railButton) : []),
     h('div', { class: 'sep' }), h('div', { class: 'small' }, `${REPORTS.length ? `${REPORTS.length} research report${REPORTS.length === 1 ? '' : 's'}, the` : 'The'} 2025 Outlook Study and ${(ECON && ECON.datasets || []).length} economic indicators.`)].filter(Boolean));
-  $('#navEmail').textContent = $('#whoEmail').textContent;
+  renderProfile();
   const main = $('#main');
   for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
   main.replaceChildren();
@@ -449,10 +448,28 @@ function closeNav(focusBtn) {
 $('#menuBtn').addEventListener('click', () => document.body.classList.contains('nav-open') ? closeNav(true) : openNav());
 $('#navClose').addEventListener('click', () => closeNav(true));
 $('#navScrim').addEventListener('click', () => closeNav(true));
-$('#navSignOut').addEventListener('click', () => { closeNav(); signOut(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('nav-open')) closeNav(true); });
 NAV_MQ.addEventListener('change', () => { if (!NAV_MQ.matches) closeNav(); });
 let q2t;
 $('#q2').addEventListener('input', () => { $('#q').value = $('#q2').value; clearTimeout(q2t); q2t = setTimeout(render, 250); });
 $('#q2').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); closeNav(); render(); window.scrollTo({ top: 0 }); } });
 $('#q').addEventListener('input', () => { $('#q2').value = $('#q').value; });
+
+/* ---------- profile menu (header): email, admin tools for admins, sign out ---------- */
+function renderProfile() {
+  const email = $('#whoEmail').textContent || '';
+  const name = email.split('@')[0].split(/[._-]+/).filter(Boolean);
+  $('#avatar').textContent = ((name[0] || '?')[0] + (name[1] ? name[1][0] : '')).toUpperCase();
+  $('#pmEmail').textContent = email;
+  $('#pmRole').textContent = IS_ADMIN ? 'Admin' : 'Member';
+  const adm = $('#pmAdmin');
+  adm.replaceChildren(...(IS_ADMIN ? [h('div', { class: 'pm-label pm-sec' }, 'Admin'),
+    ...TOPICS.filter(t => t.group === 'admin').map(t => h('button', { type: 'button', class: 'pm-item', role: 'menuitem', 'aria-current': String(current === t.id),
+      onclick: () => { closeProfile(); closeNav(); go(t.id); } }, t.name))] : []));
+}
+function openProfile() { $('#profileMenu').hidden = false; $('#profileBtn').setAttribute('aria-expanded', 'true'); closeNav(); setTimeout(() => { const f = $('#profileMenu .pm-item'); if (f) f.focus(); }, 30); }
+function closeProfile(focus) { if ($('#profileMenu').hidden) return; $('#profileMenu').hidden = true; $('#profileBtn').setAttribute('aria-expanded', 'false'); if (focus) $('#profileBtn').focus(); }
+$('#profileBtn').addEventListener('click', e => { e.stopPropagation(); $('#profileMenu').hidden ? openProfile() : closeProfile(); });
+document.addEventListener('click', e => { if (!$('#profileMenu').hidden && !e.target.closest('#who')) closeProfile(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#profileMenu').hidden) closeProfile(true); });
+$('#signOut').addEventListener('click', () => closeProfile());
