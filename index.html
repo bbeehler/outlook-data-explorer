@@ -602,7 +602,8 @@ function insight(ds) {
 const CHARTS = new Map();
 Chart.defaults.font.family = '"Sofia Sans", Arial, sans-serif';
 Chart.defaults.font.size = 12;
-Chart.defaults.animation = matchMedia('(prefers-reduced-motion: reduce)').matches ? false : { duration: 250 };
+// Change only the speed: replacing the whole animation object drops settings Chart.js needs and crashes it on the first hover.
+Chart.defaults.animation.duration = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 250;
 
 function drawChart(canvas, ds, R, opts = {}) {
   const u = opts.unit || ds.unit;
@@ -1086,7 +1087,7 @@ const rerender = () => { clearTimeout(rerender.t); rerender.t = setTimeout(rende
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerender);
 new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-const HUB_VERSION = '2026-10-25 18:35';
+const HUB_VERSION = '2026-10-25 18:53';
 /* ---------- AIA Canada Research Hub: sections, research reports, economy, links between sources, report manager ---------- */
 const BASE_TOPICS = TOPICS.filter(t => !['home', 'access'].includes(t.id)).map(t => ({ ...t, group: 'outlook' }));
 let REPORTS = [], ECON = null;

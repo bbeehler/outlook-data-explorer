@@ -50,11 +50,13 @@ const log = (...a) => { const s = a.map(x => typeof x === 'string' ? x : JSON.st
         await p.mouse.click(5, 300); await p.waitForTimeout(800); log(name, page, 'option off, then click elsewhere on page', await state(0));
         await p.evaluate(() => { window.dispatchEvent(new Event('blur')); document.dispatchEvent(new Event('visibilitychange')); window.dispatchEvent(new Event('focus')); }); await p.waitForTimeout(900);
         log(name, page, 'option off, then window loses and regains focus', await state(0));
-        await p.mouse.wheel(0, 900); await p.waitForTimeout(500); await p.mouse.wheel(0, -900); await p.waitForTimeout(900);
+        if (!opts.isMobile) { await p.mouse.wheel(0, 900); await p.waitForTimeout(500); await p.mouse.wheel(0, -900); } else { await p.evaluate(() => { scrollTo(0, 900); }); await p.waitForTimeout(500); await p.evaluate(() => scrollTo(0, 0)); } await p.waitForTimeout(900);
         log(name, page, 'option off, then scroll away and back', await state(0));
         await p.locator('article.card h2').first().click({ timeout: 3000 }).catch(() => {}); await p.waitForTimeout(600);
         log(name, page, 'option off, then click the chart title', await state(0));
         await p.locator('article.card .cv canvas').first().click({ position: { x: 50, y: 50 }, timeout: 3000 }).catch(() => {}); await p.waitForTimeout(600);
+        { const b = await p.locator('article.card .cv canvas').first().boundingBox(); if (b && !opts.isMobile) { await p.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await p.waitForTimeout(500); await p.mouse.move(5, 5); await p.waitForTimeout(500); } }
+        log(name, page, 'option off, then hover over the chart', await state(0));
         log(name, page, 'option off, then click inside the chart', await state(0));
         await lg.nth(1).click(); await p.waitForTimeout(600);
       }

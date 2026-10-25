@@ -430,7 +430,8 @@ function insight(ds) {
 const CHARTS = new Map();
 Chart.defaults.font.family = '"Sofia Sans", Arial, sans-serif';
 Chart.defaults.font.size = 12;
-Chart.defaults.animation = matchMedia('(prefers-reduced-motion: reduce)').matches ? false : { duration: 250 };
+// Change only the speed: replacing the whole animation object drops settings Chart.js needs and crashes it on the first hover.
+Chart.defaults.animation.duration = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 250;
 
 function drawChart(canvas, ds, R, opts = {}) {
   const u = opts.unit || ds.unit;
