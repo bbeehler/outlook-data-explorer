@@ -30,7 +30,7 @@ jobs:
                   keep.append(f"{c['productId']} | {t} | {c.get('cubeStartDate')} to {c.get('cubeEndDate')} | {'archived' if c.get('archived')=='1' else ''}")
           open("city_tables.txt", "w").write("\n".join(sorted(keep)))
           summary = []
-          for pid in [17100148, 17100135, 14100459, 14100380, 14100294, 14100385]:
+          for pid in [98100061, 98100457, 98100055]:
               try:
                   m = post("getCubeMetadata", [{"productId": pid}])[0]["object"]
                   json.dump(m, open(f"{pid}.json", "w"))
@@ -38,7 +38,7 @@ jobs:
                   for d in m.get("dimension", []):
                       mem = d.get("member", [])
                       summary.append(f"  dim {d['dimensionPositionId']} {d['dimensionNameEn']} ({len(mem)} members)")
-                      for x in mem[:80]: summary.append(f"    {x['memberId']} {x['memberNameEn']}")
+                      for x in mem[:120]: summary.append(f"    {x['memberId']} {x['memberNameEn']}")
               except Exception as e:
                   summary.append(f"## {pid} ERROR {e}")
           open("summary.txt", "w").write("\n".join(summary))
