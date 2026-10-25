@@ -241,6 +241,7 @@ function pageFoot() {
     h('span', {}, 'S&P Global Mobility materials are the copyrighted property of S&P Global Mobility, represent its data and opinions as of original publication, and should not be used for financial or investment purposes. Replacement rates © IMR Inc. All rights reserved.'));
   if (src === 'report' || src === 'all') f.append(h('span', {}, 'Research reports: © AIA Canada. Charts are built from the figures in each published report; see the full report for methodology and sample details. Member resource: do not redistribute.'));
   if (src === 'macro' || src === 'all') f.append(h('span', {}, `Economic data: Statistics Canada (Statistics Canada Open Licence) and the Bank of Canada. Adapted by AIA Canada; this does not constitute an endorsement by Statistics Canada or the Bank of Canada.${ECON && ECON.built ? ' Last updated ' + ECON.built + '.' : ''}`));
+  f.append(h('span', { class: 'ver' }, `Research Hub version ${typeof HUB_VERSION !== 'undefined' ? HUB_VERSION : ''}`));
   return f;
 }
 function relatedFor(ds) {
@@ -619,6 +620,7 @@ function renderProfile() {
   $('#avatar').textContent = ((name[0] || '?')[0] + (name[1] ? name[1][0] : '')).toUpperCase();
   $('#pmEmail').textContent = email;
   $('#pmRole').textContent = IS_ADMIN ? 'Admin' : 'Member';
+  $('#pmRole').title = typeof HUB_VERSION !== 'undefined' ? 'Version ' + HUB_VERSION : '';
   const adm = $('#pmAdmin');
   adm.replaceChildren(...(IS_ADMIN ? [h('div', { class: 'pm-label pm-sec' }, 'Admin'),
     ...TOPICS.filter(t => t.group === 'admin').map(t => h('button', { type: 'button', class: 'pm-item', role: 'menuitem', 'aria-current': String(current === t.id),

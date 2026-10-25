@@ -80,8 +80,13 @@ async function loadApp(session) {
   if (!data.length) { gate('denied', { email: session.user.email }); return; }
   DS = data.map(r => r.payload);
   BYID = Object.fromEntries(DS.map(d => [d.id, d]));
-  const adm = await SB.rpc('outlook_is_admin'); IS_ADMIN = adm.data === true;
-  try { await loadHub(); } catch (e) { console.warn('Research Hub content', e); }
+  // Check admin rights, load the hub content and check whether AI answers are on, all before the first draw,
+  // so the page is drawn once (drawing twice made charts appear and then blank out while the page rebuilt).
+  const aiCheck = askFn({ ping: true }).then(r => r.ok ? r.json() : null).then(j => !!(j && j.enabled)).catch(() => false);
+  const [adm] = await Promise.all([SB.rpc('outlook_is_admin'), loadHub().catch(e => console.warn('Research Hub content', e))]);
+  IS_ADMIN = adm.data === true;
+  const aiOn = await Promise.race([aiCheck, new Promise(ok => setTimeout(() => ok(null), 4000))]);
+  if (aiOn) { SAMPLE = remoteSample(); $('#askTop').hidden = false; }
   DOWNLOADS = { save: async ({ filename, data }) => {
     const url = URL.createObjectURL(new Blob([data], { type: 'text/csv;charset=utf-8' }));
     const a = h('a', { href: url, download: filename }); document.body.append(a); a.click(); a.remove();
@@ -91,10 +96,7 @@ async function loadApp(session) {
   if (TOPICS.some(t => t.id === INITIAL_HASH)) current = INITIAL_HASH;
   render();
   if (BYID[INITIAL_HASH]) jump(INITIAL_HASH);
-  try {
-    const r = await askFn({ ping: true });
-    if (r.ok && (await r.json()).enabled) { SAMPLE = remoteSample(); $('#askTop').hidden = false; render(); }
-  } catch {}
+  if (aiOn === null) aiCheck.then(on => { if (on) { SAMPLE = remoteSample(); $('#askTop').hidden = false; } }); // slow check: just show the button
 }
 
 async function askFn(body, signal) {

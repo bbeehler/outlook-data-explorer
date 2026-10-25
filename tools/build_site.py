@@ -83,8 +83,10 @@ rep("      responsive: true, maintainAspectRatio: false, indexAxis: horiz ? 'y' 
 rep("  for (const c of el.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }", "  for (const c of el.querySelectorAll('canvas')) freeChart(c);")
 rep("  for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }", "  for (const c of main.querySelectorAll('canvas')) freeChart(c);")
 rep("  const old = CHARTS.get(canvas); if (old) old.destroy();", "  const old = CHARTS.get(canvas); if (old) { old.destroy(); CHARTS.delete(canvas); }\n  if (!ensureCanvas(canvas)) return;")
+import datetime, zoneinfo
+VER = datetime.datetime.now(zoneinfo.ZoneInfo('America/Toronto')).strftime('%Y-%m-%d %H:%M')
 i=t.index("(function boot() {"); j=t.index("</script>", i)
-t=t[:i]+open('tools/hub.js').read()+"\n"+open('tools/boot_supabase.js').read()+"\n"+t[j:]
+t=t[:i]+f"const HUB_VERSION = '{VER}';\n"+open('tools/hub.js').read()+"\n"+open('tools/boot_supabase.js').read()+"\n"+t[j:]
 rep("@media (max-width: 960px) {",open('tools/extra.css').read()+"\n@media (max-width: 960px) {")
 head='''<!doctype html>
 <html lang="en-CA">
