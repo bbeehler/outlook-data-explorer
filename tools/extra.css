@@ -152,3 +152,5 @@ details.howto > summary::-webkit-details-marker { display: none; }
 details.howto > summary::after { content: "+"; font-size: 22px; font-weight: 700; color: var(--accent-ink); line-height: 1; }
 details.howto[open] > summary::after { content: "\2212"; }
 details.howto[open] > summary { margin-bottom: 12px; }
+.cv { position: relative; }
+.cv-fail { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 16px; margin: 0; font-size: 14px; color: var(--muted); background: var(--bg); }

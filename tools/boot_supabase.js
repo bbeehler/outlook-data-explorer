@@ -8,7 +8,7 @@ function gate(kind, info = {}) {
   document.body.classList.add('is-gated'); if (typeof closeNav === 'function') closeNav();
   $('#rail').hidden = true; $('#askTop').hidden = true; $('.search').hidden = true;
   const main = $('#main');
-  for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
+  for (const c of main.querySelectorAll('canvas')) { freeChart(c); }
   main.replaceChildren();
   const box = h('section', { class: 'gate', 'aria-live': 'polite' });
   if (kind === 'loading') {

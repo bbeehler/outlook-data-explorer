@@ -79,6 +79,10 @@ rep("""    viz.append(cv);
     lazyChart(cv, () => {
       const col = s.band;""")
 rep("      responsive: true, maintainAspectRatio: false, indexAxis: horiz ? 'y' : 'x',", "      responsive: true, maintainAspectRatio: false, devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2), indexAxis: horiz ? 'y' : 'x',")
+# ---- chart memory: free drawing memory on removal; check before drawing ----
+rep("  for (const c of el.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }", "  for (const c of el.querySelectorAll('canvas')) freeChart(c);")
+rep("  for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }", "  for (const c of main.querySelectorAll('canvas')) freeChart(c);")
+rep("  const old = CHARTS.get(canvas); if (old) old.destroy();", "  const old = CHARTS.get(canvas); if (old) { old.destroy(); CHARTS.delete(canvas); }\n  if (!ensureCanvas(canvas)) return;")
 i=t.index("(function boot() {"); j=t.index("</script>", i)
 t=t[:i]+open('tools/hub.js').read()+"\n"+open('tools/boot_supabase.js').read()+"\n"+t[j:]
 rep("@media (max-width: 960px) {",open('tools/extra.css').read()+"\n@media (max-width: 960px) {")

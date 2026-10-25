@@ -364,6 +364,8 @@ details.howto > summary::-webkit-details-marker { display: none; }
 details.howto > summary::after { content: "+"; font-size: 22px; font-weight: 700; color: var(--accent-ink); line-height: 1; }
 details.howto[open] > summary::after { content: "\2212"; }
 details.howto[open] > summary { margin-bottom: 12px; }
+.cv { position: relative; }
+.cv-fail { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 16px; margin: 0; font-size: 14px; color: var(--muted); background: var(--bg); }
 
 @media (max-width: 960px) {
   .wrap { grid-template-columns: minmax(0, 1fr); gap: 16px; }
@@ -654,7 +656,8 @@ function drawChart(canvas, ds, R, opts = {}) {
       },
     },
   };
-  const old = CHARTS.get(canvas); if (old) old.destroy();
+  const old = CHARTS.get(canvas); if (old) { old.destroy(); CHARTS.delete(canvas); }
+  if (!ensureCanvas(canvas)) return;
   CHARTS.set(canvas, new Chart(canvas, cfg));
 }
 
@@ -720,7 +723,7 @@ function card(ds) {
 }
 function paintCard(el, ds) {
   const s = st(ds);
-  for (const c of el.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
+  for (const c of el.querySelectorAll('canvas')) freeChart(c);
   el.replaceChildren();
   const ins = insight(ds);
   el.append(h('div', { class: 'card-h' },
@@ -889,7 +892,7 @@ function render() {
     h('a', { class: 'raillink', href: 'https://outlook.aiacanada.com/ontario/' }, h('span', {}, 'Ontario vehicles'), h('span', { class: 'count' }, 'Open data')),
     h('div', { class: 'sep' }), h('div', { class: 'small' }, `${Math.max(DS.length - 1, 0)} figures from the 2025 Outlook Study data tool. Data mostly 2019–2023, with forecasts to 2030.`));
   const main = $('#main');
-  for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
+  for (const c of main.querySelectorAll('canvas')) freeChart(c);
   main.replaceChildren();
   main.append(h('div', { class: 'banner', role: 'note' }, h('span', {}, h('b', {}, 'Member resource. '), 'Contains licensed S&P Global Mobility and IMR Inc. data. Do not redistribute outside AIA Canada membership. Figures are unaudited estimates; see the disclaimer at the bottom of the page.')));
   const q = $('#q').value.trim();
@@ -1178,7 +1181,7 @@ function render() {
   rail.replaceChildren(...items);
   renderProfile();
   const main = $('#main');
-  for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
+  for (const c of main.querySelectorAll('canvas')) { freeChart(c); }
   main.replaceChildren();
   const q = $('#q').value.trim();
   if (q) return renderSearch(main, q);
@@ -1589,7 +1592,7 @@ function adminFigure(fg, rep) {
   const ds = { ...fg.payload, topic: 'r:' + rep.slug, source: `AIA Canada, ${rep.title || 'research report'}` };
   const set = async (upd, okMsg) => { const { error } = await SB.from('hub_figures').update(upd).eq('id', fg.id); if (error) { toast('Could not save: ' + error.message); return false; } Object.assign(fg, upd); if (okMsg) toast(okMsg); if (rep.status === 'published') await refreshHub(); return true; };
   const draw = () => {
-    for (const c of wrap.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
+    for (const c of wrap.querySelectorAll('canvas')) { freeChart(c); }
     wrap.className = 'admfig' + (fg.hidden ? ' is-hidden' : '');
     const bar = h('div', { class: 'admbar' }, h('span', { class: 'ref' }, fg.page ? `Page ${fg.page}` : 'Page ?'),
       fg.confidence === 'high' ? h('span', { class: 'badge b-published' }, 'Checked') : h('span', { class: 'badge b-review' }, fg.confidence === 'low' ? 'Estimated values: check' : 'Some values read from the chart: check'),
@@ -1733,7 +1736,7 @@ const freeIO = 'IntersectionObserver' in window ? new IntersectionObserver(entri
     if (!el.isConnected) { if (el.dataset.seenFar) freeIO.unobserve(el); continue; }
     el.dataset.seenFar = '1';
     const ch = cv && CHARTS.get(cv);
-    if (!e.isIntersecting && ch) { ch.destroy(); CHARTS.delete(cv); }
+    if (!e.isIntersecting && ch) freeChart(cv);
   }
 }, { rootMargin: '5000px 0px' }) : null;
 function lazyChart(el, fn) {
@@ -1748,6 +1751,31 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 window.addEventListener('pageshow', () => setTimeout(redrawCharts, 150));
 window.addEventListener('focus', () => setTimeout(redrawCharts, 150));
 
+/* ---------- chart memory (iPhone Safari caps total canvas memory per page and frees it late) ---------- */
+const MAX_LIVE_CHARTS = 10;
+// Remove a chart and hand its drawing memory back straight away (setting the size to 0 frees it on iOS).
+function freeChart(c) {
+  const ch = CHARTS.get(c);
+  if (ch) { try { ch.destroy(); } catch { /* already gone */ } CHARTS.delete(c); }
+  try { c.width = 0; c.height = 0; } catch { /* ignore */ }
+}
+// Called before every chart is drawn: keeps at most MAX_LIVE_CHARTS alive (freeing the ones furthest from the screen),
+// and if the browser still refuses to give a drawing surface, shows a note instead of a blank box.
+function ensureCanvas(cv) {
+  const off = c => { const r = c.getBoundingClientRect(); return r.bottom < -300 || r.top > innerHeight + 300 || !c.isConnected; };
+  if (CHARTS.size >= MAX_LIVE_CHARTS) {
+    const far = [...CHARTS.keys()].filter(c => c !== cv && off(c))
+      .sort((a, b) => Math.abs(b.getBoundingClientRect().top) - Math.abs(a.getBoundingClientRect().top));
+    for (const c of far.slice(0, CHARTS.size - MAX_LIVE_CHARTS + 1)) freeChart(c);
+  }
+  let ctx = null; try { ctx = cv.getContext('2d'); } catch { /* none */ }
+  if (!ctx) { for (const c of [...CHARTS.keys()]) if (c !== cv && off(c)) freeChart(c); try { ctx = cv.getContext('2d'); } catch { /* none */ } }
+  if (ctx) { const f = cv.closest('.cv')?.querySelector('.cv-fail'); if (f) f.remove(); return true; }
+  const box = cv.closest('.cv');
+  if (box && !box.querySelector('.cv-fail')) box.append(h('p', { class: 'cv-fail' }, 'This chart could not be drawn on this device right now. Tap Table to see the numbers, or reload the page.'));
+  return false;
+}
+
 /* ---------- sign-in, data loading and access management (Supabase) ---------- */
 const SB = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
 let IS_ADMIN = false, LOADED_FOR = null;
@@ -1758,7 +1786,7 @@ function gate(kind, info = {}) {
   document.body.classList.add('is-gated'); if (typeof closeNav === 'function') closeNav();
   $('#rail').hidden = true; $('#askTop').hidden = true; $('.search').hidden = true;
   const main = $('#main');
-  for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
+  for (const c of main.querySelectorAll('canvas')) { freeChart(c); }
   main.replaceChildren();
   const box = h('section', { class: 'gate', 'aria-live': 'polite' });
   if (kind === 'loading') {

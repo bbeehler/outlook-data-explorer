@@ -93,7 +93,7 @@ function render() {
   rail.replaceChildren(...items);
   renderProfile();
   const main = $('#main');
-  for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
+  for (const c of main.querySelectorAll('canvas')) { freeChart(c); }
   main.replaceChildren();
   const q = $('#q').value.trim();
   if (q) return renderSearch(main, q);
@@ -504,7 +504,7 @@ function adminFigure(fg, rep) {
   const ds = { ...fg.payload, topic: 'r:' + rep.slug, source: `AIA Canada, ${rep.title || 'research report'}` };
   const set = async (upd, okMsg) => { const { error } = await SB.from('hub_figures').update(upd).eq('id', fg.id); if (error) { toast('Could not save: ' + error.message); return false; } Object.assign(fg, upd); if (okMsg) toast(okMsg); if (rep.status === 'published') await refreshHub(); return true; };
   const draw = () => {
-    for (const c of wrap.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
+    for (const c of wrap.querySelectorAll('canvas')) { freeChart(c); }
     wrap.className = 'admfig' + (fg.hidden ? ' is-hidden' : '');
     const bar = h('div', { class: 'admbar' }, h('span', { class: 'ref' }, fg.page ? `Page ${fg.page}` : 'Page ?'),
       fg.confidence === 'high' ? h('span', { class: 'badge b-published' }, 'Checked') : h('span', { class: 'badge b-review' }, fg.confidence === 'low' ? 'Estimated values: check' : 'Some values read from the chart: check'),
@@ -648,7 +648,7 @@ const freeIO = 'IntersectionObserver' in window ? new IntersectionObserver(entri
     if (!el.isConnected) { if (el.dataset.seenFar) freeIO.unobserve(el); continue; }
     el.dataset.seenFar = '1';
     const ch = cv && CHARTS.get(cv);
-    if (!e.isIntersecting && ch) { ch.destroy(); CHARTS.delete(cv); }
+    if (!e.isIntersecting && ch) freeChart(cv);
   }
 }, { rootMargin: '5000px 0px' }) : null;
 function lazyChart(el, fn) {
@@ -662,3 +662,28 @@ function redrawCharts() {
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') setTimeout(redrawCharts, 150); });
 window.addEventListener('pageshow', () => setTimeout(redrawCharts, 150));
 window.addEventListener('focus', () => setTimeout(redrawCharts, 150));
+
+/* ---------- chart memory (iPhone Safari caps total canvas memory per page and frees it late) ---------- */
+const MAX_LIVE_CHARTS = 10;
+// Remove a chart and hand its drawing memory back straight away (setting the size to 0 frees it on iOS).
+function freeChart(c) {
+  const ch = CHARTS.get(c);
+  if (ch) { try { ch.destroy(); } catch { /* already gone */ } CHARTS.delete(c); }
+  try { c.width = 0; c.height = 0; } catch { /* ignore */ }
+}
+// Called before every chart is drawn: keeps at most MAX_LIVE_CHARTS alive (freeing the ones furthest from the screen),
+// and if the browser still refuses to give a drawing surface, shows a note instead of a blank box.
+function ensureCanvas(cv) {
+  const off = c => { const r = c.getBoundingClientRect(); return r.bottom < -300 || r.top > innerHeight + 300 || !c.isConnected; };
+  if (CHARTS.size >= MAX_LIVE_CHARTS) {
+    const far = [...CHARTS.keys()].filter(c => c !== cv && off(c))
+      .sort((a, b) => Math.abs(b.getBoundingClientRect().top) - Math.abs(a.getBoundingClientRect().top));
+    for (const c of far.slice(0, CHARTS.size - MAX_LIVE_CHARTS + 1)) freeChart(c);
+  }
+  let ctx = null; try { ctx = cv.getContext('2d'); } catch { /* none */ }
+  if (!ctx) { for (const c of [...CHARTS.keys()]) if (c !== cv && off(c)) freeChart(c); try { ctx = cv.getContext('2d'); } catch { /* none */ } }
+  if (ctx) { const f = cv.closest('.cv')?.querySelector('.cv-fail'); if (f) f.remove(); return true; }
+  const box = cv.closest('.cv');
+  if (box && !box.querySelector('.cv-fail')) box.append(h('p', { class: 'cv-fail' }, 'This chart could not be drawn on this device right now. Tap Table to see the numbers, or reload the page.'));
+  return false;
+}
