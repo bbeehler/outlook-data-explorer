@@ -1,6 +1,12 @@
-# Outlook Data Explorer
+# AIA Canada Research Hub
 
-A web version of the AIA Canada Outlook Study 2025 data visualization tool, replacing the Excel workbook. It has all 61 figures in one place, plus year and province filters, table view, CSV download and optional "Ask the data" AI answers.
+AIA Canada's research in one place, for members. It brings together:
+- **Research reports** (Consumer Behaviour Series and future reports). Admins upload a PDF; Claude turns its charts and tables into interactive charts, and an admin checks and publishes them.
+- **The Outlook Study 2025**: all 61 figures from the old Excel Visualization Tool 3.0, with year and province filters.
+- **Economic indicators** from Statistics Canada and the Bank of Canada (prices, registrations, jobs, wages, rates), refreshed automatically.
+- **Links between sources**: each chart shows related data from the other sources, and "Ask the data" answers questions across all of it.
+
+Every chart has a table view, CSV download and copy buttons. This repo started as the Outlook Data Explorer; the name stays in some table and function names.
 
 **Live site:** https://outlook.aiacanada.com (the old bbeehler.github.io address forwards here)
 
@@ -14,6 +20,8 @@ A web version of the AIA Canada Outlook Study 2025 data visualization tool, repl
 | Nightly re-check | Edge function `outlook-member-sync`, run nightly by pg_cron | Re-checks registered members and removes anyone whose organisation's membership has lapsed. It never adds people. |
 | Who can sign in | Table `outlook_access` | Registered members, plus anyone an admin adds under **Manage access**. |
 | Sign-in | Supabase Auth email link (no passwords) | Uses the Data Portal's existing auth. |
+| Research reports | Tables `hub_reports`, `hub_figures`; private bucket `hub-reports`; edge function `hub-extract` | See "Adding a research report" below. Members see only published reports and never get the PDF. |
+| Economic indicators | `economy/data.json`, built by `tools/economy_build.py` | The "Economy data" GitHub Action refreshes it on the 12th and 28th of each month. Open data (Statistics Canada Open Licence; Bank of Canada). |
 | Ask the data | Edge function `outlook-ask` | Calls the Anthropic API with the key stored as a Supabase secret. 30 questions per person per hour, logged in `outlook_ai_log`. |
 
 ## One-time setup
@@ -28,6 +36,17 @@ A web version of the AIA Canada Outlook Study 2025 data visualization tool, repl
    - `OUTLOOK_AI_MODEL`: default `claude-sonnet-5-5`
    - `OUTLOOK_AI_HOURLY_LIMIT`: default `30`
    - `OUTLOOK_ALLOWED_ORIGINS`: only needed if the site moves to a new address. outlook.aiacanada.com and bbeehler.github.io are allowed by default.
+
+## Adding a research report
+1. Sign in as a Data Portal admin and open **Research reports** (under Admin).
+2. Choose the report PDF (or paste a link to it). Title, series, date and store link are optional: Claude reads them from the cover.
+3. Click **Upload and read** and keep the page open. Claude reads 4 pages at a time (about half a minute each) and saves every chart and table as a draft.
+4. Review: each chart shows its page number. Charts marked "Some values read from the chart" had no printed numbers, so compare them with the page, then click **Looks right** or **Edit** (change the title, takeaway, chart type, unit or the data itself). Hide or delete anything members don't need.
+5. Click **Publish to members**. The report becomes its own section with its key findings, charts, and connected economic data. **Unpublish** takes it down again.
+
+Members see the charts and findings, not the PDF, so the full report can still be sold. To show less, hide charts or leave a report unpublished.
+
+Settings (Supabase Edge Function secrets, all optional): `HUB_EXTRACT_MODEL` (default `claude-sonnet-5-5`), `HUB_PAGES_PER_CHUNK` (default 4; lower it for very dense reports). Uses the same `ANTHROPIC_API_KEY`.
 
 ## Giving people access
 Members register themselves. They get access when their contact record in Insightly has the same email address and is linked to a current member organisation. The contact shown to people who are turned away is `contactEmail` in `config.js`.
@@ -51,6 +70,9 @@ A separate, public page at https://outlook.aiacanada.com/ontario/ built from Ont
 - **Updates itself:** the "Ontario vehicle data" GitHub Action runs monthly. It downloads every file in the dataset, keeps the raw files on the `ontario-raw` branch, rebuilds `ontario/data.json` with `tools/ontario_build.py`, and commits only when the numbers change. Run it by hand from the Actions tab.
 - **Make and model names:** the Ministry publishes codes (TOYT, RV4). The names are mapped in `tools/ontario_build.py` (`MAKES`, `MODELS`). Add a model name there when a code becomes clear; codes without a name are shown as is.
 - **What "on the road" means:** passenger and commercial vehicles with fit-active status at December 31. The 2015 file is a stub and is skipped. The 2020–2023 dip reflects COVID-era sticker extensions and the 2022 end of sticker fees, as noted on the page.
+
+## Economic indicators
+`tools/economy_build.py` lists each series (Statistics Canada table and coordinate, or Bank of Canada series) and the topic tags that link it to research findings. To add an indicator, add a function there; the Action rebuilds the file. If one source fails, the rest still update and the error is listed in the file.
 
 ## Updating the data (next Outlook edition)
 1. Run `tools/charts.py` and `tools/extract.py` on the new workbook to produce `data.json`. That file is ignored by git; never commit it.

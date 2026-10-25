@@ -28,3 +28,37 @@
 .dir-contacts td { background: var(--bg); }
 .panel h3 { font-size: 15px; margin: 14px 0 6px; }
 .panel select.tsearch { width: auto; }
+/* Research Hub */
+.rail .rgroup { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; padding: 14px 12px 4px; }
+.rail .rname { overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.sec-h { font-size: 18px; font-weight: 800; margin-top: 6px; }
+.tcard .ref { font-size: 11.5px; }
+.kf { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; color: var(--ink-2); }
+.related { padding: 8px 18px 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.related > .ref { margin-right: 4px; }
+.related .rel { border: 1px solid var(--line); background: var(--bg); padding: 5px 10px; text-align: left; font-size: 13px; display: flex; flex-direction: column; max-width: 100%; }
+.related .rel:hover { border-color: var(--accent); }
+.related .rel .ref { font-size: 11px; }
+a.btn-ask { text-decoration: none; }
+.formgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; }
+.fl { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--ink-2); min-width: 0; }
+.fl > span { font-weight: 600; }
+.fl .tsearch, .fl input[type=file] { width: 100%; }
+.tsearch.wide { width: 100%; }
+.bulk.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+.prog { display: flex; flex-direction: column; gap: 6px; }
+.bar-out { height: 8px; background: var(--chip); }
+.bar-in { height: 100%; background: var(--accent); transition: width .3s; }
+.badge { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border: 1px solid var(--line); background: var(--bg); }
+.badge.b-published { border-color: #1baf7a; color: #0e7a54; }
+.badge.b-review, .badge.b-processing { border-color: var(--warn-ink); color: var(--warn-ink); background: var(--warn-bg); }
+.badge.b-archived, .badge.b-draft { color: var(--muted); }
+.admfig { display: flex; flex-direction: column; gap: 0; }
+.admfig.is-hidden .card { opacity: .55; }
+.admbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 10px; background: var(--chip); border: 1px solid var(--line); border-bottom: 0; }
+.editor .chips .fl { flex: 1 1 200px; }
+@media (max-width: 960px) {
+  .rail .rgroup { display: none; }
+  .formgrid { grid-template-columns: minmax(0, 1fr); }
+  .rail .rname { display: inline; }
+}

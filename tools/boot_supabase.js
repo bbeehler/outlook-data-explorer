@@ -11,7 +11,7 @@ function gate(kind, info = {}) {
   main.replaceChildren();
   const box = h('section', { class: 'gate', 'aria-live': 'polite' });
   if (kind === 'loading') {
-    box.append(h('p', { class: 'gate-muted' }, info.msg || 'Loading the Outlook data…'));
+    box.append(h('p', { class: 'gate-muted' }, info.msg || 'Loading the Research Hub…'));
   } else if (kind === 'signin') {
     const form = h('form', { class: 'gate-form' },
       h('label', { for: 'email' }, 'Work email'),
@@ -39,15 +39,15 @@ function gate(kind, info = {}) {
       gate('sent', { email });
     });
     box.append(h('span', { class: 'eyebrow' }, 'For AIA Canada members'),
-      h('h1', {}, 'Get access to the Outlook Data Explorer'),
+      h('h1', {}, 'Get access to the AIA Canada Research Hub'),
       h('p', {}, 'Enter the work email your company has on file with AIA Canada. We\u2019ll check it against our member records and email you a sign-in link. No password needed. Already registered? Use the same form to sign in.'),
       form, err,
       h('p', { class: 'gate-muted' }, `Questions about access? Contact ${CFG.contactEmail}.`));
   } else if (kind === 'notmember') {
-    const contact = h('a', { href: `mailto:${CFG.contactEmail}?subject=${encodeURIComponent('Outlook Data Explorer access')}&body=${encodeURIComponent(`Hello,\n\nI would like access to the Outlook Data Explorer. My work email is ${info.email}.\n\nCompany:\nName:\n`)}` }, CFG.contactEmail);
+    const contact = h('a', { href: `mailto:${CFG.contactEmail}?subject=${encodeURIComponent('Research Hub access')}&body=${encodeURIComponent(`Hello,\n\nI would like access to the AIA Canada Research Hub. My work email is ${info.email}.\n\nCompany:\nName:\n`)}` }, CFG.contactEmail);
     box.append(h('h1', {}, 'We couldn\u2019t confirm a current membership for this email'),
       h('p', {}, h('span', {}, 'We checked '), h('strong', {}, info.email), h('span', {}, ' against AIA Canada\u2019s member records and didn\u2019t find a current membership.')),
-      h('p', {}, 'The Outlook Data Explorer is a member benefit. If your company is a member, try the email address AIA Canada has on file for you. If you think this is a mistake, or you\u2019d like to become a member, contact:'),
+      h('p', {}, 'The Research Hub is a member benefit. If your company is a member, try the email address AIA Canada has on file for you. If you think this is a mistake, or you\u2019d like to become a member, contact:'),
       h('p', { class: 'contact-line' }, contact, h('button', { type: 'button', class: 'act', onclick: () => copyText(CFG.contactEmail, 'Email address copied.') }, 'Copy')),
       h('button', { type: 'button', class: 'act', onclick: () => gate('signin', { email: info.email }) }, 'Try a different email'));
   } else if (kind === 'sent') {
@@ -57,7 +57,7 @@ function gate(kind, info = {}) {
       h('button', { type: 'button', class: 'act', onclick: () => gate('signin', { email: info.email }) }, 'Use a different email'));
   } else if (kind === 'denied') {
     box.append(h('h1', {}, 'You’re signed in, but not on the access list yet'),
-      h('p', {}, h('span', {}, 'You’re signed in as '), h('strong', {}, info.email), h('span', {}, `. The Outlook data is limited to approved members and staff. Ask ${CFG.contactEmail} to add this address, then sign in again.`)),
+      h('p', {}, h('span', {}, 'You’re signed in as '), h('strong', {}, info.email), h('span', {}, `. The Research Hub is limited to approved members and staff. Ask ${CFG.contactEmail} to add this address, then sign in again.`)),
       h('button', { type: 'button', class: 'act', onclick: signOut }, 'Sign out'));
   } else if (kind === 'error') {
     box.append(h('h1', {}, 'The data could not be loaded'), h('p', {}, 'Check your connection and reload the page.'),
@@ -80,6 +80,7 @@ async function loadApp(session) {
   DS = data.map(r => r.payload);
   BYID = Object.fromEntries(DS.map(d => [d.id, d]));
   const adm = await SB.rpc('outlook_is_admin'); IS_ADMIN = adm.data === true;
+  try { await loadHub(); } catch (e) { console.warn('Research Hub content', e); }
   DOWNLOADS = { save: async ({ filename, data }) => {
     const url = URL.createObjectURL(new Blob([data], { type: 'text/csv;charset=utf-8' }));
     const a = h('a', { href: url, download: filename }); document.body.append(a); a.click(); a.remove();
@@ -132,7 +133,7 @@ function remoteSample() {
 /* ---------- access list (admins only) ---------- */
 async function renderAccess(main) {
   main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'Admin'), h('h1', {}, 'Manage access'),
-    h('p', {}, 'People on this list can sign in with their email and see the Outlook data. Removing someone takes effect the next time they load the page.')));
+    h('p', {}, 'People on this list can sign in with their email and see the Research Hub. Removing someone takes effect the next time they load the page.')));
   const panel = h('section', { class: 'panel' });
   const ta = h('textarea', { id: 'bulk', rows: '4', class: 'bulk', placeholder: 'One or more emails, separated by commas or new lines' });
   const org = h('input', { id: 'bulkOrg', class: 'tsearch', placeholder: 'Organization (optional)' });

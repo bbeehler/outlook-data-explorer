@@ -23,8 +23,39 @@ rep("t.id !== 'home' && t.id !== 'defs' ?","t.id !== 'home' && t.id !== 'defs' &
 rep("TOPICS.filter(t => t.id !== 'home').map(","TOPICS.filter(t => t.id !== 'home' && t.id !== 'access').map(")
 rep("  if (current === 'home') return renderHome(main);","  if (current === 'home') return renderHome(main);\n  if (current === 'access') return IS_ADMIN ? renderAccess(main) : renderHome(main);")
 rep("`${DS.length - 1} figures","`${Math.max(DS.length - 1, 0)} figures")
+# ---- Research Hub ----
+rep('<span class="eyebrow">AIA Canada · Outlook Study 2025</span>\n      <span class="name">Outlook Data Explorer</span>',
+    '<span class="eyebrow">AIA Canada · Research and data</span>\n      <span class="name">Research Hub</span>')
+rep('placeholder="Find a figure: EV share, technicians, F-150…"', 'placeholder="Search reports and data: repair prices, EV owners, technicians…"')
+rep("  el.append(h('div', { class: 'foot' }, src, acts));", "  const rel = relatedFor(ds); if (rel) el.append(rel);\n  el.append(h('div', { class: 'foot' }, src, acts));")
+i0=t.index("const RULES = `"); j0=t.index("`;", i0)+2
+t=t[:i0]+"""const RULES = `You are the data assistant inside the AIA Canada Research Hub, a tool for members of the Automotive Industries Association of Canada (AIA Canada). It holds three kinds of data:
+- AIA Canada research reports (consumer surveys such as the Consumer Behaviour Series), with the report named in each figure's source.
+- The AIA Canada Outlook Study 2025 (released January 2025, prepared with EY; mostly 2019 to 2023, with S&P Global Mobility forecasts to 2030).
+- Economic indicators from Statistics Canada and the Bank of Canada (prices, vehicle registrations, jobs, wages, interest rates), updated twice a month.
+
+Rules:
+- Answer only from the figures you are given. Every number you state must come from that data. Never estimate or use outside knowledge for figures.
+- After each fact, cite the figure in square brackets with its title or reference and its source type, for example [Outlook Ch. 1, Fig. 1], [Dealership vs. independent report, Figure 3] or [Economy: Vehicle repair and parts prices].
+- Make connections across sources when they help: for example, a survey finding about price next to how repair prices have moved. Say clearly that a connection is context, not proof of cause.
+- If the data cannot answer the question, say so in one sentence and name the closest figure that might help.
+- Values with unit "per cent" are stored as fractions: 0.117 means 11.7 per cent.
+- Write in plain Canadian English for busy business owners. Lead with the answer. Keep it short: two to five sentences, or up to five bullets. Use "per cent" in sentences. Do not use the abbreviations AIA or AIAC; write AIA Canada.
+- Do not give investment advice.`;"""+t[j0:]
+rep("<span class=\"fine\">Answers come only from the Outlook Study figures in this tool and cite them. Check important numbers in the figure before you quote them.</span>",
+    "<span class=\"fine\">Answers come only from the reports, Outlook Study and economic data in the hub, and cite them. Check important numbers in the figure before you quote them.</span>")
+rep("'Ask about vehicles, jobs, EVs, repair demand or prices. Answers use the Outlook Study figures in this tool and name the figure behind each number.'",
+    "'Ask about repair prices, where people get service, EVs, jobs or the economy. Answers use the reports, the Outlook Study and the economic data, and name the figure behind each number.'")
+rep('placeholder="Ask about vehicles, jobs, EVs, repair demand…"', 'placeholder="Ask about repair prices, EV owners, jobs…"')
+rep("  series.forEach(x => { x.color = ramp ? ramp[all.indexOf(x.name)] : SLOTS[s.slot[x.name] ?? 0]; });",
+    "  series.forEach(x => { x.color = ramp ? ramp[all.indexOf(x.name)] : SLOTS[s.slot[x.name] ?? 0]; });\n  if (scaleOf(all)) series.forEach(x => { x.color = scaleColor(x.name) || x.color; });")
+rep("        const col = ramp ? ramp[seriesNames(ds).indexOf(n)] : (on ? SLOTS[s.slot[n]] : null);",
+    "        const col = on && scaleOf(names) && scaleColor(n) ? scaleColor(n) : ramp ? ramp[seriesNames(ds).indexOf(n)] : (on ? SLOTS[s.slot[n]] : null);")
+rep("    case '%': return (v * 100).toFixed(Math.abs(v) < 0.1 && !Number.isInteger(v * 1000) ? 1 : 1) + '%';",
+    "    case '%': return (v * 100).toFixed(Math.abs(v) < 0.1 && !Number.isInteger(v * 1000) ? 1 : 1) + '%';\n    case 'rate %': return (v * 100).toFixed(2) + '%';")
+rep("const unitLabel = u => ({ '$B': 'billions of dollars',", "const unitLabel = u => ({ 'rate %': 'per cent', '$B': 'billions of dollars',")
 i=t.index("(function boot() {"); j=t.index("</script>", i)
-t=t[:i]+open('tools/boot_supabase.js').read()+"\n"+t[j:]
+t=t[:i]+open('tools/hub.js').read()+"\n"+open('tools/boot_supabase.js').read()+"\n"+t[j:]
 rep("@media (max-width: 960px) {",open('tools/extra.css').read()+"\n@media (max-width: 960px) {")
 head='''<!doctype html>
 <html lang="en-CA">
@@ -32,7 +63,7 @@ head='''<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>Outlook Data Explorer | AIA Canada</title>
+<title>Research Hub | AIA Canada</title>
 <script src="config.js"></script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>

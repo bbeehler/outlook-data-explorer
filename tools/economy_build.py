@@ -190,7 +190,7 @@ def main():
     def rates():
         s = OrderedDict([("Bank of Canada policy rate", OrderedDict((k, v / 100) for k, v in monthly_last(boc("V39079", since)).items()))])
         cats, series = align(s, month_label, since)
-        return fig("econ-policy-rate", "Bank of Canada policy interest rate", cats, series, "%", ["interest-rates", "household-finances", "vehicle-sales"],
+        return fig("econ-policy-rate", "Bank of Canada policy interest rate", cats, series, "rate %", ["interest-rates", "household-finances", "vehicle-sales"],
                    "Bank of Canada, Valet API (series V39079, target for the overnight rate)", "Rate at the end of each month.")
 
     def fx():
