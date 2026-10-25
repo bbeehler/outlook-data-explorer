@@ -37,7 +37,7 @@ def norm(name):
     """'St. Catharines - Niagara (CMA), Ontario' / 'St. Catharines-Niagara, Ontario' -> 'stcatharinesniagara'"""
     n = re.sub(r"\(CMA\)|\(CA\)", "", name)
     n = re.sub(r"\((Ontario|Quebec) part\)", "", n)
-    n = n.split(",")[0]
+    n = n.split(",")[0].split("/")[0]
     n = unicodedata.normalize("NFKD", n).encode("ascii", "ignore").decode().lower()
     return re.sub(r"[^a-z]", "", n)
 
@@ -53,8 +53,12 @@ def fetch(pid, coords, n):
     for i in range(0, len(coords), 100):
         batch = coords[i:i + 100]
         res = post("getDataFromCubePidCoordAndLatestNPeriods", [{"productId": pid, "coordinate": c, "latestN": n} for c in batch])
-        for c, r in zip(batch, res):
+        for r in res:  # results don't come back in request order: key them by the coordinate StatCan returns
             if r.get("status") != "SUCCESS":
+                continue
+            c = r["object"]["coordinate"]
+            c = coord(*[int(x) for x in c.split(".") if x != ""][:10]) if c else None
+            if c not in batch:
                 continue
             pts = {}
             for p in r["object"]["vectorDataPoint"]:
@@ -84,8 +88,13 @@ def main():
         for mid, name in geo_members(m):
             if name == "Canada":
                 ids["canada"] = mid
-            elif accept(name) and norm(name) in by_key and norm(name) not in ids:
-                ids[norm(name)] = mid
+            elif accept(name) and not re.search(r"\bpart\b", name):  # skip the Ontario/Quebec halves of Ottawa - Gatineau
+                k = norm(name)
+                if k not in by_key:  # e.g. 'Belleville, Ontario' for 'Belleville - Quinte West'
+                    cand = [x for x in by_key if x.startswith(k) and len(k) >= 6]
+                    k = cand[0] if len(cand) == 1 else None
+                if k and k not in ids:
+                    ids[k] = mid
         missing = [c["name"] for c in cmas if c["key"] not in ids]
         if missing:
             errors.append(f"{label}: no match for {', '.join(missing)}")
