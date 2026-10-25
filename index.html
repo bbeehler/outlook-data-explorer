@@ -1358,12 +1358,18 @@ function watchReport(id, prog) {
     if (!prog.isConnected) return;
     try {
       const [{ data: r }, { count }] = await Promise.all([
-        SB.from('hub_reports').select('status,chunks_done,chunks_total,error').eq('id', id).single(),
+        SB.from('hub_reports').select('status,chunks_done,chunks_total,error,sections').eq('id', id).single(),
         SB.from('hub_figures').select('id', { count: 'exact', head: true }).eq('report_id', id)]);
       if (!r) return;
       const frac = r.chunks_total ? r.chunks_done / r.chunks_total : 0;
       if (r.chunks_total && r.chunks_done >= r.chunks_total) {
-        progress(prog, `Done: ${count || 0} chart${count === 1 ? '' : 's'} found. Opening the review\u2026`, 1);
+        const sorted = (r.sections || []).length > 0, sortFailed = (r.error || '').startsWith('Could not sort');
+        if (!sorted && !sortFailed && count && Date.now() - since < 5 * 60 * 1000) {
+          if (lastDone !== -2) { lastDone = -2; since = Date.now(); }
+          progress(prog, `All pages read: ${count} charts found. Sorting them into the report\u2019s sections\u2026`, 1);
+          setTimeout(tick, 4000); return;
+        }
+        progress(prog, sorted ? `Done: ${count || 0} charts in ${r.sections.length} sections. Opening the review\u2026` : `Done: ${count || 0} charts found. Opening the review\u2026`, 1);
         setTimeout(() => { if (prog.isConnected) { ADM = { view: 'review', id }; render(); window.scrollTo({ top: 0 }); } }, 900);
         return;
       }
@@ -1442,6 +1448,7 @@ async function renderReview(main, id) {
   const pub = h('button', { type: 'button', class: 'btn-ask', onclick: async () => {
     if (r.status !== 'published' && pending && pub.dataset.armed !== '1') { pub.dataset.armed = '1'; pub.textContent = `Publish anyway (${pending} not checked)`; return; }
     if (r.status !== 'published' && !(r.title || f.title.value.trim())) { toast('Give the report a title first.'); return; }
+    if (r.status !== 'published' && (figs || []).length && !(r.sections || []).length) { toast('Sort the report into sections first (Sections panel below).'); return; }
     const { error } = await SB.from('hub_reports').update({ status: r.status === 'published' ? 'archived' : 'published' }).eq('id', id);
     if (error) { toast('Could not change: ' + error.message); return; }
     await refreshHub(); toast(r.status === 'published' ? 'Unpublished. Members no longer see this report.' : 'Published. Members can see it now.'); render();
@@ -1453,6 +1460,7 @@ async function renderReview(main, id) {
   } }, 'Read the PDF again');
   main.append(h('section', { class: 'panel' }, h('h2', {}, 'Publish'),
     h('p', { style: 'margin:0' }, r.status === 'published' ? 'This report is live for members. Unpublish to take it down; your edits are kept.' :
+      (figs || []).length && !(r.sections || []).length ? 'Sort the report into sections before publishing: use Sort into sections below.' :
       pending ? `${pending} chart${pending === 1 ? ' has' : 's have'} values read from the chart rather than printed numbers. Check ${pending === 1 ? 'it' : 'them'} against the page (Edit, then Save, or Looks right).` : 'All charts are checked.'),
     h('div', { class: 'chips' }, pub, reread)));
   // sections

@@ -220,7 +220,11 @@ async function step(id: string, index: number, token: string) {
   let r = await readChunk(rep, index);
   if (r.error) r = await readChunk(rep, index); // one retry
   if (r.error) { await db.from("hub_reports").update({ error: `Stopped at pages ${r.pages?.join("-")}: ${r.error}` }).eq("id", id); return; }
-  if (r.finished) { await organize(id); return; }
+  if (r.finished) { // sorting into sections runs as its own invocation
+    await fetch(SELF, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE}`, "x-hub-internal": "1" },
+      body: JSON.stringify({ report_id: id, action: "organize" }) }).catch(() => organize(id));
+    return;
+  }
   const { data: now } = await db.from("hub_reports").select("run_token").eq("id", id).maybeSingle();
   if (!now || now.run_token !== token) return;
   await fetch(SELF, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE}`, "x-hub-internal": "1" },
@@ -307,7 +311,7 @@ const SECTION_TOOL = {
     required: ["sections", "assign"],
   },
 };
-async function organize(id: string) {
+async function organize(id: string, attempt = 1): Promise<void> {
   const { data: rep } = await db.from("hub_reports").select("*").eq("id", id).maybeSingle();
   if (!rep) return;
   const { data: figs } = await db.from("hub_figures").select("id,page,payload").eq("report_id", id).order("sort");
@@ -346,6 +350,7 @@ async function organize(id: string) {
     await Promise.all(figs.map((f) => db.from("hub_figures").update({ payload: { ...f.payload, section: assign.get(f.id) ?? f.payload.section ?? fallback } }).eq("id", f.id)));
     await db.from("hub_reports").update({ sections: sections.map(({ key, name, blurb }: any) => ({ key, name, blurb })), error: "" }).eq("id", id);
   } catch (e) {
+    if (attempt < 2) return organize(id, attempt + 1);
     await db.from("hub_reports").update({ error: "Could not sort into sections: " + String((e as Error).message ?? e).slice(0, 200) }).eq("id", id);
   }
 }
