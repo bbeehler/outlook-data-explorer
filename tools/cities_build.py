@@ -48,6 +48,10 @@ def norm(name):
     return re.sub(r"[^a-z]", "", n)
 
 
+def ascii_(s):
+    return unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
+
+
 def coord(*ids):
     ids = list(ids) + [0] * (10 - len(ids))
     return ".".join(str(i) for i in ids)
@@ -101,7 +105,7 @@ def main():
                 if k not in by_key:  # e.g. 'Belleville, Ontario' for 'Belleville - Quinte West'
                     cand = [x for x in by_key if x.startswith(k) and len(k) >= 6]
                     k = cand[0] if len(cand) == 1 else None
-                if k and "(CMA)" not in name and by_key[k]["province"].split("/")[0] not in name:
+                if k and "(CMA)" not in name and ascii_(by_key[k]["province"].split("/")[0]) not in ascii_(name):
                     k = None  # same name, other province (e.g. a Victoria outside British Columbia)
                 if k and k not in ids:
                     ids[k] = mid
