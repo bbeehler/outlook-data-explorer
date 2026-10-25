@@ -1,0 +1,539 @@
+## 98100061 Household income statistics by dwelling and household characteristics: Canada, provinces and territories, census metropolitan areas and census agglomerations with parts | freq 18 | 2021-01-01 to 2021-01-01
+  dim 1 Geography (174 members)
+    1 Canada
+    2 Newfoundland and Labrador
+    3 Corner Brook (CA), N.L.
+    4 Gander (CA), N.L.
+    5 Grand Falls-Windsor (CA), N.L.
+    6 St. John's (CMA), N.L.
+    7 Prince Edward Island
+    8 Charlottetown (CA), P.E.I.
+    9 Summerside (CA), P.E.I.
+    10 Nova Scotia
+    11 Cape Breton (CA), N.S.
+    12 Halifax (CMA), N.S.
+    13 Kentville (CA), N.S.
+    14 New Glasgow (CA), N.S.
+    15 Truro (CA), N.S.
+    16 New Brunswick
+    17 Bathurst (CA), N.B.
+    18 Campbellton (CA), N.B./Que.
+    19 Campbellton (New Brunswick part) (CA), N.B.
+    20 Campbellton (Quebec part) (CA), Que.
+    21 Edmundston (CA), N.B.
+    22 Fredericton (CMA), N.B.
+    23 Miramichi (CA), N.B.
+    24 Moncton (CMA), N.B.
+    25 Saint John (CMA), N.B.
+    26 Quebec
+    27 Alma (CA), Que.
+    28 Amos (CA), Que.
+    29 Baie-Comeau (CA), Que.
+    30 Cowansville (CA), Que.
+    31 Dolbeau-Mistassini (CA), Que.
+    32 Drummondville (CMA), Que.
+    33 Granby (CA), Que.
+    34 Joliette (CA), Que.
+    35 Lachute (CA), Que.
+    36 Matane (CA), Que.
+    37 Montréal (CMA), Que.
+    38 Québec (CMA), Que.
+    39 Rimouski (CA), Que.
+    40 Rivière-du-Loup (CA), Que.
+    41 Rouyn-Noranda (CA), Que.
+    42 Saguenay (CMA), Que.
+    43 Saint-Georges (CA), Que.
+    44 Saint-Hyacinthe (CA), Que.
+    45 Sainte-Agathe-des-Monts (CA), Que.
+    46 Sainte-Marie (CA), Que.
+    47 Salaberry-de-Valleyfield (CA), Que.
+    48 Sept-Îles (CA), Que.
+    49 Shawinigan (CA), Que.
+    50 Sherbrooke (CMA), Que.
+    51 Sorel-Tracy (CA), Que.
+    52 Thetford Mines (CA), Que.
+    53 Trois-Rivières (CMA), Que.
+    54 Val-d'Or (CA), Que.
+    55 Victoriaville (CA), Que.
+    56 Ontario
+    57 Barrie (CMA), Ont.
+    58 Belleville - Quinte West (CMA), Ont.
+    59 Brantford (CMA), Ont.
+    60 Brockville (CA), Ont.
+    61 Centre Wellington (CA), Ont.
+    62 Chatham-Kent (CA), Ont.
+    63 Cobourg (CA), Ont.
+    64 Collingwood (CA), Ont.
+    65 Cornwall (CA), Ont.
+    66 Elliot Lake (CA), Ont.
+    67 Essa (CA), Ont.
+    68 Greater Sudbury (CMA), Ont.
+    69 Guelph (CMA), Ont.
+    70 Hamilton (CMA), Ont.
+    71 Hawkesbury (CA), Ont./Que.
+    72 Hawkesbury (Ontario part) (CA), Ont.
+    73 Hawkesbury (Quebec part) (CA), Que.
+    74 Ingersoll (CA), Ont.
+    75 Kawartha Lakes (CA), Ont.
+    76 Kenora (CA), Ont.
+    77 Kingston (CMA), Ont.
+    78 Kitchener - Cambridge - Waterloo (CMA), Ont.
+    79 London (CMA), Ont.
+    80 Midland (CA), Ont.
+    81 Norfolk (CA), Ont.
+    82 North Bay (CA), Ont.
+    83 Orillia (CA), Ont.
+    84 Oshawa (CMA), Ont.
+    85 Ottawa - Gatineau (CMA), Ont./Que.
+    86 Ottawa - Gatineau (Ontario part) (CMA), Ont.
+    87 Ottawa - Gatineau (Quebec part) (CMA), Que.
+    88 Owen Sound (CA), Ont.
+    89 Pembroke (CA), Ont.
+    90 Petawawa (CA), Ont.
+    91 Peterborough (CMA), Ont.
+    92 Port Hope (CA), Ont.
+    93 Sarnia (CA), Ont.
+    94 Sault Ste. Marie (CA), Ont.
+    95 St. Catharines - Niagara (CMA), Ont.
+    96 Stratford (CA), Ont.
+    97 Thunder Bay (CMA), Ont.
+    98 Tillsonburg (CA), Ont.
+    99 Timmins (CA), Ont.
+    100 Toronto (CMA), Ont.
+    101 Wasaga Beach (CA), Ont.
+    102 Windsor (CMA), Ont.
+    103 Woodstock (CA), Ont.
+    104 Manitoba
+    105 Brandon (CA), Man.
+    106 Portage la Prairie (CA), Man.
+    107 Steinbach (CA), Man.
+    108 Thompson (CA), Man.
+    109 Winkler (CA), Man.
+    110 Winnipeg (CMA), Man.
+    111 Saskatchewan
+    112 Estevan (CA), Sask.
+    113 Moose Jaw (CA), Sask.
+    114 North Battleford (CA), Sask.
+    115 Prince Albert (CA), Sask.
+    116 Regina (CMA), Sask.
+    117 Saskatoon (CMA), Sask.
+    118 Swift Current (CA), Sask.
+    119 Weyburn (CA), Sask.
+    120 Yorkton (CA), Sask.
+  dim 2 Household type including census family structure (11) (11 members)
+    1 Total – Household type including census family structure
+    2 Census-family households
+    3 Households consisting of only one census family without additional persons
+    4 One couple, with or without children in their census family
+    5 Without children
+    6 With children
+    7 One one-parent census family
+    8 With a parent that is a man+
+    9 With a parent that is a woman+
+    10 Other census family households
+    11 Non-census family households
+  dim 3 Structural type of dwelling (9) (9 members)
+    1 Total - Structural type of dwelling
+    2 Single-detached house
+    3 Semi-detached house
+    4 Row house
+    5 Apartment or flat in a duplex
+    6 Apartment in a building that has fewer than five storeys
+    7 Apartment in a building that has five or more storeys
+    8 Other single-attached house
+    9 Movable dwelling
+  dim 4 Household income statistics (16) (16 members)
+    1 Total - Household income statistics - 100% Data (2020)
+    2 Median total income of households ($) (2020)
+    3 Median after-tax income of households ($) (2020)
+    4 Total - Household income statistics - 25% Sample data (2020)
+    5 Average total income of households ($) (2020)
+    6 Aggregate total income of households ($'000) (2020)
+    7 Average after-tax income of households ($) (2020)
+    8 Aggregate after-tax income of households ($'000) (2020)
+    9 Total - Household income statistics - 100% Data (2015)
+    10 Median total income of households ($) (2015)
+    11 Median after-tax income of households ($) (2015)
+    12 Total - Household income statistics - 25% Sample data (2015)
+    13 Average total income of households ($) (2015)
+    14 Aggregate total income of households ($'000) (2015)
+    15 Average after-tax income of households ($) (2015)
+    16 Aggregate after-tax income of households ($'000) (2015)
+## 98100457 Main mode of commuting by commuting duration, time leaving for work, age and gender: Canada, provinces and territories, census metropolitan areas and census agglomerations with parts | freq 18 | 2021-01-01 to 2021-01-01
+  dim 1 Geography (174 members)
+    1 Canada
+    2 Newfoundland and Labrador
+    3 Corner Brook (CA), N.L.
+    4 Gander (CA), N.L.
+    5 Grand Falls-Windsor (CA), N.L.
+    6 St. John's (CMA), N.L.
+    7 Prince Edward Island
+    8 Charlottetown (CA), P.E.I.
+    9 Summerside (CA), P.E.I.
+    10 Nova Scotia
+    11 Cape Breton (CA), N.S.
+    12 Halifax (CMA), N.S.
+    13 Kentville (CA), N.S.
+    14 New Glasgow (CA), N.S.
+    15 Truro (CA), N.S.
+    16 New Brunswick
+    17 Bathurst (CA), N.B.
+    18 Campbellton (CA), N.B./Que.
+    19 Campbellton (New Brunswick part) (CA), N.B.
+    20 Campbellton (Quebec part) (CA), Que.
+    21 Edmundston (CA), N.B.
+    22 Fredericton (CMA), N.B.
+    23 Miramichi (CA), N.B.
+    24 Moncton (CMA), N.B.
+    25 Saint John (CMA), N.B.
+    26 Quebec
+    27 Alma (CA), Que.
+    28 Amos (CA), Que.
+    29 Baie-Comeau (CA), Que.
+    30 Cowansville (CA), Que.
+    31 Dolbeau-Mistassini (CA), Que.
+    32 Drummondville (CMA), Que.
+    33 Granby (CA), Que.
+    34 Joliette (CA), Que.
+    35 Lachute (CA), Que.
+    36 Matane (CA), Que.
+    37 Montréal (CMA), Que.
+    38 Québec (CMA), Que.
+    39 Rimouski (CA), Que.
+    40 Rivière-du-Loup (CA), Que.
+    41 Rouyn-Noranda (CA), Que.
+    42 Saguenay (CMA), Que.
+    43 Saint-Georges (CA), Que.
+    44 Saint-Hyacinthe (CA), Que.
+    45 Sainte-Agathe-des-Monts (CA), Que.
+    46 Sainte-Marie (CA), Que.
+    47 Salaberry-de-Valleyfield (CA), Que.
+    48 Sept-Îles (CA), Que.
+    49 Shawinigan (CA), Que.
+    50 Sherbrooke (CMA), Que.
+    51 Sorel-Tracy (CA), Que.
+    52 Thetford Mines (CA), Que.
+    53 Trois-Rivières (CMA), Que.
+    54 Val-d'Or (CA), Que.
+    55 Victoriaville (CA), Que.
+    56 Ontario
+    57 Barrie (CMA), Ont.
+    58 Belleville - Quinte West (CMA), Ont.
+    59 Brantford (CMA), Ont.
+    60 Brockville (CA), Ont.
+    61 Centre Wellington (CA), Ont.
+    62 Chatham-Kent (CA), Ont.
+    63 Cobourg (CA), Ont.
+    64 Collingwood (CA), Ont.
+    65 Cornwall (CA), Ont.
+    66 Elliot Lake (CA), Ont.
+    67 Essa (CA), Ont.
+    68 Greater Sudbury (CMA), Ont.
+    69 Guelph (CMA), Ont.
+    70 Hamilton (CMA), Ont.
+    71 Hawkesbury (CA), Ont./Que.
+    72 Hawkesbury (Ontario part) (CA), Ont.
+    73 Hawkesbury (Quebec part) (CA), Que.
+    74 Ingersoll (CA), Ont.
+    75 Kawartha Lakes (CA), Ont.
+    76 Kenora (CA), Ont.
+    77 Kingston (CMA), Ont.
+    78 Kitchener - Cambridge - Waterloo (CMA), Ont.
+    79 London (CMA), Ont.
+    80 Midland (CA), Ont.
+    81 Norfolk (CA), Ont.
+    82 North Bay (CA), Ont.
+    83 Orillia (CA), Ont.
+    84 Oshawa (CMA), Ont.
+    85 Ottawa - Gatineau (CMA), Ont./Que.
+    86 Ottawa - Gatineau (Ontario part) (CMA), Ont.
+    87 Ottawa - Gatineau (Quebec part) (CMA), Que.
+    88 Owen Sound (CA), Ont.
+    89 Pembroke (CA), Ont.
+    90 Petawawa (CA), Ont.
+    91 Peterborough (CMA), Ont.
+    92 Port Hope (CA), Ont.
+    93 Sarnia (CA), Ont.
+    94 Sault Ste. Marie (CA), Ont.
+    95 St. Catharines - Niagara (CMA), Ont.
+    96 Stratford (CA), Ont.
+    97 Thunder Bay (CMA), Ont.
+    98 Tillsonburg (CA), Ont.
+    99 Timmins (CA), Ont.
+    100 Toronto (CMA), Ont.
+    101 Wasaga Beach (CA), Ont.
+    102 Windsor (CMA), Ont.
+    103 Woodstock (CA), Ont.
+    104 Manitoba
+    105 Brandon (CA), Man.
+    106 Portage la Prairie (CA), Man.
+    107 Steinbach (CA), Man.
+    108 Thompson (CA), Man.
+    109 Winkler (CA), Man.
+    110 Winnipeg (CMA), Man.
+    111 Saskatchewan
+    112 Estevan (CA), Sask.
+    113 Moose Jaw (CA), Sask.
+    114 North Battleford (CA), Sask.
+    115 Prince Albert (CA), Sask.
+    116 Regina (CMA), Sask.
+    117 Saskatoon (CMA), Sask.
+    118 Swift Current (CA), Sask.
+    119 Weyburn (CA), Sask.
+    120 Yorkton (CA), Sask.
+  dim 2 Time leaving for work (7) (7 members)
+    1 Total - Time leaving for work
+    2 Between 5 a.m. and 5:59 a.m.
+    3 Between 6 a.m. and 6:59 a.m.
+    4 Between 7 a.m. and 7:59 a.m.
+    5 Between 8 a.m. and 8:59 a.m.
+    6 Between 9 a.m. and 11:59 a.m.
+    7 Between 12 p.m. and 4:59 a.m.
+  dim 3 Age (15A) (15 members)
+    1 Total - Age
+    2 15 to 24 years
+    3 15 to 19 years
+    4 20 to 24 years
+    5 25 to 64 years
+    6 25 to 54 years
+    7 25 to 34 years
+    8 25 to 29 years
+    9 30 to 34 years
+    10 35 to 44 years
+    11 45 to 54 years
+    12 55 to 64 years
+    13 65 years and over
+    14 65 to 74 years
+    15 75 years and over
+  dim 4 Gender (3) (3 members)
+    1 Total - Gender
+    2 Men+
+    3 Women+
+  dim 5 Statistics (3) (3 members)
+    1 Count
+    2 95% confidence interval lower bound, Count
+    3 95% confidence interval upper bound, Count
+  dim 6 Main mode of commuting (21) (21 members)
+    1 Total - Main mode of commuting
+    2 Car, truck or van
+    3 Car, truck or van - as a driver
+    4 Driver (only worker in vehicle)
+    5 Driver with 1 passenger
+    6 Driver with 2 or more passengers
+    7 Car, truck or van - as a passenger
+    8 Passenger (only worker in vehicle)
+    9 Passenger with 2 or more workers
+    10 Passenger with 3 or more workers
+    11 Sustainable transportation
+    12 Public transit
+    13 Bus
+    14 Subway or elevated rail
+    15 Light rail, streetcar or commuter train
+    16 Passenger ferry
+    17 Active transportation
+    18 Walked
+    19 Bicycle
+    20 Motorcycle, scooter or moped
+    21 Other method
+  dim 7 Commuting duration (7) (7 members)
+    1 Total - Commuting duration
+    2 Less than 15 minutes
+    3 15 to 29 minutes
+    4 30 to 44 minutes
+    5 45 to 59 minutes
+    6 60 minutes and over
+    7 Average commuting duration (in minutes)
+## 98100055 Household total income group by household characteristics: Canada, provinces and territories, census metropolitan areas and census agglomerations with parts | freq 18 | 2021-01-01 to 2021-01-01
+  dim 1 Geography (174 members)
+    1 Canada
+    2 Newfoundland and Labrador
+    3 Corner Brook (CA), N.L.
+    4 Gander (CA), N.L.
+    5 Grand Falls-Windsor (CA), N.L.
+    6 St. John's (CMA), N.L.
+    7 Prince Edward Island
+    8 Charlottetown (CA), P.E.I.
+    9 Summerside (CA), P.E.I.
+    10 Nova Scotia
+    11 Cape Breton (CA), N.S.
+    12 Halifax (CMA), N.S.
+    13 Kentville (CA), N.S.
+    14 New Glasgow (CA), N.S.
+    15 Truro (CA), N.S.
+    16 New Brunswick
+    17 Bathurst (CA), N.B.
+    18 Campbellton (CA), N.B./Que.
+    19 Campbellton (New Brunswick part) (CA), N.B.
+    20 Campbellton (Quebec part) (CA), Que.
+    21 Edmundston (CA), N.B.
+    22 Fredericton (CMA), N.B.
+    23 Miramichi (CA), N.B.
+    24 Moncton (CMA), N.B.
+    25 Saint John (CMA), N.B.
+    26 Quebec
+    27 Alma (CA), Que.
+    28 Amos (CA), Que.
+    29 Baie-Comeau (CA), Que.
+    30 Cowansville (CA), Que.
+    31 Dolbeau-Mistassini (CA), Que.
+    32 Drummondville (CMA), Que.
+    33 Granby (CA), Que.
+    34 Joliette (CA), Que.
+    35 Lachute (CA), Que.
+    36 Matane (CA), Que.
+    37 Montréal (CMA), Que.
+    38 Québec (CMA), Que.
+    39 Rimouski (CA), Que.
+    40 Rivière-du-Loup (CA), Que.
+    41 Rouyn-Noranda (CA), Que.
+    42 Saguenay (CMA), Que.
+    43 Saint-Georges (CA), Que.
+    44 Saint-Hyacinthe (CA), Que.
+    45 Sainte-Agathe-des-Monts (CA), Que.
+    46 Sainte-Marie (CA), Que.
+    47 Salaberry-de-Valleyfield (CA), Que.
+    48 Sept-Îles (CA), Que.
+    49 Shawinigan (CA), Que.
+    50 Sherbrooke (CMA), Que.
+    51 Sorel-Tracy (CA), Que.
+    52 Thetford Mines (CA), Que.
+    53 Trois-Rivières (CMA), Que.
+    54 Val-d'Or (CA), Que.
+    55 Victoriaville (CA), Que.
+    56 Ontario
+    57 Barrie (CMA), Ont.
+    58 Belleville - Quinte West (CMA), Ont.
+    59 Brantford (CMA), Ont.
+    60 Brockville (CA), Ont.
+    61 Centre Wellington (CA), Ont.
+    62 Chatham-Kent (CA), Ont.
+    63 Cobourg (CA), Ont.
+    64 Collingwood (CA), Ont.
+    65 Cornwall (CA), Ont.
+    66 Elliot Lake (CA), Ont.
+    67 Essa (CA), Ont.
+    68 Greater Sudbury (CMA), Ont.
+    69 Guelph (CMA), Ont.
+    70 Hamilton (CMA), Ont.
+    71 Hawkesbury (CA), Ont./Que.
+    72 Hawkesbury (Ontario part) (CA), Ont.
+    73 Hawkesbury (Quebec part) (CA), Que.
+    74 Ingersoll (CA), Ont.
+    75 Kawartha Lakes (CA), Ont.
+    76 Kenora (CA), Ont.
+    77 Kingston (CMA), Ont.
+    78 Kitchener - Cambridge - Waterloo (CMA), Ont.
+    79 London (CMA), Ont.
+    80 Midland (CA), Ont.
+    81 Norfolk (CA), Ont.
+    82 North Bay (CA), Ont.
+    83 Orillia (CA), Ont.
+    84 Oshawa (CMA), Ont.
+    85 Ottawa - Gatineau (CMA), Ont./Que.
+    86 Ottawa - Gatineau (Ontario part) (CMA), Ont.
+    87 Ottawa - Gatineau (Quebec part) (CMA), Que.
+    88 Owen Sound (CA), Ont.
+    89 Pembroke (CA), Ont.
+    90 Petawawa (CA), Ont.
+    91 Peterborough (CMA), Ont.
+    92 Port Hope (CA), Ont.
+    93 Sarnia (CA), Ont.
+    94 Sault Ste. Marie (CA), Ont.
+    95 St. Catharines - Niagara (CMA), Ont.
+    96 Stratford (CA), Ont.
+    97 Thunder Bay (CMA), Ont.
+    98 Tillsonburg (CA), Ont.
+    99 Timmins (CA), Ont.
+    100 Toronto (CMA), Ont.
+    101 Wasaga Beach (CA), Ont.
+    102 Windsor (CMA), Ont.
+    103 Woodstock (CA), Ont.
+    104 Manitoba
+    105 Brandon (CA), Man.
+    106 Portage la Prairie (CA), Man.
+    107 Steinbach (CA), Man.
+    108 Thompson (CA), Man.
+    109 Winkler (CA), Man.
+    110 Winnipeg (CMA), Man.
+    111 Saskatchewan
+    112 Estevan (CA), Sask.
+    113 Moose Jaw (CA), Sask.
+    114 North Battleford (CA), Sask.
+    115 Prince Albert (CA), Sask.
+    116 Regina (CMA), Sask.
+    117 Saskatoon (CMA), Sask.
+    118 Swift Current (CA), Sask.
+    119 Weyburn (CA), Sask.
+    120 Yorkton (CA), Sask.
+  dim 2 Household type including census family structure (11) (11 members)
+    1 Total – Household type including census family structure
+    2 Census-family households
+    3 Households consisting of only one census family without additional persons
+    4 One couple, with or without children in their census family
+    5 Without children
+    6 With children
+    7 One one-parent census family
+    8 With a parent that is a man+
+    9 With a parent that is a woman+
+    10 Other census family households
+    11 Non-census family households
+  dim 3 Household size (7) (7 members)
+    1 Total - Households by household size
+    2 1 person
+    3 2 or more persons
+    4 2 persons
+    5 3 persons
+    6 4 persons
+    7 5 or more persons
+  dim 4 Number of earners in household (6) (6 members)
+    1 Total - Number of earners in household
+    2 No earners
+    3 1 earner or more
+    4 1 earner
+    5 2 earners
+    6 3 or more earners
+  dim 5 Ages of household members (18) (18 members)
+    1 Total - Households by number of persons aged 0 to 5 years
+    2 None
+    3 1 person or more
+    4 1 person
+    5 2 persons
+    6 3 persons or more
+    7 Total - Households by number of persons aged 0 to 17 years
+    8 None
+    9 1 person or more
+    10 1 person
+    11 2 persons
+    12 3 persons or more
+    13 Total - Households by number of persons aged 65 years and over
+    14 None
+    15 1 person or more
+    16 1 person
+    17 2 persons
+    18 3 persons or more
+  dim 6 Household total income groups (22) (22 members)
+    1 Total - Total income of households
+    2 Under $5,000
+    3 $5,000 to $9,999
+    4 $10,000 to $14,999
+    5 $15,000 to $19,999
+    6 $20,000 to $24,999
+    7 $25,000 to $29,999
+    8 $30,000 to $34,999
+    9 $35,000 to $39,999
+    10 $40,000 to $44,999
+    11 $45,000 to $49,999
+    12 $50,000 to $59,999
+    13 $60,000 to $69,999
+    14 $70,000 to $79,999
+    15 $80,000 to $89,999
+    16 $90,000 to $99,999
+    17 $100,000 and over
+    18 $100,000 to $124,999
+    19 $125,000 to $149,999
+    20 $150,000 to $199,999
+    21 $200,000 and over
+    22 Median total income of household ($)
+  dim 7 Year (2) (2 members)
+    1 2020
+    2 2015
