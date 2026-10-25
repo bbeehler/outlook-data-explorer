@@ -1,0 +1,36 @@
+# Runs the Research Hub in WebKit (Safari's engine) and Chromium with synthetic data, and saves results and screenshots
+# to the `browser-test-results` branch. Runs when the site or the test changes, or on demand.
+name: Browser test
+on:
+  push:
+    branches: [main]
+    paths: ['index.html', 'tests/webkit/**', '.github/workflows/browser-test.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Install Playwright with WebKit and Chromium
+        run: |
+          cd tests/webkit && npm init -y >/dev/null && npm i playwright@1.48.2 >/dev/null
+          npx playwright install --with-deps webkit chromium
+      - name: Run
+        run: |
+          mkdir -p "$RUNNER_TEMP/out"
+          python3 -m http.server 8000 >/dev/null 2>&1 &
+          sleep 2
+          OUT="$RUNNER_TEMP/out" node tests/webkit/run.js || echo "test script failed" >> "$RUNNER_TEMP/out/results.txt"
+      - name: Save results
+        if: always()
+        run: |
+          cd "$RUNNER_TEMP/out"
+          git init -q -b browser-test-results
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -qm "Browser test results $(date -u +%FT%TZ) for ${{ github.sha }}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" browser-test-results
