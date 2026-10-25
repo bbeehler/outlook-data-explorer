@@ -11,7 +11,7 @@ All from Statistics Canada's Web Data Service (Statistics Canada Open Licence):
 Metro areas are matched across tables by name. Anything that can't be matched or fetched is listed under "errors".
 Usage: python3 tools/cities_build.py [output path]
 """
-import json, sys, re, datetime, unicodedata, urllib.request
+import json, sys, re, time, datetime, unicodedata, urllib.request
 from pathlib import Path
 
 OUT = Path(sys.argv[1] if len(sys.argv) > 1 else "cities/data.json")
@@ -21,8 +21,14 @@ errors = []
 
 
 def post(path, body):
-    req = urllib.request.Request(WDS + path, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
-    return json.load(urllib.request.urlopen(req, timeout=300))
+    for attempt in range(4):  # Statistics Canada sometimes drops a connection; try again before giving up
+        try:
+            req = urllib.request.Request(WDS + path, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
+            return json.load(urllib.request.urlopen(req, timeout=300))
+        except Exception:
+            if attempt == 3:
+                raise
+            time.sleep(5 * (attempt + 1))
 
 
 def meta(pid):
@@ -50,8 +56,8 @@ def coord(*ids):
 def fetch(pid, coords, n):
     """Many series from one table: {coordinate: {refPer: value}}. Requests are sent in batches."""
     out = {}
-    for i in range(0, len(coords), 100):
-        batch = coords[i:i + 100]
+    for i in range(0, len(coords), 40):
+        batch = coords[i:i + 40]
         res = post("getDataFromCubePidCoordAndLatestNPeriods", [{"productId": pid, "coordinate": c, "latestN": n} for c in batch])
         for r in res:  # results don't come back in request order: key them by the coordinate StatCan returns
             if r.get("status") != "SUCCESS":
@@ -83,11 +89,13 @@ def main():
     by_key = {c["key"]: c for c in cmas}
     CANADA = {"key": "canada", "name": "Canada", "province": ""}
 
-    def match(m, label, accept=lambda n: True):
+    def match(m, label, accept=lambda n: True, parts=None):
         ids = {}
         for mid, name in geo_members(m):
             if name == "Canada":
                 ids["canada"] = mid
+            elif parts is not None and accept(name) and re.search(r"\bpart\b", name) and norm(name) in by_key:
+                parts.setdefault(norm(name), []).append(mid)
             elif accept(name) and not re.search(r"\bpart\b", name):  # skip the Ontario/Quebec halves of Ottawa - Gatineau
                 k = norm(name)
                 if k not in by_key:  # e.g. 'Belleville, Ontario' for 'Belleville - Quinte West'
@@ -95,7 +103,7 @@ def main():
                     k = cand[0] if len(cand) == 1 else None
                 if k and k not in ids:
                     ids[k] = mid
-        missing = [c["name"] for c in cmas if c["key"] not in ids]
+        missing = [c["name"] for c in cmas if c["key"] not in ids and c["key"] not in (parts or {})]
         if missing:
             errors.append(f"{label}: no match for {', '.join(missing)}")
         return ids
@@ -169,13 +177,22 @@ def main():
     # ---- new vehicle registrations by fuel type ----
     try:
         vm = meta(20100025)
-        ids = match(vm, "vehicle registrations", lambda n: "," in n)
+        parts = {}
+        ids = match(vm, "vehicle registrations", lambda n: "," in n, parts)
+        geo = {k: [ids[k]] if k in ids else parts.get(k, []) for k in keys}  # Ottawa - Gatineau is published as its Ontario and Quebec parts: add them up
         fuels = {"all": 4, "bev": 2, "phev": 3, "hybrid": 7}
-        res = fetch(20100025, [coord(ids[k], f, 1, 1) for k in keys if k in ids for f in fuels.values()], 12)
+        res = fetch(20100025, [coord(g, f, 1, 1) for k in keys for g in geo[k] for f in fuels.values()], 12)
+
+        def summed(k, f):
+            out = {}
+            for g in geo[k]:
+                for q, v in res.get(coord(g, f, 1, 1), {}).items():
+                    out[q] = out.get(q, 0) + v
+            return out if all(coord(g, f, 1, 1) in res for g in geo[k]) else {}
         for k in keys:
-            if k not in ids:
+            if not geo[k]:
                 continue
-            s = {name: res.get(coord(ids[k], f, 1, 1), {}) for name, f in fuels.items()}
+            s = {name: summed(k, f) for name, f in fuels.items()}
             qs = sorted(s["all"])
             if qs:
                 data[k]["vehicles"] = {"quarters": [quarter_label(q) for q in qs], **{name: [round(s[name].get(q)) if s[name].get(q) is not None else None for q in qs] for name in fuels}}
