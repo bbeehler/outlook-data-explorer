@@ -50,6 +50,7 @@ async function loadHub() {
     { id: 'home', name: 'Overview', blurb: '' },
     ...REPORTS.flatMap(r => [{ id: 'r:' + r.slug, name: r.title, label: r.title, group: 'research', blurb: r.summary, report: r },
       ...r._sections.map((sec, i) => ({ id: `r:${r.slug}~${sec.key}`, name: sec.name, label: `${r.title}: ${sec.name}`, group: 'research-sec', parent: 'r:' + r.slug, blurb: sec.blurb, report: r, section: sec, index: i }))]),
+    { id: 'outlook', name: 'Overview', group: 'outlook-home', blurb: 'The 2025 Outlook Study, prepared with EY: the size of Canada\u2019s auto care sector, vehicles on the road, EVs, demand for repair, prices and how Canada compares.' },
     ...BASE_TOPICS,
     { id: 'macro', name: 'Economic indicators', group: 'economy', blurb: 'Prices, vehicle sales, jobs, wages and interest rates from Statistics Canada and the Bank of Canada, updated twice a month.' },
     { id: 'reports', name: 'Research reports', group: 'admin', blurb: '' },
@@ -57,8 +58,8 @@ async function loadHub() {
 }
 
 /* ---------- rail and pages ---------- */
-function railButton(t, cls) {
-  const n = t.group === 'research' ? DS.filter(d => d.topic === t.id || d.topic.startsWith(t.id + '~')).length : DS.filter(d => d.topic === t.id).length;
+function railButton(t, cls, count) {
+  const n = count != null ? count : t.group === 'research' ? DS.filter(d => d.topic === t.id || d.topic.startsWith(t.id + '~')).length : DS.filter(d => d.topic === t.id).length;
   return h('button', { type: 'button', class: cls || null, 'aria-current': String(current === t.id), title: t.name, onclick: () => { closeNav(); go(t.id); } },
     h('span', { class: 'rname' }, t.name), n && t.id !== 'defs' ? h('span', { class: 'count' }, n) : null);
 }
@@ -72,14 +73,24 @@ function render() {
   RSEQ++;
   if (typeof lazyIO !== 'undefined' && lazyIO) lazyIO.disconnect();
   const rail = $('#rail');
-  const grp = g => TOPICS.filter(t => t.group === g);
-  rail.replaceChildren(...[
-    railButton(TOPICS[0]),
-    grp('research').length ? h('div', { class: 'rgroup' }, 'Research reports') : null, ...grp('research').flatMap(railReport),
-    h('div', { class: 'rgroup' }, 'Outlook Study 2025'), ...grp('outlook').map(railButton),
-    h('div', { class: 'rgroup' }, 'Economy'), ...grp('economy').map(railButton),
-    h('a', { class: 'raillink', href: 'https://outlook.aiacanada.com/ontario/' }, h('span', {}, 'Ontario vehicles'), h('span', { class: 'count' }, 'Open data')),
-    h('div', { class: 'sep' }), h('div', { class: 'small' }, `${REPORTS.length ? `${REPORTS.length} research report${REPORTS.length === 1 ? '' : 's'}, the` : 'The'} 2025 Outlook Study and ${(ECON && ECON.datasets || []).length} economic indicators.`)].filter(Boolean));
+  const pick = currentReport();
+  const list = reportList();
+  const sel = h('select', { class: 'sel rpick', id: 'reportPick', 'aria-label': 'Choose a report',
+    onchange: e => { const r = list.find(x => x.id === e.target.value); go(r ? r.overview : 'home'); } },
+    h('option', { value: '', selected: !pick }, 'Choose a report\u2026'),
+    ...list.map(r => h('option', { value: r.id, selected: pick && pick.id === r.id }, r.short)));
+  const items = [railButton({ ...TOPICS[0], name: 'Research Hub home' }),
+    h('label', { class: 'rgroup', for: 'reportPick' }, 'Report'), h('div', { class: 'rpick-wrap' }, sel)];
+  if (pick) {
+    items.push(h('div', { class: 'rgroup' }, pick.kind === 'economy' ? 'Economy' : 'In this report'));
+    items.push(railButton({ ...TOPICS.find(t => t.id === pick.overview), name: pick.kind === 'economy' ? 'Economic indicators' : 'Report overview' }, null, pick.charts));
+    for (const t of pick.sections) items.push(railButton(t));
+  } else {
+    items.push(h('div', { class: 'rgroup' }, 'All reports'));
+    for (const r of list) items.push(railButton({ ...TOPICS.find(t => t.id === r.overview), name: r.short }, null, r.charts));
+  }
+  items.push(h('div', { class: 'sep' }), h('a', { class: 'raillink', href: 'https://outlook.aiacanada.com/ontario/' }, h('span', {}, 'Ontario vehicles'), h('span', { class: 'count' }, 'Open data')));
+  rail.replaceChildren(...items);
   renderProfile();
   const main = $('#main');
   for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
@@ -91,6 +102,7 @@ function render() {
   const t = TOPICS.find(x => x.id === current);
   if (!t || current === 'home') { current = 'home'; return renderHome(main); }
   if (current === 'macro') return renderEconomy(main);
+  if (current === 'outlook') return renderOutlookOverview(main);
   if (t.section) return renderReportSection(main, t);
   if (t.report) return renderReport(main, t);
   main.append(h('div', { class: 'banner', role: 'note' }, h('span', {}, h('b', {}, 'Member resource. '), 'Contains licensed S&P Global Mobility and IMR Inc. data. Do not redistribute outside AIA Canada membership. Figures are unaudited estimates; see the disclaimer at the bottom of the page.')));
@@ -99,34 +111,80 @@ function render() {
   main.append(pageFoot());
 }
 function lastVal(a) { for (let i = a.length - 1; i >= 0; i--) if (a[i] != null) return [a[i], i]; return [null, -1]; }
-function renderHome(main) {
-  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'AIA Canada Research Hub'),
-    h('h1', {}, 'Research on Canada’s auto care sector, in one place'),
-    h('p', {}, 'AIA Canada’s research reports, the 2025 Outlook Study and the latest economic data, as interactive charts. Compare findings, copy the data, or ask a question in plain language.')));
+// Every report in the hub, for the menu's report picker and the home page
+function reportList() {
+  const out = REPORTS.map(r => ({ id: 'r:' + r.slug, kind: 'research', overview: 'r:' + r.slug, short: r.title, title: r.title,
+    meta: [r.series || 'AIA Canada research', fmtDate(r.published_on)].filter(Boolean).join(' \u00b7 '), summary: r.summary,
+    sections: TOPICS.filter(t => t.parent === 'r:' + r.slug), charts: DS.filter(d => d.topic === 'r:' + r.slug || d.topic.startsWith('r:' + r.slug + '~')).length }));
+  out.push({ id: 'outlook', kind: 'outlook', overview: 'outlook', short: 'Outlook Study 2025', title: 'Outlook Study 2025', meta: 'AIA Canada with EY \u00b7 January 2025',
+    summary: TOPICS.find(t => t.id === 'outlook').blurb, sections: TOPICS.filter(t => t.group === 'outlook'), charts: DS.filter(d => sourceOf(d) === 'outlook' && d.kind !== 'defs').length });
+  out.push({ id: 'macro', kind: 'economy', overview: 'macro', short: 'Economic indicators', title: 'Economic indicators', meta: `Statistics Canada and Bank of Canada${ECON && ECON.built ? ' \u00b7 updated ' + fmtDay(ECON.built) : ''}`,
+    summary: TOPICS.find(t => t.id === 'macro').blurb, sections: [], charts: DS.filter(d => d.topic === 'macro').length });
+  return out;
+}
+const fmtDay = s => new Date(s + 'T12:00:00').toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+function currentReport() {
+  const list = reportList();
+  if (current.startsWith('r:')) return list.find(r => r.id === current.split('~')[0]);
+  if (current === 'outlook' || BASE_TOPICS.some(t => t.id === current)) return list.find(r => r.id === 'outlook');
+  if (current === 'macro') return list.find(r => r.id === 'macro');
+  return null;
+}
+function kpiTiles(which) {
   const tile = (v, l, s, target) => h('button', { type: 'button', class: 'kpi', onclick: () => jump(target) }, h('span', { class: 'v' }, v), h('span', { class: 'l' }, l), h('span', { class: 's' }, s));
   const tiles = [];
   const sumAt = (d, i) => d.series.filter(x => !/^total$/i.test(x.name)).reduce((t, x) => t + (x.vals[i] || 0), 0);
-  try { const v = BYID['vio-national'], vn = v.cats.length - 1; tiles.push(tile(fmt(sumAt(v, vn), 'vehicles'), 'Vehicles in operation', `Dec. ${v.cats[vn]} · Outlook Study`, 'vio-national')); } catch {}
-  try { const s = BYID['ev-share'], [a, ai] = lastVal(s.series[0].vals); tiles.push(tile(fmt(a, '%'), 'EV share of new vehicles', `${s.cats[ai]} · Outlook Study`, 'ev-share')); } catch {}
-  try { const g = BYID['gdp-trend'], n = g.cats.length - 1; tiles.push(tile(fmt(sumAt(g, n), '$B'), 'Auto care sector GDP', `${g.cats[n]} · Outlook Study`, 'gdp-trend')); } catch {}
-  try { const c = BYID['econ-cpi-repair'], [r, ri] = lastVal(c.series[1].vals), [all] = lastVal(c.series[0].vals); tiles.push(tile((r >= 0 ? '+' : '') + fmt(r, '%'), 'Repair and parts prices, past year', `${c.cats[ri]} · all items ${(all >= 0 ? '+' : '') + fmt(all, '%')}`, 'econ-cpi-repair')); } catch {}
-  try { const j = BYID['econ-repair-jobs'], [n, ni] = lastVal(j.series[0].vals); tiles.push(tile(Math.round(n).toLocaleString('en-CA'), 'Jobs in automotive repair', `${j.cats[ni]} · Statistics Canada`, 'econ-repair-jobs')); } catch {}
-  try { const p = BYID['econ-policy-rate'], [v, vi] = lastVal(p.series[0].vals); tiles.push(tile(fmt(v, p.unit), 'Bank of Canada policy rate', `${p.cats[vi]}`, 'econ-policy-rate')); } catch {}
-  if (tiles.length) main.append(h('div', { class: 'kpis' }, tiles));
-  if (REPORTS.length) {
-    main.append(h('h2', { class: 'sec-h' }, 'Latest research'));
-    main.append(h('div', { class: 'topics' }, REPORTS.map(r => h('button', { type: 'button', class: 'tcard', onclick: () => go('r:' + r.slug) },
-      h('span', { class: 'ref' }, [r.series, fmtDate(r.published_on)].filter(Boolean).join(' · ')), h('b', {}, r.title),
-      h('span', {}, (r.summary || '').length > 180 ? r.summary.slice(0, 177) + '…' : r.summary)))));
+  if (which !== 'economy') {
+    try { const v = BYID['vio-national'], vn = v.cats.length - 1; tiles.push(tile(fmt(sumAt(v, vn), 'vehicles'), 'Vehicles in operation', `Dec. ${v.cats[vn]} \u00b7 Outlook Study`, 'vio-national')); } catch {}
+    try { const s = BYID['ev-share'], [a, ai] = lastVal(s.series[0].vals); tiles.push(tile(fmt(a, '%'), 'EV share of new vehicles', `${s.cats[ai]} \u00b7 Outlook Study`, 'ev-share')); } catch {}
+    try { const g = BYID['gdp-trend'], n = g.cats.length - 1; tiles.push(tile(fmt(sumAt(g, n), '$B'), 'Auto care sector GDP', `${g.cats[n]} \u00b7 Outlook Study`, 'gdp-trend')); } catch {}
   }
+  if (which !== 'outlook') {
+    try { const c = BYID['econ-cpi-repair'], [r, ri] = lastVal(c.series[1].vals), [all] = lastVal(c.series[0].vals); tiles.push(tile((r >= 0 ? '+' : '') + fmt(r, '%'), 'Repair and parts prices, past year', `${c.cats[ri]} \u00b7 all items ${(all >= 0 ? '+' : '') + fmt(all, '%')}`, 'econ-cpi-repair')); } catch {}
+    try { const j = BYID['econ-repair-jobs'], [n, ni] = lastVal(j.series[0].vals); tiles.push(tile(Math.round(n).toLocaleString('en-CA'), 'Jobs in automotive repair', `${j.cats[ni]} \u00b7 Statistics Canada`, 'econ-repair-jobs')); } catch {}
+    try { const p = BYID['econ-policy-rate'], [v, vi] = lastVal(p.series[0].vals); tiles.push(tile(fmt(v, p.unit), 'Bank of Canada policy rate', `${p.cats[vi]}`, 'econ-policy-rate')); } catch {}
+  }
+  return tiles.length ? h('div', { class: 'kpis' }, tiles) : null;
+}
+function renderHome(main) {
+  const list = reportList();
+  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'AIA Canada Research Hub'),
+    h('h1', {}, 'Welcome to the Research Hub'),
+    h('p', {}, 'All of AIA Canada\u2019s research in one place: our consumer research reports, the 2025 Outlook Study and the latest economic data, as interactive charts you can explore, copy and ask questions about.')));
+  // how to use
+  const step = (n, title, text) => h('li', { class: 'howto-step' }, h('span', { class: 'howto-n', 'aria-hidden': 'true' }, n), h('div', {}, h('b', {}, title), h('span', {}, text)));
+  main.append(h('details', { class: 'panel howto', open: innerWidth > 760 }, h('summary', {}, h('h2', {}, 'How to use the hub')),
+    h('ol', { class: 'howto-list' },
+      step('1', 'Pick a report', 'Choose a report from the list below, or from the Report menu at the top of the menu (tap Menu on a phone). The menu then shows that report\u2019s sections.'),
+      step('2', 'Read it section by section', 'Each report opens with its summary and key findings, then one page per section. Use Next section at the bottom of each page to keep going.'),
+      step('3', 'Explore any chart', 'Switch between Chart and Table, tap a legend label to show or hide it, and use Copy data or CSV to take the numbers into Excel or a presentation.'),
+      step('4', 'Follow the connections', 'Under each chart, Related data links to findings and economic figures on the same topic, so you can see the bigger picture.'),
+      step('5', 'Ask a question', SAMPLE ? 'Tap Ask the data (top right) and ask in plain language. Answers use only the hub\u2019s data and name the chart behind each number.' : 'Use the search box to find charts on any topic across every report.'),
+      step('6', 'Search everything', 'Type a topic such as repair prices, EV owners or technicians in the search box to find matching charts in every report.'))));
+  // reports
+  main.append(h('h2', { class: 'sec-h' }, `Reports in the hub (${list.length})`));
+  main.append(h('div', { class: 'topics replist' }, list.map(r => h('button', { type: 'button', class: 'tcard rcard', onclick: () => go(r.overview) },
+    h('span', { class: 'ref' }, r.meta), h('b', {}, r.title),
+    h('span', {}, (r.summary || '').length > 200 ? r.summary.slice(0, 197) + '\u2026' : r.summary),
+    h('span', { class: 'rstats' }, [r.sections.length ? `${r.sections.length} sections` : null, `${r.charts} charts`].filter(Boolean).join(' \u00b7 '), h('span', { class: 'ropen' }, 'Open \u2192'))))));
+  const tiles = kpiTiles();
+  if (tiles) main.append(h('h2', { class: 'sec-h' }, 'At a glance'), tiles);
   if (SAMPLE) {
-    main.append(h('section', { class: 'panel' }, h('h2', {}, 'Ask a question'),
+    main.append(h('section', { class: 'panel' }, h('h2', {}, 'Try a question'),
       h('p', { style: 'margin:0;color:var(--ink-2);font-size:14px' }, 'Answers draw on every report, the Outlook Study and the economic data, and name the figure behind each number.'),
       h('div', { class: 'chips' }, QUESTIONS.map(qq => h('button', { type: 'button', class: 'qchip', onclick: () => openDrawer({ ask: qq }) }, qq)))));
   }
-  main.append(h('h2', { class: 'sec-h' }, 'Outlook Study 2025 and the economy'));
-  main.append(h('div', { class: 'topics' }, [...TOPICS.filter(t => t.group === 'outlook'), TOPICS.find(t => t.id === 'macro')].map(t =>
-    h('button', { type: 'button', class: 'tcard', onclick: () => go(t.id) }, h('span', { class: 'ref' }, t.group === 'economy' ? 'Economy' : 'Outlook Study 2025'), h('b', {}, t.name), h('span', {}, t.blurb)))));
+  main.append(pageFoot());
+}
+function renderOutlookOverview(main) {
+  const t = TOPICS.find(x => x.id === 'outlook');
+  main.append(h('div', { class: 'banner', role: 'note' }, h('span', {}, h('b', {}, 'Member resource. '), 'Contains licensed S&P Global Mobility and IMR Inc. data. Do not redistribute outside AIA Canada membership. Figures are unaudited estimates; see the disclaimer at the bottom of the page.')));
+  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'AIA Canada with EY \u00b7 January 2025'), h('h1', {}, 'Outlook Study 2025'), h('p', {}, t.blurb)));
+  const tiles = kpiTiles('outlook'); if (tiles) main.append(tiles);
+  const secs = TOPICS.filter(x => x.group === 'outlook');
+  main.append(h('h2', { class: 'sec-h' }, 'Sections'));
+  main.append(h('div', { class: 'topics secs' }, secs.map((x, i) => { const n = DS.filter(d => d.topic === x.id).length;
+    return h('button', { type: 'button', class: 'tcard', onclick: () => go(x.id) }, h('span', { class: 'ref' }, `Section ${i + 1}${x.id === 'defs' ? '' : ` \u00b7 ${n} charts`}`), h('b', {}, x.name), h('span', {}, x.blurb)); })));
   main.append(pageFoot());
 }
 function renderReport(main, t) {

@@ -135,3 +135,20 @@ body.is-gated .navpanel, body.is-gated .menu-btn { display: none !important; }
 .secrow { display: flex; flex-direction: column; gap: 6px; }
 .adm-sec { font-size: 16px; font-weight: 800; margin: 10px 0 0; padding-top: 10px; border-top: 2px solid var(--line); }
 @media (max-width: 640px) { .secnav { grid-template-columns: minmax(0, 1fr); } .secnav .nx { text-align: left; align-items: flex-start; } }
+/* report picker + home */
+.rpick-wrap { padding: 0 12px 6px; }
+.rail select.rpick { width: 100%; padding: 10px 12px; font-size: 15px; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--line); min-height: 44px; }
+.rail label.rgroup { display: block; }
+.howto-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 22px; }
+.howto-step { display: flex; gap: 12px; align-items: flex-start; }
+.howto-step > div { display: flex; flex-direction: column; gap: 2px; font-size: 14px; color: var(--ink-2); }
+.howto-step b { color: var(--ink); font-size: 15px; }
+.howto-n { flex: none; width: 28px; height: 28px; display: grid; place-items: center; background: var(--accent); color: #fff; font-weight: 800; font-size: 14px; }
+.rcard .rstats { margin-top: auto; padding-top: 8px; display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); font-family: var(--font-data); }
+.rcard .ropen { color: var(--accent-ink); font-weight: 700; }
+@media (max-width: 760px) { .howto-list { grid-template-columns: minmax(0, 1fr); } }
+details.howto > summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+details.howto > summary::-webkit-details-marker { display: none; }
+details.howto > summary::after { content: "+"; font-size: 22px; font-weight: 700; color: var(--accent-ink); line-height: 1; }
+details.howto[open] > summary::after { content: "\2212"; }
+details.howto[open] > summary { margin-bottom: 12px; }
