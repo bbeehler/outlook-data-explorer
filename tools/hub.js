@@ -55,14 +55,14 @@ function render() {
   RSEQ++;
   const rail = $('#rail');
   const grp = g => TOPICS.filter(t => t.group === g);
-  rail.replaceChildren(
+  rail.replaceChildren(...[
     railButton(TOPICS[0]),
     grp('research').length ? h('div', { class: 'rgroup' }, 'Research reports') : null, ...grp('research').map(railButton),
     h('div', { class: 'rgroup' }, 'Outlook Study 2025'), ...grp('outlook').map(railButton),
     h('div', { class: 'rgroup' }, 'Economy'), ...grp('economy').map(railButton),
     h('a', { class: 'raillink', href: 'https://outlook.aiacanada.com/ontario/' }, h('span', {}, 'Ontario vehicles'), h('span', { class: 'count' }, 'Open data')),
     IS_ADMIN ? h('div', { class: 'rgroup' }, 'Admin') : null, ...(IS_ADMIN ? grp('admin').map(railButton) : []),
-    h('div', { class: 'sep' }), h('div', { class: 'small' }, `${REPORTS.length} research report${REPORTS.length === 1 ? '' : 's'}, the 2025 Outlook Study and ${(ECON && ECON.datasets || []).length} economic indicators.`));
+    h('div', { class: 'sep' }), h('div', { class: 'small' }, `${REPORTS.length ? `${REPORTS.length} research report${REPORTS.length === 1 ? '' : 's'}, the` : 'The'} 2025 Outlook Study and ${(ECON && ECON.datasets || []).length} economic indicators.`)].filter(Boolean));
   $('#navEmail').textContent = $('#whoEmail').textContent;
   const main = $('#main');
   for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }

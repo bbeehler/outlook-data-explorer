@@ -294,6 +294,9 @@ body.is-gated .navpanel, body.is-gated .menu-btn { display: none !important; }
     padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
     transform: translateX(-105%); visibility: hidden; transition: transform .22s ease, visibility 0s linear .22s; }
   body.nav-open .navpanel { transform: none; visibility: visible; transition: transform .22s ease; }
+  .navpanel { height: 100vh; height: 100dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .navpanel > * { flex-shrink: 0; }
+  .navpanel .rail { display: flex; flex-direction: column; }
   body.nav-open { overflow: hidden; }
   .nav-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; background: var(--mast); color: #fff; border-left: 6px solid var(--red); }
   .nav-head b { font-size: 18px; font-weight: 800; }
@@ -301,7 +304,7 @@ body.is-gated .navpanel, body.is-gated .menu-btn { display: none !important; }
   .navpanel .rail { padding: 6px 8px 12px; gap: 0; }
   .navpanel .rail button, .navpanel .rail a.raillink { min-height: 44px; align-items: center; }
   .rail .rname { display: block; -webkit-line-clamp: unset; }
-  .nav-acct { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding: 12px 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  .nav-acct { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
   .nav-acct span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .navpanel { transition: none !important; } }
@@ -1095,14 +1098,14 @@ function render() {
   RSEQ++;
   const rail = $('#rail');
   const grp = g => TOPICS.filter(t => t.group === g);
-  rail.replaceChildren(
+  rail.replaceChildren(...[
     railButton(TOPICS[0]),
     grp('research').length ? h('div', { class: 'rgroup' }, 'Research reports') : null, ...grp('research').map(railButton),
     h('div', { class: 'rgroup' }, 'Outlook Study 2025'), ...grp('outlook').map(railButton),
     h('div', { class: 'rgroup' }, 'Economy'), ...grp('economy').map(railButton),
     h('a', { class: 'raillink', href: 'https://outlook.aiacanada.com/ontario/' }, h('span', {}, 'Ontario vehicles'), h('span', { class: 'count' }, 'Open data')),
     IS_ADMIN ? h('div', { class: 'rgroup' }, 'Admin') : null, ...(IS_ADMIN ? grp('admin').map(railButton) : []),
-    h('div', { class: 'sep' }), h('div', { class: 'small' }, `${REPORTS.length} research report${REPORTS.length === 1 ? '' : 's'}, the 2025 Outlook Study and ${(ECON && ECON.datasets || []).length} economic indicators.`));
+    h('div', { class: 'sep' }), h('div', { class: 'small' }, `${REPORTS.length ? `${REPORTS.length} research report${REPORTS.length === 1 ? '' : 's'}, the` : 'The'} 2025 Outlook Study and ${(ECON && ECON.datasets || []).length} economic indicators.`)].filter(Boolean));
   $('#navEmail').textContent = $('#whoEmail').textContent;
   const main = $('#main');
   for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
