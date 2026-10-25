@@ -53,6 +53,7 @@ function railButton(t) {
 }
 function render() {
   RSEQ++;
+  if (typeof lazyIO !== 'undefined' && lazyIO) lazyIO.disconnect();
   const rail = $('#rail');
   const grp = g => TOPICS.filter(t => t.group === g);
   rail.replaceChildren(...[
@@ -484,3 +485,21 @@ $('#profileBtn').addEventListener('click', e => { e.stopPropagation(); $('#profi
 document.addEventListener('click', e => { if (!$('#profileMenu').hidden && !e.target.closest('#who')) closeProfile(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#profileMenu').hidden) closeProfile(true); });
 $('#signOut').addEventListener('click', () => closeProfile());
+
+/* ---------- lazy charts: only charts near the screen exist; ones scrolled far away are freed ---------- */
+const LAZY = new WeakMap();
+const lazyIO = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+  for (const e of entries) {
+    const el = e.target, fn = LAZY.get(el), cv = el.querySelector('canvas');
+    if (!fn || !cv) { lazyIO.unobserve(el); continue; }
+    if (!el.isConnected) { if (el.dataset.seen) lazyIO.unobserve(el); continue; } // not on the page yet, or removed
+    el.dataset.seen = '1';
+    const ch = CHARTS.get(cv);
+    if (e.isIntersecting) { if (!ch) fn(); }
+    else if (ch) { ch.destroy(); CHARTS.delete(cv); }
+  }
+}, { rootMargin: '800px 0px' }) : null;
+function lazyChart(el, fn) {
+  if (!lazyIO) return requestAnimationFrame(fn);
+  LAZY.set(el, fn); lazyIO.observe(el);
+}

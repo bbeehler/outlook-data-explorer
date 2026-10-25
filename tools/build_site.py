@@ -70,6 +70,15 @@ for line in ["  .rail { position: static; flex-direction: row; overflow-x: auto;
              "  .rail .sep, .rail .small, .rail .count { display: none; }\n",
              "  .rail a.raillink { white-space: nowrap; border: 1px solid var(--line); background: var(--surface); }\n"]:
     rep(line, '')
+# ---- lazy charts: draw only near the screen (iPhone Safari caps total canvas memory) ----
+rep("    requestAnimationFrame(() => drawChart(cv.firstChild, ds, R));", "    lazyChart(cv, () => drawChart(cv.firstChild, ds, R));")
+rep("      requestAnimationFrame(() => drawChart(cv.firstChild, { ...ds, chart: x.type === 'line' ? 'line' : 'bar' },", "      lazyChart(cv, () => drawChart(cv.firstChild, { ...ds, chart: x.type === 'line' ? 'line' : 'bar' },")
+rep("""    viz.append(cv);
+    requestAnimationFrame(() => {
+      const col = s.band;""", """    viz.append(cv);
+    lazyChart(cv, () => {
+      const col = s.band;""")
+rep("      responsive: true, maintainAspectRatio: false, indexAxis: horiz ? 'y' : 'x',", "      responsive: true, maintainAspectRatio: false, devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2), indexAxis: horiz ? 'y' : 'x',")
 i=t.index("(function boot() {"); j=t.index("</script>", i)
 t=t[:i]+open('tools/hub.js').read()+"\n"+open('tools/boot_supabase.js').read()+"\n"+t[j:]
 rep("@media (max-width: 960px) {",open('tools/extra.css').read()+"\n@media (max-width: 960px) {")

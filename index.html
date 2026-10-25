@@ -606,7 +606,7 @@ function drawChart(canvas, ds, R, opts = {}) {
     type: line ? 'line' : 'bar',
     data: { labels: R.cats, datasets },
     options: {
-      responsive: true, maintainAspectRatio: false, indexAxis: horiz ? 'y' : 'x',
+      responsive: true, maintainAspectRatio: false, devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2), indexAxis: horiz ? 'y' : 'x',
       interaction: { mode: 'index', intersect: false, axis: horiz ? 'y' : 'x' },
       layout: { padding: { top: 4, right: 8 } },
       scales: horiz ? { x: valAxis, y: catAxis } : { x: catAxis, y: valAxis },
@@ -761,7 +761,7 @@ function paintCard(el, ds) {
   } else if (ds.kind === 'table') {
     const cv = h('div', { class: 'cv tall' }, h('canvas', { role: 'img', 'aria-label': ds.title }));
     viz.append(cv);
-    requestAnimationFrame(() => {
+    lazyChart(cv, () => {
       const col = s.band;
       const top = ds.rows.slice().sort((a, b) => b[col] - a[col]).slice(0, 15);
       drawChart(cv.firstChild, { ...ds, orient: 'h', chart: 'bar', unit: 'per vehicle per year' }, { cats: top.map(r => r[0]), series: [{ name: ds.columns[col], vals: top.map(r => r[col]), color: '--s1' }] });
@@ -771,7 +771,7 @@ function paintCard(el, ds) {
     ds.series.forEach((x, i) => {
       const cv = h('div', { class: 'cv' }, h('canvas', { role: 'img', 'aria-label': x.name }));
       grid.append(h('div', {}, h('h3', {}, x.name.replace(/ \((left|right)\)/, '') + (i === 1 && ds.rightUnit ? ` (${ds.rightUnit})` : '')), cv));
-      requestAnimationFrame(() => drawChart(cv.firstChild, { ...ds, chart: x.type === 'line' ? 'line' : 'bar' }, { cats: ds.cats, series: [{ name: x.name, vals: x.vals, color: i ? '--s2' : '--s1' }] }, { unit: i === 1 ? (ds.rightUnit === '%' ? '%' : 'index') : ds.unit, type: x.type === 'line' ? 'line' : 'bar' }));
+      lazyChart(cv, () => drawChart(cv.firstChild, { ...ds, chart: x.type === 'line' ? 'line' : 'bar' }, { cats: ds.cats, series: [{ name: x.name, vals: x.vals, color: i ? '--s2' : '--s1' }] }, { unit: i === 1 ? (ds.rightUnit === '%' ? '%' : 'index') : ds.unit, type: x.type === 'line' ? 'line' : 'bar' }));
     });
     viz.append(grid);
   } else {
@@ -780,7 +780,7 @@ function paintCard(el, ds) {
     const cls = ds.orient === 'h' ? (n > 16 ? 'cv xtall' : n > 8 ? 'cv tall' : 'cv') : 'cv';
     const cv = h('div', { class: cls }, h('canvas', { role: 'img', 'aria-label': ds.title + '. Switch to Table for the values.' }));
     viz.append(cv);
-    requestAnimationFrame(() => drawChart(cv.firstChild, ds, R));
+    lazyChart(cv, () => drawChart(cv.firstChild, ds, R));
   }
 
   // footer
@@ -1110,6 +1110,7 @@ function railButton(t) {
 }
 function render() {
   RSEQ++;
+  if (typeof lazyIO !== 'undefined' && lazyIO) lazyIO.disconnect();
   const rail = $('#rail');
   const grp = g => TOPICS.filter(t => t.group === g);
   rail.replaceChildren(...[
@@ -1541,6 +1542,24 @@ $('#profileBtn').addEventListener('click', e => { e.stopPropagation(); $('#profi
 document.addEventListener('click', e => { if (!$('#profileMenu').hidden && !e.target.closest('#who')) closeProfile(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#profileMenu').hidden) closeProfile(true); });
 $('#signOut').addEventListener('click', () => closeProfile());
+
+/* ---------- lazy charts: only charts near the screen exist; ones scrolled far away are freed ---------- */
+const LAZY = new WeakMap();
+const lazyIO = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+  for (const e of entries) {
+    const el = e.target, fn = LAZY.get(el), cv = el.querySelector('canvas');
+    if (!fn || !cv) { lazyIO.unobserve(el); continue; }
+    if (!el.isConnected) { if (el.dataset.seen) lazyIO.unobserve(el); continue; } // not on the page yet, or removed
+    el.dataset.seen = '1';
+    const ch = CHARTS.get(cv);
+    if (e.isIntersecting) { if (!ch) fn(); }
+    else if (ch) { ch.destroy(); CHARTS.delete(cv); }
+  }
+}, { rootMargin: '800px 0px' }) : null;
+function lazyChart(el, fn) {
+  if (!lazyIO) return requestAnimationFrame(fn);
+  LAZY.set(el, fn); lazyIO.observe(el);
+}
 
 /* ---------- sign-in, data loading and access management (Supabase) ---------- */
 const SB = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
