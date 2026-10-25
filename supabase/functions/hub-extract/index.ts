@@ -44,7 +44,7 @@ const FIGURE_TOOL = {
         properties: {
           title: { type: "string" }, series: { type: "string", description: "Report series, e.g. 'Consumer Behaviour Series'. Empty if none." },
           published_on: { type: "string", description: "YYYY-MM-DD, or YYYY-MM-01 if only month and year are shown. Empty if not stated." },
-          summary: { type: "string", description: "Two or three plain sentences: who was surveyed, when, and what the report is about. Only from the pages." },
+          summary: { type: "string", description: "Two or three plain sentences about the whole report: who was surveyed, when, and what it covers. Only from the pages. Describe the report, never the pages you were given (no 'these pages contain...')." },
           key_findings: { type: "array", items: { type: "string" }, description: "Up to 5 headline findings stated in these pages, each one sentence with its number." },
         },
       },
