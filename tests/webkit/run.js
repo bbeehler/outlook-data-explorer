@@ -36,7 +36,7 @@ const log = (...a) => { const s = a.map(x => typeof x === 'string' ? x : JSON.st
     const state = (card) => p.evaluate(sel => { const c = document.querySelectorAll('article.card')[sel]; const cv = c && c.querySelector('.cv canvas'); if (!cv) return { canvas: false };
       const ch = Chart.getChart(cv); let ink = 0; try { const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data; for (let i = 3; i < d.length; i += 16) if (d[i]) ink++; } catch (e) { ink = 'err ' + e.message; }
       return { drawn: !!ch, w: cv.width, h: cv.height, cssW: cv.clientWidth, cssH: cv.clientHeight, datasets: ch ? ch.data.datasets.length : 0, ink }; }, card);
-    for (const page of ['macro', 'r:test-report~s1']) {
+    for (const page of ['macro', 'cities', 'r:test-report~s1']) {
       await p.evaluate(id => go(id), page); await p.waitForTimeout(1200);
       log(name, page, 'start', await state(0));
       const lg = p.locator('article.card').first().locator('.legend .lg');
