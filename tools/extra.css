@@ -124,3 +124,14 @@ body.is-gated .navpanel, body.is-gated .menu-btn { display: none !important; }
   .nav-search input { width: 100%; border: 1px solid var(--line); background: var(--bg); padding: 10px 12px 10px 34px; font-size: 16px; color: var(--ink); }
   .formgrid { grid-template-columns: minmax(0, 1fr); }
 }
+/* report sections */
+.rail button.sub { padding-left: 26px; font-size: 14px; }
+.rail button.rep.open { font-weight: 700; color: var(--ink); }
+.crumbs { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--accent-ink); font-size: 13px; text-decoration: underline; text-underline-offset: 2px; text-align: left; }
+.secnav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.secnav .nx { text-align: right; align-items: flex-end; }
+.secrows { display: flex; flex-direction: column; gap: 14px; }
+.secrow { display: flex; flex-direction: column; gap: 6px; }
+.adm-sec { font-size: 16px; font-weight: 800; margin: 10px 0 0; padding-top: 10px; border-top: 2px solid var(--line); }
+@media (max-width: 640px) { .secnav { grid-template-columns: minmax(0, 1fr); } .secnav .nx { text-align: left; align-items: flex-start; } }

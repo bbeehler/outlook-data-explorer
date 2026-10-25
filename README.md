@@ -42,7 +42,8 @@ Every chart has a table view, CSV download and copy buttons. This repo started a
 2. Choose the report PDF (or paste a link to it). Title, series, date and store link are optional: Claude reads them from the cover.
 3. Click **Upload and read**. Reading runs on the server (edge function `hub-extract`, 4 pages per step, each step starting the next), so you can close the page or lock your phone. Research reports shows live progress; if a step fails twice the report shows the error and a **Continue reading** button.
 4. Review: each chart shows its page number. Charts marked "Some values read from the chart" had no printed numbers, so compare them with the page, then click **Looks right** or **Edit** (change the title, takeaway, chart type, unit or the data itself). Hide or delete anything members don't need.
-5. Click **Publish to members**. The report becomes its own section with its key findings, charts, and connected economic data. **Unpublish** takes it down again.
+5. Sections: when reading finishes, Claude sorts the charts into the report's own sections (from its table of contents and headings). On the review screen you can rename sections, move a chart to another section (Edit, then Section), or click **Sort into sections again**.
+6. Click **Publish to members**. Members get a report overview (summary, key findings, a card per section, connected economic data) and one page per section with next/previous buttons; the menu lists the sections under the report. **Unpublish** takes it down again.
 
 Members see the charts and findings, not the PDF, so the full report can still be sold. To show less, hide charts or leave a report unpublished.
 

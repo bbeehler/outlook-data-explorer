@@ -4,6 +4,8 @@
 //        background, one chunk of PAGES_PER_CHUNK pages per invocation; each invocation starts the next one itself.
 //        Replies at once; the page shows progress from hub_reports (chunks_done / chunks_total / status / error).
 //   { report_id, action: "import_url", url }   -> fetch the PDF from a link instead of uploading it.
+//   { report_id, action: "organize" }           -> sort the charts into the report's own sections (runs in the background;
+//        also runs automatically after the last chunk). Saves hub_reports.sections and each figure's payload.section.
 // Each chunk is tried twice. Chunk 0 also fills in the report's title, date, summary and key findings.
 // When the last chunk is done the report moves to "review"; an admin checks the figures and publishes them.
 // Secrets: ANTHROPIC_API_KEY (+ optional ANTHROPIC_WORKSPACE_ID), optional HUB_EXTRACT_MODEL, HUB_PAGES_PER_CHUNK.
@@ -55,6 +57,7 @@ const FIGURE_TOOL = {
           properties: {
             page: { type: "integer", description: "Page number in the whole document (use the page numbers given in the instructions)." },
             ref: { type: "string", description: "How the report labels it, e.g. 'Figure 7' or 'Table 2'. Empty if unlabelled." },
+            section: { type: "string", description: "The report section or chapter this chart sits in, as printed in the page header, chapter title or running title. Empty if not shown." },
             title: { type: "string", description: "Clear, specific title. Add the population and year if the report gives them, e.g. 'Where EV owners get routine maintenance, 2025'." },
             question: { type: "string", description: "The survey question, if shown. Empty otherwise." },
             base: { type: "string", description: "Who answered and how many, e.g. 'EV owners, n=1,012'. Empty if not shown." },
@@ -124,6 +127,7 @@ function toPayload(f: Record<string, any>, report: Record<string, any>, idx: num
     source: `AIA Canada, ${report.title || "research report"}`,
     note: noteParts.join(" "),
     insightText: String(f.insight || ""),
+    sectionRead: String(f.section || "").slice(0, 120),
     tags: (f.tags ?? []).filter((t: string) => TAGS.includes(t)),
   };
 }
@@ -197,6 +201,11 @@ async function work(body: Record<string, any>) {
     return { started: true, from: next };
   }
 
+  if (body.action === "organize") {
+    EdgeRuntime.waitUntil(organize(id));
+    return { queued: true };
+  }
+
   if (body.action === "continue") {
     EdgeRuntime.waitUntil(step(id, Number(body.index), String(body.token ?? "")));
     return { queued: true };
@@ -211,7 +220,7 @@ async function step(id: string, index: number, token: string) {
   let r = await readChunk(rep, index);
   if (r.error) r = await readChunk(rep, index); // one retry
   if (r.error) { await db.from("hub_reports").update({ error: `Stopped at pages ${r.pages?.join("-")}: ${r.error}` }).eq("id", id); return; }
-  if (r.finished) return;
+  if (r.finished) { await organize(id); return; }
   const { data: now } = await db.from("hub_reports").select("run_token").eq("id", id).maybeSingle();
   if (!now || now.run_token !== token) return;
   await fetch(SELF, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE}`, "x-hub-internal": "1" },
@@ -280,3 +289,63 @@ Deno.serve(async (req) => {
   try { result = await work(body); } catch (e) { result = { error: String((e as Error).message ?? e).slice(0, 500) }; }
   return new Response(JSON.stringify(result), { headers });
 });
+
+// ---------- sort charts into the report's own sections ----------
+const SECTION_TOOL = {
+  name: "save_sections",
+  description: "Save the report's sections in reading order and which section each chart belongs to.",
+  input_schema: {
+    type: "object",
+    properties: {
+      sections: { type: "array", items: { type: "object", properties: {
+        key: { type: "string", description: "Short lowercase id, letters and hyphens, e.g. 'where-owners-go'." },
+        name: { type: "string", description: "Section name, 2 to 7 words, as the report names it (shorten if long)." },
+        blurb: { type: "string", description: "One plain sentence on what this section covers." } }, required: ["key", "name", "blurb"] } },
+      assign: { type: "array", items: { type: "object", properties: { id: { type: "string" }, section: { type: "string" } }, required: ["id", "section"] },
+        description: "Every chart id exactly once, with the key of its section." },
+    },
+    required: ["sections", "assign"],
+  },
+};
+async function organize(id: string) {
+  const { data: rep } = await db.from("hub_reports").select("*").eq("id", id).maybeSingle();
+  if (!rep) return;
+  const { data: figs } = await db.from("hub_figures").select("id,page,payload").eq("report_id", id).order("sort");
+  if (!figs || !figs.length) return;
+  const list = figs.map((f) => `${f.id} | page ${f.page ?? "?"} | ${f.payload.title}${f.payload.sectionRead ? ` | heading on page: ${f.payload.sectionRead}` : ""}`).join("\n");
+  const content: unknown[] = [];
+  try { // the opening pages usually hold the table of contents
+    const src = await loadPdf(rep.file_path);
+    const part = await PDFDocument.create();
+    const n = Math.min(6, src.getPageCount());
+    (await part.copyPages(src, Array.from({ length: n }, (_, i) => i))).forEach((p) => part.addPage(p));
+    content.push({ type: "document", source: { type: "base64", media_type: "application/pdf", data: encodeBase64(await part.save()) } });
+  } catch { /* sort from titles alone */ }
+  content.push({ type: "text", text: `Report: ${rep.title}\nSummary: ${rep.summary}\n\nCharts found in the report (id | PDF page | title | heading if read):\n${list}\n\n` +
+    "Group these charts into the report's own sections, in reading order, so members can browse the report section by section. " +
+    "Use the report's table of contents and headings where available (the attached pages are its opening pages). Aim for 3 to 9 sections; " +
+    "a section needs at least 2 charts unless the report clearly has a one-chart section. Put every chart id in exactly one section. " +
+    "Demographics or respondent profile charts go in a final section such as 'About the respondents'. Answer only by calling save_sections." });
+  const key = (Deno.env.get("ANTHROPIC_API_KEY") ?? "").trim();
+  try {
+    const r = await fetch("https://api.anthropic.com/v1/messages", { method: "POST",
+      headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json", ...(WORKSPACE ? { "anthropic-workspace-id": WORKSPACE } : {}) },
+      body: JSON.stringify({ model: MODEL, max_tokens: 8000, tools: [SECTION_TOOL], tool_choice: { type: "auto" }, messages: [{ role: "user", content }] }) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(`Claude ${r.status} ${j?.error?.message ?? ""}`);
+    const use = (j.content ?? []).find((c: any) => c.type === "tool_use");
+    if (!use) throw new Error("no sections returned");
+    const clean = (k: string) => String(k).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "section";
+    const seen = new Set<string>();
+    const sections = (use.input.sections ?? []).map((x: any) => { let k = clean(x.key || x.name); while (seen.has(k)) k += "-2"; seen.add(k); return { key: k, name: String(x.name).slice(0, 80), blurb: String(x.blurb ?? "").slice(0, 300), _raw: x.key }; });
+    if (!sections.length) throw new Error("no sections returned");
+    const byRaw = new Map(sections.map((x: any) => [String(x._raw), x.key]));
+    const assign = new Map<string, string>();
+    for (const a of use.input.assign ?? []) { const k = byRaw.get(String(a.section)) ?? (seen.has(clean(a.section)) ? clean(a.section) : null); if (k) assign.set(String(a.id), k as string); }
+    const fallback = sections[sections.length - 1].key;
+    await Promise.all(figs.map((f) => db.from("hub_figures").update({ payload: { ...f.payload, section: assign.get(f.id) ?? f.payload.section ?? fallback } }).eq("id", f.id)));
+    await db.from("hub_reports").update({ sections: sections.map(({ key, name, blurb }: any) => ({ key, name, blurb })), error: "" }).eq("id", id);
+  } catch (e) {
+    await db.from("hub_reports").update({ error: "Could not sort into sections: " + String((e as Error).message ?? e).slice(0, 200) }).eq("id", id);
+  }
+}
