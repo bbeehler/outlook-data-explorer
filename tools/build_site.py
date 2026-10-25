@@ -26,7 +26,7 @@ rep("`${DS.length - 1} figures","`${Math.max(DS.length - 1, 0)} figures")
 # ---- Research Hub ----
 rep('<span class="eyebrow">AIA Canada · Outlook Study 2025</span>\n      <span class="name">Outlook Data Explorer</span>',
     '<span class="eyebrow">AIA Canada · Research and data</span>\n      <span class="name">Research Hub</span>')
-rep('placeholder="Find a figure: EV share, technicians, F-150…"', 'placeholder="Search reports and data: repair prices, EV owners, technicians…"')
+rep('placeholder="Find a figure: EV share, technicians, F-150…"', 'placeholder="Search reports and data"')
 rep("  el.append(h('div', { class: 'foot' }, src, acts));", "  const rel = relatedFor(ds); if (rel) el.append(rel);\n  el.append(h('div', { class: 'foot' }, src, acts));")
 i0=t.index("const RULES = `"); j0=t.index("`;", i0)+2
 t=t[:i0]+"""const RULES = `You are the data assistant inside the AIA Canada Research Hub, a tool for members of the Automotive Industries Association of Canada (AIA Canada). It holds three kinds of data:
@@ -54,6 +54,23 @@ rep("        const col = ramp ? ramp[seriesNames(ds).indexOf(n)] : (on ? SLOTS[s
 rep("    case '%': return (v * 100).toFixed(Math.abs(v) < 0.1 && !Number.isInteger(v * 1000) ? 1 : 1) + '%';",
     "    case '%': return (v * 100).toFixed(Math.abs(v) < 0.1 && !Number.isInteger(v * 1000) ? 1 : 1) + '%';\n    case 'rate %': return (v * 100).toFixed(2) + '%';")
 rep("const unitLabel = u => ({ '$B': 'billions of dollars',", "const unitLabel = u => ({ 'rate %': 'per cent', '$B': 'billions of dollars',")
+# ---- responsive navigation ----
+rep('<div class="brand">', '<button class="menu-btn" id="menuBtn" type="button" aria-controls="navPanel" aria-expanded="false" aria-label="Open the menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="lbl">Menu</span></button>\n    <div class="brand">')
+rep('<button class="btn-ask" id="askTop" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg>Ask the data</button>',
+    '<button class="btn-ask" id="askTop" hidden aria-label="Ask the data"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg><span class="lbl">Ask the data</span></button>')
+rep('<nav class="rail" id="rail" aria-label="Topics"></nav>', '''<div class="navpanel" id="navPanel">
+    <div class="nav-head"><b>Research Hub</b><button type="button" class="act" id="navClose">Close</button></div>
+    <label class="nav-search" for="q2"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q2" type="search" placeholder="Search reports and data" autocomplete="off"></label>
+    <nav class="rail" id="rail" aria-label="Sections"></nav>
+    <div class="nav-acct"><span id="navEmail"></span><button type="button" class="act" id="navSignOut">Sign out</button></div>
+  </div>
+  <div class="scrim" id="navScrim" hidden></div>''')
+for line in ["  .rail { position: static; flex-direction: row; overflow-x: auto; gap: 6px; padding-bottom: 4px; }\n",
+             "  .rail button { white-space: nowrap; border-left: 0; border-bottom: 3px solid transparent; background: var(--surface); border: 1px solid var(--line); }\n",
+             "  .rail button[aria-current=\"true\"] { border-bottom: 3px solid var(--accent); }\n",
+             "  .rail .sep, .rail .small, .rail .count { display: none; }\n",
+             "  .rail a.raillink { white-space: nowrap; border: 1px solid var(--line); background: var(--surface); }\n"]:
+    rep(line, '')
 i=t.index("(function boot() {"); j=t.index("</script>", i)
 t=t[:i]+open('tools/hub.js').read()+"\n"+open('tools/boot_supabase.js').read()+"\n"+t[j:]
 rep("@media (max-width: 960px) {",open('tools/extra.css').read()+"\n@media (max-width: 960px) {")

@@ -48,7 +48,7 @@ async function loadHub() {
 /* ---------- rail and pages ---------- */
 function railButton(t) {
   const n = DS.filter(d => d.topic === t.id).length;
-  return h('button', { type: 'button', 'aria-current': String(current === t.id), title: t.name, onclick: () => go(t.id) },
+  return h('button', { type: 'button', 'aria-current': String(current === t.id), title: t.name, onclick: () => { closeNav(); go(t.id); } },
     h('span', { class: 'rname' }, t.name), n && t.id !== 'defs' ? h('span', { class: 'count' }, n) : null);
 }
 function render() {
@@ -63,6 +63,7 @@ function render() {
     h('a', { class: 'raillink', href: 'https://outlook.aiacanada.com/ontario/' }, h('span', {}, 'Ontario vehicles'), h('span', { class: 'count' }, 'Open data')),
     IS_ADMIN ? h('div', { class: 'rgroup' }, 'Admin') : null, ...(IS_ADMIN ? grp('admin').map(railButton) : []),
     h('div', { class: 'sep' }), h('div', { class: 'small' }, `${REPORTS.length} research report${REPORTS.length === 1 ? '' : 's'}, the 2025 Outlook Study and ${(ECON && ECON.datasets || []).length} economic indicators.`));
+  $('#navEmail').textContent = $('#whoEmail').textContent;
   const main = $('#main');
   for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
   main.replaceChildren();
@@ -430,3 +431,28 @@ function scaleColor(n) {
   return null;
 }
 function scaleOf(names) { return names.filter(n => NEG.test(n)).length >= 1 && names.filter(n => scaleColor(n)).length >= 2; }
+
+/* ---------- responsive navigation: left rail on desktop, slide-in menu on tablet and phone ---------- */
+const NAV_MQ = matchMedia('(max-width: 1099px)');
+function openNav() {
+  document.body.classList.add('nav-open'); $('#navScrim').hidden = false;
+  $('#menuBtn').setAttribute('aria-expanded', 'true');
+  $('#q2').value = $('#q').value;
+  setTimeout(() => { const cur = $('#rail [aria-current="true"]'); (cur || $('#navClose')).focus(); }, 60);
+}
+function closeNav(focusBtn) {
+  if (!document.body.classList.contains('nav-open')) return;
+  document.body.classList.remove('nav-open'); $('#navScrim').hidden = true;
+  $('#menuBtn').setAttribute('aria-expanded', 'false');
+  if (focusBtn) $('#menuBtn').focus();
+}
+$('#menuBtn').addEventListener('click', () => document.body.classList.contains('nav-open') ? closeNav(true) : openNav());
+$('#navClose').addEventListener('click', () => closeNav(true));
+$('#navScrim').addEventListener('click', () => closeNav(true));
+$('#navSignOut').addEventListener('click', () => { closeNav(); signOut(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('nav-open')) closeNav(true); });
+NAV_MQ.addEventListener('change', () => { if (!NAV_MQ.matches) closeNav(); });
+let q2t;
+$('#q2').addEventListener('input', () => { $('#q').value = $('#q2').value; clearTimeout(q2t); q2t = setTimeout(render, 250); });
+$('#q2').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); closeNav(); render(); window.scrollTo({ top: 0 }); } });
+$('#q').addEventListener('input', () => { $('#q2').value = $('#q').value; });

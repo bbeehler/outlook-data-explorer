@@ -270,18 +270,57 @@ a.btn-ask { text-decoration: none; }
 .admbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 10px; background: var(--chip); border: 1px solid var(--line); border-bottom: 0; }
 .editor .chips .fl { flex: 1 1 200px; }
 @media (max-width: 960px) {
-  .rail .rgroup { display: none; }
   .formgrid { grid-template-columns: minmax(0, 1fr); }
-  .rail .rname { display: inline; }
+}
+/* ---------- navigation: rail on desktop, slide-in menu on tablet and phone ---------- */
+.menu-btn { display: none; align-items: center; gap: 8px; background: none; border: 1px solid rgba(255,255,255,.35); color: #fff; padding: 8px 12px; font-weight: 600; }
+.menu-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.menu-btn:hover { background: rgba(255,255,255,.08); }
+.navpanel { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); align-self: start; max-height: calc(100vh - 104px); overflow-y: auto; overscroll-behavior: contain; }
+.navpanel .rail { position: static; }
+.nav-head, .nav-search, .nav-acct { display: none; }
+.scrim { position: fixed; inset: 0; background: rgba(10, 17, 40, .45); z-index: 65; }
+body.is-gated .navpanel, body.is-gated .menu-btn { display: none !important; }
+@media (max-width: 1099px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); }
+  .menu-btn { display: inline-flex; }
+  .mast .who { display: none; }
+  .mast-in { flex-wrap: nowrap; }
+  .mast .search { flex: 1 1 160px; min-width: 0; max-width: 420px; }
+  .brand { margin-right: 0; flex: 0 1 auto; min-width: 0; }
+  .mast-in > .btn-ask { margin-left: auto; flex: none; }
+  .navpanel { position: fixed; top: 0; left: 0; bottom: 0; width: min(340px, 88vw); max-height: none; z-index: 70; background: var(--surface);
+    border-right: 1px solid var(--line); box-shadow: 12px 0 40px rgba(10, 20, 45, .2); display: flex; flex-direction: column;
+    padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+    transform: translateX(-105%); visibility: hidden; transition: transform .22s ease, visibility 0s linear .22s; }
+  body.nav-open .navpanel { transform: none; visibility: visible; transition: transform .22s ease; }
+  body.nav-open { overflow: hidden; }
+  .nav-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; background: var(--mast); color: #fff; border-left: 6px solid var(--red); }
+  .nav-head b { font-size: 18px; font-weight: 800; }
+  .nav-head .act { background: none; color: #fff; border-color: rgba(255,255,255,.4); }
+  .navpanel .rail { padding: 6px 8px 12px; gap: 0; }
+  .navpanel .rail button, .navpanel .rail a.raillink { min-height: 44px; align-items: center; }
+  .rail .rname { display: block; -webkit-line-clamp: unset; }
+  .nav-acct { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding: 12px 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  .nav-acct span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .navpanel { transition: none !important; } }
+@media (max-width: 640px) {
+  .mast-in { gap: 10px; padding-block: 8px; }
+  .mast .search { display: none; }
+  .brand .eyebrow { font-size: 10.5px; }
+  .brand .name { font-size: 18px; }
+  .menu-btn { padding: 8px 10px; }
+  .menu-btn .lbl, #askTop .lbl { display: none; }
+  #askTop { padding: 10px 12px; }
+  .nav-search { display: flex; position: relative; margin: 12px 16px 4px; }
+  .nav-search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; stroke: var(--muted); fill: none; stroke-width: 2; }
+  .nav-search input { width: 100%; border: 1px solid var(--line); background: var(--bg); padding: 10px 12px 10px 34px; font-size: 16px; color: var(--ink); }
+  .formgrid { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 960px) {
   .wrap { grid-template-columns: minmax(0, 1fr); gap: 16px; }
-  .rail { position: static; flex-direction: row; overflow-x: auto; gap: 6px; padding-bottom: 4px; }
-  .rail button { white-space: nowrap; border-left: 0; border-bottom: 3px solid transparent; background: var(--surface); border: 1px solid var(--line); }
-  .rail button[aria-current="true"] { border-bottom: 3px solid var(--accent); }
-  .rail .sep, .rail .small, .rail .count { display: none; }
-  .rail a.raillink { white-space: nowrap; border: 1px solid var(--line); background: var(--surface); }
   .topics, .lcards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) {
@@ -302,21 +341,28 @@ a.btn-ask { text-decoration: none; }
 <div class="edge" aria-hidden="true"></div>
 <header class="mast">
   <div class="mast-in">
+    <button class="menu-btn" id="menuBtn" type="button" aria-controls="navPanel" aria-expanded="false" aria-label="Open the menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="lbl">Menu</span></button>
     <div class="brand">
       <span class="eyebrow">AIA Canada · Research and data</span>
       <span class="name">Research Hub</span>
     </div>
     <label class="search" for="q">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="Search reports and data: repair prices, EV owners, technicians…" autocomplete="off">
+      <input id="q" type="search" placeholder="Search reports and data" autocomplete="off">
     </label>
     <div class="who" id="who" hidden><span id="whoEmail"></span><button type="button" id="signOut">Sign out</button></div>
-    <button class="btn-ask" id="askTop" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg>Ask the data</button>
+    <button class="btn-ask" id="askTop" hidden aria-label="Ask the data"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg><span class="lbl">Ask the data</span></button>
   </div>
 </header>
 
 <div class="wrap">
-  <nav class="rail" id="rail" aria-label="Topics"></nav>
+  <div class="navpanel" id="navPanel">
+    <div class="nav-head"><b>Research Hub</b><button type="button" class="act" id="navClose">Close</button></div>
+    <label class="nav-search" for="q2"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q2" type="search" placeholder="Search reports and data" autocomplete="off"></label>
+    <nav class="rail" id="rail" aria-label="Sections"></nav>
+    <div class="nav-acct"><span id="navEmail"></span><button type="button" class="act" id="navSignOut">Sign out</button></div>
+  </div>
+  <div class="scrim" id="navScrim" hidden></div>
   <main id="main"></main>
 </div>
 
@@ -1042,7 +1088,7 @@ async function loadHub() {
 /* ---------- rail and pages ---------- */
 function railButton(t) {
   const n = DS.filter(d => d.topic === t.id).length;
-  return h('button', { type: 'button', 'aria-current': String(current === t.id), title: t.name, onclick: () => go(t.id) },
+  return h('button', { type: 'button', 'aria-current': String(current === t.id), title: t.name, onclick: () => { closeNav(); go(t.id); } },
     h('span', { class: 'rname' }, t.name), n && t.id !== 'defs' ? h('span', { class: 'count' }, n) : null);
 }
 function render() {
@@ -1057,6 +1103,7 @@ function render() {
     h('a', { class: 'raillink', href: 'https://outlook.aiacanada.com/ontario/' }, h('span', {}, 'Ontario vehicles'), h('span', { class: 'count' }, 'Open data')),
     IS_ADMIN ? h('div', { class: 'rgroup' }, 'Admin') : null, ...(IS_ADMIN ? grp('admin').map(railButton) : []),
     h('div', { class: 'sep' }), h('div', { class: 'small' }, `${REPORTS.length} research report${REPORTS.length === 1 ? '' : 's'}, the 2025 Outlook Study and ${(ECON && ECON.datasets || []).length} economic indicators.`));
+  $('#navEmail').textContent = $('#whoEmail').textContent;
   const main = $('#main');
   for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
   main.replaceChildren();
@@ -1425,6 +1472,31 @@ function scaleColor(n) {
 }
 function scaleOf(names) { return names.filter(n => NEG.test(n)).length >= 1 && names.filter(n => scaleColor(n)).length >= 2; }
 
+/* ---------- responsive navigation: left rail on desktop, slide-in menu on tablet and phone ---------- */
+const NAV_MQ = matchMedia('(max-width: 1099px)');
+function openNav() {
+  document.body.classList.add('nav-open'); $('#navScrim').hidden = false;
+  $('#menuBtn').setAttribute('aria-expanded', 'true');
+  $('#q2').value = $('#q').value;
+  setTimeout(() => { const cur = $('#rail [aria-current="true"]'); (cur || $('#navClose')).focus(); }, 60);
+}
+function closeNav(focusBtn) {
+  if (!document.body.classList.contains('nav-open')) return;
+  document.body.classList.remove('nav-open'); $('#navScrim').hidden = true;
+  $('#menuBtn').setAttribute('aria-expanded', 'false');
+  if (focusBtn) $('#menuBtn').focus();
+}
+$('#menuBtn').addEventListener('click', () => document.body.classList.contains('nav-open') ? closeNav(true) : openNav());
+$('#navClose').addEventListener('click', () => closeNav(true));
+$('#navScrim').addEventListener('click', () => closeNav(true));
+$('#navSignOut').addEventListener('click', () => { closeNav(); signOut(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('nav-open')) closeNav(true); });
+NAV_MQ.addEventListener('change', () => { if (!NAV_MQ.matches) closeNav(); });
+let q2t;
+$('#q2').addEventListener('input', () => { $('#q').value = $('#q2').value; clearTimeout(q2t); q2t = setTimeout(render, 250); });
+$('#q2').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); closeNav(); render(); window.scrollTo({ top: 0 }); } });
+$('#q').addEventListener('input', () => { $('#q2').value = $('#q').value; });
+
 /* ---------- sign-in, data loading and access management (Supabase) ---------- */
 const SB = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
 let IS_ADMIN = false, LOADED_FOR = null;
@@ -1432,6 +1504,7 @@ const INITIAL_HASH = (location.hash || '').slice(1);
 
 function gate(kind, info = {}) {
   document.querySelector('.wrap').classList.add('gated');
+  document.body.classList.add('is-gated'); if (typeof closeNav === 'function') closeNav();
   $('#rail').hidden = true; $('#askTop').hidden = true; $('.search').hidden = true;
   const main = $('#main');
   for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
@@ -1513,7 +1586,7 @@ async function loadApp(session) {
     const a = h('a', { href: url, download: filename }); document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 2000); return { status: 'saved' };
   } };
-  document.querySelector('.wrap').classList.remove('gated'); $('#rail').hidden = false; $('.search').hidden = false;
+  document.querySelector('.wrap').classList.remove('gated'); document.body.classList.remove('is-gated'); $('#rail').hidden = false; $('.search').hidden = false;
   if (TOPICS.some(t => t.id === INITIAL_HASH)) current = INITIAL_HASH;
   render();
   if (BYID[INITIAL_HASH]) jump(INITIAL_HASH);

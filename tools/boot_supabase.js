@@ -5,6 +5,7 @@ const INITIAL_HASH = (location.hash || '').slice(1);
 
 function gate(kind, info = {}) {
   document.querySelector('.wrap').classList.add('gated');
+  document.body.classList.add('is-gated'); if (typeof closeNav === 'function') closeNav();
   $('#rail').hidden = true; $('#askTop').hidden = true; $('.search').hidden = true;
   const main = $('#main');
   for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }
@@ -86,7 +87,7 @@ async function loadApp(session) {
     const a = h('a', { href: url, download: filename }); document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 2000); return { status: 'saved' };
   } };
-  document.querySelector('.wrap').classList.remove('gated'); $('#rail').hidden = false; $('.search').hidden = false;
+  document.querySelector('.wrap').classList.remove('gated'); document.body.classList.remove('is-gated'); $('#rail').hidden = false; $('.search').hidden = false;
   if (TOPICS.some(t => t.id === INITIAL_HASH)) current = INITIAL_HASH;
   render();
   if (BYID[INITIAL_HASH]) jump(INITIAL_HASH);
