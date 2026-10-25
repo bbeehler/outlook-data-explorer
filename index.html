@@ -1288,7 +1288,7 @@ function renderReportsAdmin(main) {
     h('div', { class: 'formgrid' }, h('label', { class: 'fl' }, h('span', {}, 'Report PDF'), file), h('label', { class: 'fl' }, h('span', {}, 'Or a link'), url),
       h('label', { class: 'fl' }, h('span', {}, 'Title'), title), h('label', { class: 'fl' }, h('span', {}, 'Series'), series),
       h('label', { class: 'fl' }, h('span', {}, 'Publication date'), date), h('label', { class: 'fl' }, h('span', {}, 'Store link'), link)),
-    h('p', { class: 'gate-muted' }, 'Reading takes about half a minute per 4 pages. Keep this page open until it finishes. The PDF stays private: members only ever see the charts.'),
+    h('p', { class: 'gate-muted' }, 'Reading runs on the server and takes a few minutes for a long report. You can close this page or lock your phone; come back to Research reports to see progress. The PDF stays private: members only ever see the charts.'),
     h('div', {}, go1), prog));
   const box = h('section', { class: 'panel' }, h('h2', {}, 'All reports'), h('p', { class: 'gate-muted' }, 'Loading…'));
   main.append(box);
@@ -1298,29 +1298,36 @@ function progress(el, msg, frac, extra) {
   el.replaceChildren(h('div', { class: 'bar-out' }, h('div', { class: 'bar-in', style: `width:${Math.round((frac || 0) * 100)}%` })), h('p', { class: 'gate-muted' }, msg), extra || '');
 }
 async function readReport(id, fresh, prog) {
-  let total, done = 0;
-  if (fresh) {
-    progress(prog, 'Counting pages…', 0);
-    const s = await hubExtract({ report_id: id, action: 'start' });
-    if (s.error) throw new Error(s.error);
-    total = s.chunks;
-  } else {
-    const { data } = await SB.from('hub_reports').select('chunks_total,chunks_done').eq('id', id).single();
-    total = data.chunks_total; done = data.chunks_done;
-  }
-  let found = 0;
-  for (let i = done; i < total; i++) {
-    progress(prog, `Reading part ${i + 1} of ${total}… ${found} chart${found === 1 ? '' : 's'} found so far.`, i / total);
-    const r = await hubExtract({ report_id: id, action: 'chunk', index: i });
-    if (r.error) {
-      progress(prog, `Stopped at pages ${(r.pages || []).join('–')}: ${r.error}`, i / total,
-        h('button', { type: 'button', class: 'act', onclick: () => readReport(id, false, prog).catch(e => progress(prog, 'Stopped: ' + e.message, 0)) }, 'Try again from here'));
-      return;
-    }
-    found += r.figures || 0;
-  }
-  progress(prog, `Done: ${found} chart${found === 1 ? '' : 's'} found. Opening the review…`, 1);
-  ADM = { view: 'review', id }; render(); window.scrollTo({ top: 0 });
+  progress(prog, fresh ? 'Counting pages\u2026' : 'Starting\u2026', 0);
+  const s = await hubExtract({ report_id: id, action: 'run', fresh: !!fresh });
+  if (s.error) throw new Error(s.error);
+  watchReport(id, prog);
+}
+// Reading runs on the server. This only shows progress, so the page can be closed or the phone locked.
+function watchReport(id, prog) {
+  let lastDone = -1, since = Date.now();
+  const again = (label) => h('button', { type: 'button', class: 'act', onclick: () => readReport(id, false, prog).catch(e => progress(prog, 'Could not restart: ' + e.message, 0)) }, label);
+  const tick = async () => {
+    if (!prog.isConnected) return;
+    try {
+      const [{ data: r }, { count }] = await Promise.all([
+        SB.from('hub_reports').select('status,chunks_done,chunks_total,error').eq('id', id).single(),
+        SB.from('hub_figures').select('id', { count: 'exact', head: true }).eq('report_id', id)]);
+      if (!r) return;
+      const frac = r.chunks_total ? r.chunks_done / r.chunks_total : 0;
+      if (r.chunks_total && r.chunks_done >= r.chunks_total) {
+        progress(prog, `Done: ${count || 0} chart${count === 1 ? '' : 's'} found. Opening the review\u2026`, 1);
+        setTimeout(() => { if (prog.isConnected) { ADM = { view: 'review', id }; render(); window.scrollTo({ top: 0 }); } }, 900);
+        return;
+      }
+      if (r.error && r.error.startsWith('Stopped')) { progress(prog, r.error, frac, again('Try again from here')); return; }
+      if (r.chunks_done !== lastDone) { lastDone = r.chunks_done; since = Date.now(); }
+      if (Date.now() - since > 6 * 60 * 1000) { progress(prog, `No progress for a few minutes (part ${r.chunks_done + 1} of ${r.chunks_total}).`, frac, again('Restart from here')); return; }
+      progress(prog, `Reading part ${r.chunks_done + 1} of ${r.chunks_total}\u2026 ${count || 0} chart${count === 1 ? '' : 's'} found so far. You can leave this page; reading carries on.`, frac);
+    } catch { /* network blip: keep watching */ }
+    setTimeout(tick, 4000);
+  };
+  tick();
 }
 async function listReports(box) {
   const [{ data: reps, error }, { data: figs }] = await Promise.all([
@@ -1333,9 +1340,13 @@ async function listReports(box) {
     const c = count[r.id] || { n: 0, check: 0, hidden: 0 };
     const acts = h('div', { class: 'chips' });
     acts.append(h('button', { type: 'button', class: 'act', onclick: () => { ADM = { view: 'review', id: r.id }; render(); window.scrollTo({ top: 0 }); } }, r.status === 'published' ? 'Edit' : 'Review'));
+    let live = null;
     if (r.status === 'processing' && r.chunks_done < r.chunks_total) {
-      const prog = h('div', { class: 'prog' });
-      acts.append(h('button', { type: 'button', class: 'act', onclick: () => { acts.append(prog); readReport(r.id, false, prog).catch(e => progress(prog, 'Stopped: ' + e.message, 0)); } }, 'Continue reading'));
+      live = h('div', { class: 'prog' });
+      const stale = Date.now() - new Date(r.updated_at).getTime() > 6 * 60 * 1000;
+      if ((r.error && r.error.startsWith('Stopped')) || stale)
+        acts.append(h('button', { type: 'button', class: 'act', onclick: () => readReport(r.id, false, live).catch(e => progress(live, 'Could not restart: ' + e.message, 0)) }, 'Continue reading'));
+      else watchReport(r.id, live);
     }
     const del = h('button', { type: 'button', class: 'act', onclick: async () => {
       if (del.dataset.armed !== '1') { del.dataset.armed = '1'; del.textContent = 'Confirm delete'; return; }
@@ -1346,7 +1357,7 @@ async function listReports(box) {
       await refreshHub(); listReports(box);
     } }, 'Delete');
     acts.append(del);
-    return h('tr', {}, h('th', { scope: 'row' }, r.title || r.file_name || '(untitled)', r.error ? h('div', { class: 'gate-err', style: 'font-size:12px;font-weight:500' }, r.error) : null),
+    return h('tr', {}, h('th', { scope: 'row' }, r.title || r.file_name || '(untitled)', r.error && r.status !== 'processing' ? h('div', { class: 'gate-err', style: 'font-size:12px;font-weight:500' }, r.error) : null, live),
       h('td', {}, h('span', { class: 'badge b-' + r.status }, STATUS[r.status] || r.status), r.status === 'processing' ? ` ${r.chunks_done}/${r.chunks_total}` : ''),
       h('td', {}, `${c.n - c.hidden}`, c.check ? h('span', { class: 'gate-muted' }, ` (${c.check} to check)`) : ''),
       h('td', {}, new Date(r.updated_at).toLocaleDateString('en-CA')), h('td', {}, acts));

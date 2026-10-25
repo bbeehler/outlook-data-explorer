@@ -40,7 +40,7 @@ Every chart has a table view, CSV download and copy buttons. This repo started a
 ## Adding a research report
 1. Sign in as a Data Portal admin and open **Research reports** (under Admin).
 2. Choose the report PDF (or paste a link to it). Title, series, date and store link are optional: Claude reads them from the cover.
-3. Click **Upload and read** and keep the page open. Claude reads 4 pages at a time (about half a minute each) and saves every chart and table as a draft.
+3. Click **Upload and read**. Reading runs on the server (edge function `hub-extract`, 4 pages per step, each step starting the next), so you can close the page or lock your phone. Research reports shows live progress; if a step fails twice the report shows the error and a **Continue reading** button.
 4. Review: each chart shows its page number. Charts marked "Some values read from the chart" had no printed numbers, so compare them with the page, then click **Looks right** or **Edit** (change the title, takeaway, chart type, unit or the data itself). Hide or delete anything members don't need.
 5. Click **Publish to members**. The report becomes its own section with its key findings, charts, and connected economic data. **Unpublish** takes it down again.
 

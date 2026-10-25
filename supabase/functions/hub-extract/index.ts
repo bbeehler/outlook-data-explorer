@@ -1,10 +1,11 @@
 // hub-extract: turns an uploaded research report (PDF in the private `hub-reports` bucket) into Research Hub figures.
-// Admin only. The page drives it one step at a time so no single request runs long:
-//   { report_id, action: "start" }            -> counts pages, splits the work into chunks of PAGES_PER_CHUNK pages
-//   { report_id, action: "chunk", index: n }  -> Claude reads those pages and saves every chart/table as a figure
-//                                                 (chunk 0 also returns the report's title, date, summary, key findings)
-// Re-running a chunk replaces the figures it made before. When the last chunk is done the report moves to "review";
-// an admin checks the figures and publishes it from the Research reports page.
+// Admin only. Reading runs on the server, so the admin can close the page or lock their phone:
+//   { report_id, action: "run", fresh?: true } -> (fresh: count pages and clear old charts) then read the report in the
+//        background, one chunk of PAGES_PER_CHUNK pages per invocation; each invocation starts the next one itself.
+//        Replies at once; the page shows progress from hub_reports (chunks_done / chunks_total / status / error).
+//   { report_id, action: "import_url", url }   -> fetch the PDF from a link instead of uploading it.
+// Each chunk is tried twice. Chunk 0 also fills in the report's title, date, summary and key findings.
+// When the last chunk is done the report moves to "review"; an admin checks the figures and publishes them.
 // Secrets: ANTHROPIC_API_KEY (+ optional ANTHROPIC_WORKSPACE_ID), optional HUB_EXTRACT_MODEL, HUB_PAGES_PER_CHUNK.
 // Uses the AIA Canada shared tag list (TAGS) so report figures can be linked to economy series.
 import { createClient } from "jsr:@supabase/supabase-js@2";
@@ -16,6 +17,9 @@ const WORKSPACE = (Deno.env.get("ANTHROPIC_WORKSPACE_ID") ?? "").trim();
 const PAGES_PER_CHUNK = Number(Deno.env.get("HUB_PAGES_PER_CHUNK") ?? "4");
 const ORIGINS = (Deno.env.get("OUTLOOK_ALLOWED_ORIGINS") ??
   "https://outlook.aiacanada.com,https://research.aiacanada.com,https://bbeehler.github.io,http://localhost:8000,http://127.0.0.1:8000").split(",").map((s) => s.trim());
+declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void };
+const SELF = `${Deno.env.get("SUPABASE_URL")}/functions/v1/hub-extract`;
+const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 
 // Shared vocabulary that links report figures to Statistics Canada series and Outlook figures.
@@ -84,6 +88,8 @@ If a table mixes units (for example dollars in one column and percentages in ano
 Write titles and insights in plain Canadian English. Call save_figures exactly once with everything you found (an empty list if there is no data on these pages).`;
 
 async function isAdmin(req: Request) {
+  // the function calling itself for the next chunk
+  if (req.headers.get("x-hub-internal") === "1" && req.headers.get("Authorization") === `Bearer ${SERVICE}`) return true;
   // Short-lived test tokens (table hub_test_tokens, service role only) for automated checks.
   const test = req.headers.get("x-hub-test") ?? "";
   if (test.length >= 32) {
@@ -173,18 +179,50 @@ async function work(body: Record<string, any>) {
     return { ok: true, bytes: buf.length };
   }
 
-  if (body.action === "start") {
-    const pdf = await loadPdf(rep.file_path);
-    const pages = pdf.getPageCount();
-    const chunks = Math.ceil(pages / PAGES_PER_CHUNK);
-    await db.from("hub_figures").delete().eq("report_id", id);
-    await db.from("hub_reports").update({ pages, chunks_total: chunks, chunks_done: 0, status: "processing", error: "" }).eq("id", id);
-    return { pages, chunks, pages_per_chunk: PAGES_PER_CHUNK };
+  if (body.action === "run") {
+    // start (or resume) a server-side reading job; a new token makes any older job stop
+    const token = crypto.randomUUID();
+    let next = rep.chunks_done;
+    if (body.fresh || !rep.chunks_total) {
+      const pdf = await loadPdf(rep.file_path);
+      const pages = pdf.getPageCount();
+      await db.from("hub_figures").delete().eq("report_id", id);
+      await db.from("hub_reports").update({ pages, chunks_total: Math.ceil(pages / PAGES_PER_CHUNK), chunks_done: 0, status: "processing", error: "", run_token: token }).eq("id", id);
+      next = 0;
+    } else {
+      if (next >= rep.chunks_total) return { done: true };
+      await db.from("hub_reports").update({ status: "processing", error: "", run_token: token }).eq("id", id);
+    }
+    EdgeRuntime.waitUntil(step(id, next, token));
+    return { started: true, from: next };
   }
 
-  if (body.action === "chunk") {
-    const index = Number(body.index);
-    if (!Number.isInteger(index) || index < 0 || index >= rep.chunks_total) return { error: "Bad chunk index" };
+  if (body.action === "continue") {
+    EdgeRuntime.waitUntil(step(id, Number(body.index), String(body.token ?? "")));
+    return { queued: true };
+  }
+  return { error: "Unknown action" };
+}
+
+// One chunk per invocation, then hand the next chunk to a fresh invocation (keeps each run well inside time limits).
+async function step(id: string, index: number, token: string) {
+  const { data: rep } = await db.from("hub_reports").select("*").eq("id", id).maybeSingle();
+  if (!rep || rep.run_token !== token || !Number.isInteger(index) || index >= rep.chunks_total) return;
+  let r = await readChunk(rep, index);
+  if (r.error) r = await readChunk(rep, index); // one retry
+  if (r.error) { await db.from("hub_reports").update({ error: `Stopped at pages ${r.pages?.join("-")}: ${r.error}` }).eq("id", id); return; }
+  if (r.finished) return;
+  const { data: now } = await db.from("hub_reports").select("run_token").eq("id", id).maybeSingle();
+  if (!now || now.run_token !== token) return;
+  await fetch(SELF, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE}`, "x-hub-internal": "1" },
+    body: JSON.stringify({ report_id: id, action: "continue", index: index + 1, token }) }).catch(async (e) => {
+    await db.from("hub_reports").update({ error: "Could not start the next part: " + String(e).slice(0, 200) }).eq("id", id);
+  });
+}
+
+async function readChunk(rep: Record<string, any>, index: number) {
+  const id = rep.id;
+  {
     const first = index * PAGES_PER_CHUNK + 1, last = Math.min(rep.pages, first + PAGES_PER_CHUNK - 1);
     try {
       const src = await loadPdf(rep.file_path);
@@ -229,7 +267,6 @@ async function work(body: Record<string, any>) {
       return { error: msg, pages: [first, last] };
     }
   }
-  return { error: "Unknown action" };
 }
 
 Deno.serve(async (req) => {
@@ -239,17 +276,7 @@ Deno.serve(async (req) => {
   if (!(await isAdmin(req))) return new Response(JSON.stringify({ error: "admins_only" }), { status: 403, headers });
   let body: Record<string, any> = {};
   try { body = await req.json(); } catch { /* empty */ }
-  // Stream a space every 10 s while Claude reads, so proxies don't drop a long request; the JSON follows.
-  const enc = new TextEncoder();
-  const stream = new ReadableStream({
-    async start(ctrl) {
-      const tick = setInterval(() => { try { ctrl.enqueue(enc.encode(" ")); } catch { /* closed */ } }, 10000);
-      let result: unknown;
-      try { result = await work(body); } catch (e) { result = { error: String((e as Error).message ?? e).slice(0, 500) }; }
-      clearInterval(tick);
-      ctrl.enqueue(enc.encode(JSON.stringify(result)));
-      ctrl.close();
-    },
-  });
-  return new Response(stream, { headers });
+  let result: unknown;
+  try { result = await work(body); } catch (e) { result = { error: String((e as Error).message ?? e).slice(0, 500) }; }
+  return new Response(JSON.stringify(result), { headers });
 });
