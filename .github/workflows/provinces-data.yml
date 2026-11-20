@@ -1,0 +1,51 @@
+# Keeps the Vehicles by province page (provinces/) current: Statistics Canada tables for every province and territory,
+# plus Alberta's yearly registration tables (PDFs on open.alberta.ca). Runs monthly, on demand, and when this changes.
+name: Provincial vehicle data
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/provinces-data.yml', 'tools/provinces_build.py']
+  workflow_dispatch:
+  schedule:
+    - cron: '41 10 5 * *'
+permissions:
+  contents: write
+concurrency: { group: data-commits, cancel-in-progress: false }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tools
+        run: sudo apt-get install -y -q poppler-utils >/dev/null
+      - name: Alberta tables (PDF to text)
+        run: |
+          mkdir -p "$RUNNER_TEMP/ab" && cd "$RUNNER_TEMP/ab"
+          python3 - <<'PY'
+          import json, urllib.request, re
+          for kind, pid in [("fuel", "c5eb22a7-f3e6-41ce-8363-17d1ea979bc7"), ("style", "553f5a93-0032-484a-b5d3-bcfd8c47bc11")]:
+              j = json.load(urllib.request.urlopen(urllib.request.Request(f"https://open.alberta.ca/api/3/action/package_show?id={pid}", headers={"User-Agent": "Mozilla/5.0"}), timeout=120))["result"]
+              for i, r in enumerate(j["resources"]):
+                  if str(r.get("format", "")).upper() == "PDF":
+                      fn = f"{kind}_{i:02d}.pdf"
+                      try:
+                          urllib.request.urlretrieve(r["url"], fn); print("got", fn, r["name"])
+                      except Exception as e:
+                          print("skip", r["url"], e)
+          PY
+          for f in *.pdf; do pdftotext -layout "$f" "${f%.pdf}.txt"; done; ls
+      - name: Build provinces/data.json
+        run: python3 tools/provinces_build.py provinces/data.json "$RUNNER_TEMP/ab"
+      - name: Save what was found (provinces-raw branch, for checking)
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/raw" && cp provinces/data.json.structure.txt "$RUNNER_TEMP/raw/" 2>/dev/null; cp "$RUNNER_TEMP"/ab/*.txt "$RUNNER_TEMP/raw/" 2>/dev/null; cp provinces/data.json "$RUNNER_TEMP/raw/" 2>/dev/null
+          cd "$RUNNER_TEMP/raw" && git init -q -b provinces-raw && git config user.name "github-actions[bot]" && git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -qm "Provincial build check $(date -u +%F)" && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" provinces-raw
+      - name: Commit if the numbers changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git add -N provinces/data.json || true
+          if git diff --quiet -- provinces/data.json; then echo "No change"; exit 0; fi
+          git add provinces/data.json && git commit -m "Update provincial vehicle data" && git pull --rebase && git push
