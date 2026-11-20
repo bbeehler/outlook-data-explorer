@@ -717,7 +717,7 @@ function render() {
   const rail = $('#rail');
   rail.replaceChildren(...TOPICS.map(t => h('button', { type: 'button', 'aria-current': String(current === t.id), onclick: () => go(t.id) },
     h('span', {}, t.name), t.id !== 'home' && t.id !== 'defs' ? h('span', { class: 'count' }, DS.filter(d => d.topic === t.id).length) : null)),
-    h('a', { class: 'raillink', href: 'ontario/' }, h('span', {}, 'Ontario vehicles'), h('span', { class: 'count' }, 'Open data')),
+    h('a', { class: 'raillink', href: 'provinces/' }, h('span', {}, 'Vehicles by province'), h('span', { class: 'count' }, 'Open data')),
     h('div', { class: 'sep' }), h('div', { class: 'small' }, `${DS.length - 1} figures from the 2025 Outlook Study data tool. Data mostly 2019–2023, with forecasts to 2030.`));
   const main = $('#main');
   for (const c of main.querySelectorAll('canvas')) { const ch = CHARTS.get(c); if (ch) { ch.destroy(); CHARTS.delete(c); } }

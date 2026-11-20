@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vehicles by Province | AIA Canada</title>
+<meta name="description" content="Vehicles on the road and new registrations in every Canadian province and territory, by type and fuel, with detail for Ontario, Quebec and Alberta.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400;500;600;700;800&family=Sofia+Sans+Semi+Condensed:wght@500;600&display=swap">
+<style>
+/* AIA Canada brand frame, same as the Outlook Data Explorer: dark-blue masthead, red edge bar, square corners. */
+:root {
+  --navy: #192b56; --red: #e21c47; --bg: #f2f7fa; --surface: #ffffff; --ink: #192b56; --ink-2: #3d4c6e; --muted: #5f6b85;
+  --line: #d9e3ec; --line-soft: #e8eef4; --accent: #e21c47; --accent-ink: #c4123a; --chip: #e6eef5; --chip-on: #192b56; --chip-on-ink: #fff;
+  --mast: #192b56; --mast-ink: #fff; --mast-2: #84c8e3; --focus: #e21c47; --warn-bg: #fff4e0; --warn-ink: #7a4b00;
+  --s1: #2a78d6; --s2: #e21c47; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --s8: #eb6834; --muted-bar: #b9c6d6;
+  --font: "Sofia Pro", "Sofia Sans", Arial, sans-serif; --font-data: "Sofia Sans Semi Condensed", "Sofia Sans", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1630; --surface: #142045; --ink: #eef3f9; --ink-2: #c9d4e4; --muted: #9eadc6; --line: #26365f; --line-soft: #1d2a50;
+    --accent: #f2546f; --accent-ink: #ff7d93; --chip: #1f2d55; --chip-on: #84c8e3; --chip-on-ink: #0d1630;
+    --mast: #0a1128; --focus: #84c8e3; --warn-bg: #3a2c10; --warn-ink: #f5d48f;
+    --s1: #3987e5; --s2: #f2546f; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #d95926; --muted-bar: #3c4d78; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1630; --surface: #142045; --ink: #eef3f9; --ink-2: #c9d4e4; --muted: #9eadc6; --line: #26365f; --line-soft: #1d2a50;
+  --accent: #f2546f; --accent-ink: #ff7d93; --chip: #1f2d55; --chip-on: #84c8e3; --chip-on-ink: #0d1630;
+  --mast: #0a1128; --focus: #84c8e3; --warn-bg: #3a2c10; --warn-ink: #f5d48f;
+  --s1: #3987e5; --s2: #f2546f; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #d95926; --muted-bar: #3c4d78; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; }
+.edge { position: fixed; top: 0; bottom: 0; left: 0; width: 6px; background: var(--red); z-index: 40; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+a { color: inherit; }
+.mast { background: var(--mast); color: var(--mast-ink); position: sticky; top: 0; z-index: 20; }
+.mast-in { max-width: 1100px; margin: 0 auto; padding: 12px 16px 12px 22px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand { display: flex; flex-direction: column; margin-right: auto; min-width: 0; }
+.brand .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--mast-2); font-weight: 600; }
+.brand .name { font-size: 22px; font-weight: 800; line-height: 1.1; }
+.mast a.back { color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,.35); padding: 7px 12px; font-size: 13px; }
+.mast a.back:hover { background: rgba(255,255,255,.08); }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 22px 16px 60px 22px; display: flex; flex-direction: column; gap: 22px; }
+.head { display: flex; flex-direction: column; gap: 6px; }
+.head .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); font-weight: 700; }
+.head h1 { font-size: 30px; font-weight: 800; line-height: 1.15; }
+.head p { margin: 0; color: var(--ink-2); max-width: 72ch; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.kpi { background: var(--surface); padding: 16px 18px; display: flex; flex-direction: column; gap: 2px; }
+.kpi .v { font-size: 30px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kpi .l { font-size: 13px; color: var(--ink-2); }
+.kpi .s { font-size: 12px; color: var(--muted); font-family: var(--font-data); }
+.jump { display: flex; flex-wrap: wrap; gap: 8px; }
+.jump a { border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; font-size: 14px; text-decoration: none; }
+.jump a:hover { border-color: var(--accent); }
+.card { background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; scroll-margin-top: 80px; }
+.card-h { padding: 16px 18px 6px; display: flex; flex-direction: column; gap: 4px; }
+.ref { font-family: var(--font-data); font-size: 12px; color: var(--muted); letter-spacing: .02em; text-transform: uppercase; }
+.card-h h2 { font-size: 19px; font-weight: 800; line-height: 1.25; }
+.insight { font-size: 14px; color: var(--ink-2); max-width: 80ch; }
+.insight strong { color: var(--ink); }
+.controls { padding: 8px 18px 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.controls label { font-size: 13px; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); flex-wrap: wrap; }
+.seg button { border: 0; background: var(--surface); padding: 5px 10px; font-size: 13px; color: var(--ink-2); }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--chip-on); color: var(--chip-on-ink); font-weight: 600; }
+.sel, .tsearch { border: 1px solid var(--line); background: var(--surface); padding: 5px 8px; font-size: 13px; max-width: 100%; }
+.tsearch { width: 220px; }
+.legend { padding: 8px 18px 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.lg { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); padding: 3px 9px; font-size: 12.5px; }
+.lg i { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+.chart { position: relative; height: 320px; padding: 10px 18px 0; }
+.chart.tall { height: 520px; }
+.body { padding: 10px 18px 0; }
+.tbl-wrap { overflow: auto; max-height: 440px; border: 1px solid var(--line-soft); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--line-soft); white-space: nowrap; font-variant-numeric: tabular-nums; }
+th:first-child, td:first-child { text-align: left; white-space: normal; min-width: 150px; }
+thead th { position: sticky; top: 0; background: var(--surface); color: var(--ink-2); font-weight: 600; border-bottom: 1px solid var(--line); }
+tbody tr:hover td, tbody tr:hover th { background: var(--bg); }
+tbody th { font-weight: 600; }
+tr.pick { cursor: pointer; }
+tr.pick[aria-selected="true"] th, tr.pick[aria-selected="true"] td { background: var(--chip); }
+.code { font-family: var(--font-data); color: var(--muted); font-size: 12px; margin-left: 6px; }
+.up { color: var(--s6); } .down { color: var(--accent-ink); }
+.foot { padding: 10px 18px 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; align-items: center; border-top: 1px solid var(--line-soft); margin-top: 12px; }
+.src { font-size: 12px; color: var(--muted); max-width: 75ch; }
+.act { border: 1px solid var(--line); background: var(--surface); padding: 5px 10px; font-size: 13px; }
+.act:hover { border-color: var(--ink); }
+.note { background: var(--warn-bg); color: var(--warn-ink); padding: 8px 12px; font-size: 13px; margin: 8px 18px 0; }
+.pagefoot { font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; max-width: 90ch; }
+.pagefoot h2 { font-size: 15px; color: var(--ink); }
+.loading { padding: 40px 0; color: var(--muted); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 760px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpi .v { font-size: 24px; }
+  .head h1 { font-size: 25px; }
+  .chart { height: 270px; padding: 10px 8px 0; }
+  .chart.tall { height: 460px; }
+  .card-h, .controls, .body, .foot, .legend { padding-left: 12px; padding-right: 12px; }
+  .note { margin-left: 12px; margin-right: 12px; }
+  .tsearch { width: 100%; }
+  .brand .name { font-size: 19px; }
+}
+.pickrow { padding: 0; }
+.pickrow label { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 600; }
+.pickrow .sel { font-size: 16px; padding: 8px 10px; min-width: 260px; }
+.golink { display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--line); padding: 14px 16px; text-decoration: none; color: var(--ink); background: var(--surface); }
+.golink:hover { border-color: var(--accent); }
+.golink b { font-size: 17px; color: var(--accent); }
+tr.cur th, tr.cur td { background: var(--chip-on); color: var(--chip-on-ink); }
+</style>
+</head>
+<body>
+<div class="edge" aria-hidden="true"></div>
+<header class="mast"><div class="mast-in">
+  <div class="brand"><span class="eyebrow">AIA Canada · Provincial registrations</span><span class="name">Vehicles by Province</span></div>
+  <a class="back" href="../">AIA Canada Research Hub</a>
+</div></header>
+<div class="wrap">
+  <div class="head">
+    <span class="eyebrow" id="asAt">Statistics Canada and provincial open data</span>
+    <h1>What's on the road, province by province</h1>
+    <p>Vehicles on the road and new vehicles registered in every province and territory, by vehicle type and fuel, from Statistics Canada. Ontario and Quebec also publish vehicle-by-vehicle data (makes, models, ages and regions), and Alberta publishes yearly tables: those are linked or shown for those provinces.</p>
+  </div>
+  <div class="controls pickrow"><label>Province or territory <select class="sel" id="pick" aria-label="Province or territory"></select></label></div>
+  <section class="kpis" id="kpis" aria-label="Key figures"></section>
+  <nav class="jump" aria-label="Sections">
+    <a href="#fleet">Fleet</a><a href="#fuel">Fuel mix</a><a href="#newregs">New registrations</a><a href="#detail">Provincial detail</a><a href="#compare">Compare provinces</a>
+  </nav>
+  <main id="main" style="display:flex;flex-direction:column;gap:22px"><p class="loading">Loading the data…</p></main>
+  <footer class="pagefoot">
+    <h2>About this data</h2>
+    <p><b>Vehicles on the road</b>: Statistics Canada, <a href="https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=2310030801">Table 23-10-0308-01</a>, vehicle registrations by type of vehicle and fuel type, counted once a year from provincial and territorial registration records. <b>New registrations</b>: Statistics Canada, <a href="https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=2010002501">Table 20-10-0025-01</a>, new motor vehicle registrations by fuel type, quarterly. Both under the Statistics Canada Open Licence.</p>
+    <p><b>Alberta</b>: Alberta Transportation and Economic Corridors, registered motorized vehicles by fuel type and by body style as of March 31 each year, on <a href="https://open.alberta.ca/">open.alberta.ca</a> (Open Government Licence – Alberta). Alberta’s own fuel categories differ from Statistics Canada’s.</p>
+    <p>Statistics Canada counts registrations, so a vehicle registered twice in a year or moved between provinces can affect the totals, and provinces count some vehicle types differently. Light vehicles are those weighing 4,536 kg or less: cars, SUVs and minivans (“multi-purpose vehicles”), pickups and vans.</p>
+    <p id="built"></p>
+  </footer>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') el.className = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat(Infinity)) if (c != null && c !== false) el.append(c instanceof Node ? c : String(c));
+  return el;
+};
+const nf = new Intl.NumberFormat('en-CA');
+const fmt = n => nf.format(Math.round(n));
+const pct = (n, d = 1) => (n * 100).toFixed(d) + '%';
+const chg = (a, b) => b ? (a - b) / b : null;
+const sgn = (x, d = 1) => x == null ? '—' : (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x * 100).toFixed(d) + '%';
+const cls = x => x == null ? '' : x > 0.0005 ? 'up' : x < -0.0005 ? 'down' : '';
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const big = n => n >= 1e6 ? (n / 1e6).toFixed(2).replace(/\.?0+$/, '') + 'M' : n >= 1e4 ? Math.round(n / 1e3) + 'K' : fmt(n);
+const csvCell = v => /[",\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v);
+function download(name, rows) {
+  const blob = new Blob(['﻿' + rows.map(r => r.map(csvCell).join(',')).join('\n')], { type: 'text/csv' });
+  const a = h('a', { href: URL.createObjectURL(blob), download: name }); document.body.append(a); a.click(); a.remove();
+}
+function seg(opts, val, on) {
+  const el = h('div', { class: 'seg', role: 'group' });
+  const draw = () => el.replaceChildren(...opts.map(([v, t]) => h('button', { type: 'button', 'aria-pressed': String(v === val), onclick: () => { val = v; draw(); on(v); } }, t)));
+  draw(); return el;
+}
+function legend(items) { return h('div', { class: 'legend' }, items.map(([t, c]) => h('span', { class: 'lg' }, h('i', { style: `background:${c}` }), t))); }
+
+const charts = new Map();
+function chart(id, canvasParent, cfg) {
+  if (charts.has(id)) charts.get(id).destroy();
+  const cv = h('canvas', { role: 'img', 'aria-label': cfg.label || '' });
+  canvasParent.replaceChildren(cv);
+  const ink = css('--ink-2'), grid = css('--line-soft');
+  const c = new Chart(cv, {
+    type: cfg.type, data: cfg.data,
+    options: Object.assign({
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: cfg.tip || (x => `${x.dataset.label}: ${fmt(x.parsed.y ?? x.parsed.x)}`) } } },
+      scales: {
+        x: Object.assign({ grid: { display: false }, ticks: { color: ink, font: { family: 'Sofia Sans Semi Condensed' } }, stacked: !!cfg.stacked }, cfg.x || {}),
+        y: Object.assign({ grid: { color: grid }, border: { display: false }, ticks: { color: ink, callback: cfg.ytick || (v => big(v)), font: { family: 'Sofia Sans Semi Condensed' } }, stacked: !!cfg.stacked, beginAtZero: true }, cfg.y || {}),
+      },
+    }, cfg.options || {}),
+  });
+  charts.set(id, c); return c;
+}
+function card(id, ref, title) {
+  const ins = h('p', { class: 'insight' });
+  const el = h('section', { class: 'card', id }, h('div', { class: 'card-h' }, h('span', { class: 'ref' }, ref), h('h2', {}, title), ins));
+  return { el, ins };
+}
+function foot(src, onCsv) { return h('div', { class: 'foot' }, h('span', { class: 'src' }, src), h('button', { type: 'button', class: 'act', onclick: onCsv }, 'Download CSV')); }
+
+let D, CUR = 'on';
+const PLACE = k => D.places.find(p => p.key === k);
+const FT = { light: 'Total, vehicles weighing 4,536 kilograms or less', all: 'Total, road motor vehicle registrations' };
+const TYPES = [['Passenger cars', 'Passenger cars, weighing 4,536 kilograms or less', '--s1'], ['SUVs and minivans', 'Multi-purpose vehicles, weighing 4,536 kilograms or less', '--s3'],
+  ['Pickup trucks', 'Pickup trucks, weighing 4,536 kilograms or less', '--s4'], ['Vans', 'Vans, weighing 4,536 kilograms or less', '--s7'],
+  ['Medium trucks (4,536–11,793 kg)', 'Total, vehicles weighing 4,536 to 11,793 kilograms', '--s5'], ['Heavy trucks (11,794 kg+)', 'Total, vehicles weighing 11,794 kilograms or more', '--s8'],
+  ['Buses', 'Buses', '--s6'], ['Motorcycles and mopeds', 'Motorcycles and mopeds', '--muted-bar']];
+const FUELS = [['Battery electric', '--s1'], ['Plug-in hybrid electric', '--s2'], ['Hybrid electric', '--s3'], ['Diesel', '--s4'], ['Gasoline', '--muted-bar'], ['Other fuel types', '--s5']];
+const NFUELS = [['Battery electric', '--s1'], ['Plug-in hybrid electric', '--s2'], ['Hybrid electric', '--s3'], ['Diesel', '--s4'], ['Gasoline', '--muted-bar'], ['Other fuel types', '--s5']];
+const SRC_F = 'Statistics Canada, Table 23-10-0308-01, vehicle registrations by type of vehicle and fuel type.';
+const SRC_N = 'Statistics Canada, Table 20-10-0025-01, new motor vehicle registrations, quarterly.';
+function series(p, type, fuel) { const s = (p.fleet || []).find(x => x.dims[0] === type && x.dims[1] === fuel); return s ? Object.fromEntries(s.years.map((y, i) => [y, s.vals[i]])) : {}; }
+function years(p) { const s = series(p, FT.all, 'All fuel types'); return Object.keys(s).filter(y => s[y] > 0).sort(); }
+function nr(p, fuel) { return (p.newregs || {})[fuel] || {}; }
+function quarters(p) { const a = nr(p, 'All fuel types'); return Object.keys(a).sort((x, y) => (x.slice(3) + x[1]).localeCompare(y.slice(3) + y[1])); }
+function evShare4(p) { const q = quarters(p).slice(-4); const t = q.reduce((s, k) => s + (nr(p, 'All fuel types')[k] || 0), 0); const z = q.reduce((s, k) => s + (nr(p, 'Battery electric')[k] || 0) + (nr(p, 'Plug-in hybrid electric')[k] || 0), 0); return t ? z / t : null; }
+function lightShare(p, fuels, y) { const t = series(p, FT.light, 'All fuel types')[y]; return t ? fuels.reduce((s, f) => s + (series(p, FT.light, f)[y] || 0), 0) / t : null; }
+
+async function boot() {
+  D = await (await fetch('data.json', { cache: 'no-cache' })).json();
+  const sel = $('#pick');
+  sel.replaceChildren(...D.places.map(p => h('option', { value: p.key }, p.key === 'ca' ? 'Canada (all provinces and territories)' : p.name)));
+  const fromHash = location.hash.slice(1); if (PLACE(fromHash)) CUR = fromHash;
+  sel.value = CUR;
+  sel.addEventListener('change', () => { CUR = sel.value; history.replaceState(null, '', '#' + CUR); renderAll(); });
+  $('#built').textContent = `Built ${D.built}. The page checks for new figures each month.`;
+  renderAll();
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderAll);
+}
+function renderAll() {
+  const p = PLACE(CUR), Y = years(p), L = Y.at(-1);
+  $('#asAt').textContent = `Statistics Canada · vehicles on the road to ${L}` + (quarters(p).length ? `, new registrations to ${quarters(p).at(-1)}` : '');
+  kpis(p);
+  $('#main').replaceChildren(fleet(p), fuel(p), newregs(p), detail(p), compare(p));
+}
+function kpis(p) {
+  const Y = years(p), L = Y.at(-1), P = Y.at(-2), all = series(p, FT.all, 'All fuel types'), light = series(p, FT.light, 'All fuel types');
+  const el = lightShare(p, ['Battery electric', 'Plug-in hybrid electric'], L), hy = lightShare(p, ['Hybrid electric'], L), ev4 = evShare4(p);
+  $('#kpis').replaceChildren(
+    h('div', { class: 'kpi' }, h('span', { class: 'v' }, big(all[L] || 0)), h('span', { class: 'l' }, `Vehicles on the road, ${L}`), h('span', { class: 's' }, `${sgn(chg(all[L], all[P]))} vs ${P}`)),
+    h('div', { class: 'kpi' }, h('span', { class: 'v' }, big(light[L] || 0)), h('span', { class: 'l' }, 'Light vehicles'), h('span', { class: 's' }, `${pct((light[L] || 0) / (all[L] || 1))} of all vehicles`)),
+    h('div', { class: 'kpi' }, h('span', { class: 'v' }, el == null ? '—' : pct(el)), h('span', { class: 'l' }, 'Plug-in or battery electric'), h('span', { class: 's' }, `of light vehicles · hybrids ${hy == null ? '—' : pct(hy)}`)),
+    h('div', { class: 'kpi' }, h('span', { class: 'v' }, ev4 == null ? '—' : pct(ev4)), h('span', { class: 'l' }, 'Electric share of new vehicles'), h('span', { class: 's' }, 'Past four quarters, plug-in and battery')),
+  );
+}
+function fleet(p) {
+  const Y = years(p), L = Y.at(-1), F = Y[0];
+  const { el, ins } = card('fleet', 'Fleet', `Vehicles on the road by type, ${F}–${L}`);
+  const all = series(p, FT.all, 'All fuel types');
+  const types = TYPES.map(([n, k, c]) => [n, series(p, k, 'All fuel types'), c]).filter(([, s]) => Y.some(y => s[y]));
+  const lead = types.slice().sort((a, b) => (b[1][L] || 0) - (a[1][L] || 0))[0];
+  ins.append(`${p.key === 'ca' ? 'Canada' : p.name} had `, h('strong', {}, fmt(all[L] || 0)), ` road vehicles registered in ${L}, ${sgn(chg(all[L], all[F]))} since ${F}. `, h('strong', {}, lead[0]), ` are the largest group, at ${pct((lead[1][L] || 0) / all[L])}.`);
+  const box = h('div', { class: 'chart' });
+  el.append(legend(types.map(([n, , c]) => [n, css(c)])), box, foot(SRC_F, () => download(`vehicles-by-type-${p.key}.csv`, [['Year', ...types.map(t => t[0]), 'All road vehicles'], ...Y.map(y => [y, ...types.map(t => t[1][y] || 0), all[y] || 0])])));
+  requestAnimationFrame(() => chart('fleet', box, { type: 'bar', stacked: true, label: 'Vehicles on the road by type and year',
+    data: { labels: Y, datasets: types.map(([n, s, c]) => ({ label: n, data: Y.map(y => s[y] || 0), backgroundColor: css(c) })) },
+    options: { plugins: { legend: { display: false }, tooltip: { callbacks: { footer: it => 'Total: ' + fmt(it.reduce((s, x) => s + x.parsed.y, 0)) } } } } }));
+  return el;
+}
+function fuel(p) {
+  const Y = years(p), L = Y.at(-1), F = Y[0];
+  const { el, ins } = card('fuel', 'Fuel mix', 'How light vehicles on the road are powered');
+  const sh = (y, f) => lightShare(p, [f], y);
+  const e = lightShare(p, ['Battery electric', 'Plug-in hybrid electric', 'Hybrid electric'], L), e0 = lightShare(p, ['Battery electric', 'Plug-in hybrid electric', 'Hybrid electric'], F);
+  const b = series(p, FT.light, 'Battery electric'), bp = (b[L] || 0) - (b[Y.at(-2)] || 0);
+  ins.append(`Hybrids, plug-ins and battery electrics were `, h('strong', {}, pct(e || 0)), ` of light vehicles on the road in ${L}, up from ${pct(e0 || 0)} in ${F}. Battery electrics alone numbered `, h('strong', {}, fmt(b[L] || 0)), `, ${bp >= 0 ? '+' : '−'}${fmt(Math.abs(bp))} in a year.`);
+  let mode = 'share';
+  const box = h('div', { class: 'chart' }), lg = h('div');
+  const draw = () => {
+    const keys = mode === 'share' ? FUELS.filter(([k]) => k !== 'Gasoline' && k !== 'Other fuel types') : FUELS;
+    lg.replaceChildren(legend(keys.map(([k, c]) => [k, css(c)])));
+    chart('fuel', box, { type: mode === 'share' ? 'line' : 'bar', stacked: mode === 'count', label: 'Fuel mix of light vehicles by year',
+      data: { labels: Y, datasets: keys.map(([k, c]) => ({ label: k, data: Y.map(y => mode === 'share' ? +((sh(y, k) || 0) * 100).toFixed(3) : (series(p, FT.light, k)[y] || 0)), borderColor: css(c), backgroundColor: css(c), pointRadius: 2, borderWidth: 2 })) },
+      ytick: mode === 'share' ? (v => v + '%') : undefined, tip: mode === 'share' ? (x => `${x.dataset.label}: ${x.parsed.y.toFixed(2)}%`) : undefined });
+  };
+  el.append(h('div', { class: 'controls' }, seg([['share', 'Share, excluding gasoline'], ['count', 'All light vehicles']], mode, v => { mode = v; draw(); })), lg, box,
+    foot(SRC_F + ' Vehicles weighing 4,536 kg or less.', () => download(`light-vehicle-fuel-${p.key}.csv`, [['Year', ...FUELS.map(f => f[0]), 'All fuel types'], ...Y.map(y => [y, ...FUELS.map(([k]) => series(p, FT.light, k)[y] || 0), series(p, FT.light, 'All fuel types')[y] || 0])])));
+  requestAnimationFrame(draw);
+  return el;
+}
+function newregs(p) {
+  const Q = quarters(p);
+  const { el, ins } = card('newregs', 'New registrations', 'New vehicles registered each quarter, by fuel');
+  if (!Q.length) { el.append(h('p', { class: 'note' }, 'Statistics Canada does not publish new registrations by fuel for this area.')); return el; }
+  const tot = nr(p, 'All fuel types'), ev = q => (nr(p, 'Battery electric')[q] || 0) + (nr(p, 'Plug-in hybrid electric')[q] || 0);
+  const last = Q.at(-1), yAgo = Q.at(-5);
+  ins.append(`In ${last}, `, h('strong', {}, pct(ev(last) / (tot[last] || 1))), ` of the ${fmt(tot[last] || 0)} new vehicles registered were plug-in or battery electric${yAgo ? `, against ${pct(ev(yAgo) / (tot[yAgo] || 1))} a year earlier` : ''}. Hybrids were ${pct((nr(p, 'Hybrid electric')[last] || 0) / (tot[last] || 1))}.`);
+  let mode = 'count';
+  const box = h('div', { class: 'chart' }), lg = h('div');
+  const draw = () => {
+    lg.replaceChildren(legend(NFUELS.map(([k, c]) => [k, css(c)])));
+    chart('newregs', box, { type: 'bar', stacked: true, label: 'New vehicle registrations by quarter and fuel',
+      data: { labels: Q, datasets: NFUELS.map(([k, c]) => ({ label: k, data: Q.map(q => mode === 'share' ? +(((nr(p, k)[q] || 0) / (tot[q] || 1)) * 100).toFixed(2) : (nr(p, k)[q] || 0)), backgroundColor: css(c) })) },
+      ytick: mode === 'share' ? (v => v + '%') : undefined, tip: mode === 'share' ? (x => `${x.dataset.label}: ${x.parsed.y.toFixed(1)}%`) : undefined,
+      y: mode === 'share' ? { max: 100 } : {} });
+  };
+  el.append(h('div', { class: 'controls' }, seg([['count', 'Vehicles'], ['share', 'Share of each quarter']], mode, v => { mode = v; draw(); })), lg, box,
+    foot(SRC_N, () => download(`new-registrations-${p.key}.csv`, [['Quarter', ...NFUELS.map(f => f[0]), 'All fuel types'], ...Q.map(q => [q, ...NFUELS.map(([k]) => nr(p, k)[q] || 0), tot[q] || 0])])));
+  requestAnimationFrame(draw);
+  return el;
+}
+function detail(p) {
+  const name = p.key === 'ca' ? 'Canada' : p.name;
+  const { el, ins } = card('detail', 'Provincial detail', `More from ${name}`);
+  const link = (href, title, text) => h('a', { class: 'golink', href }, h('b', {}, title), h('span', {}, text));
+  if (p.key === 'on') { ins.append('Ontario publishes a file of every registered vehicle each year.'); el.append(h('div', { class: 'body' }, link('../ontario/', 'Ontario Vehicles on the Road →', 'Makes, models, vehicle age and counties, 2014 to the latest year, from the Ministry of Transportation.'))); }
+  else if (p.key === 'qc') { ins.append('Quebec’s SAAQ publishes a file of every vehicle authorised to circulate each year.'); el.append(h('div', { class: 'body' }, link('../quebec/', 'Quebec Vehicles on the Road →', 'Makes, models, vehicle age, fuel and regions, 2011 to the latest year the SAAQ has published.'))); }
+  else if (p.key === 'ab' && D.alberta && D.alberta.fuel) albertaCharts(el, ins);
+  else if (p.key === 'ca') ins.append('Ontario and Quebec publish vehicle-by-vehicle data (makes, models, ages and regions), and Alberta publishes yearly tables. Pick one of them above to see it.');
+  else ins.append(`${name} doesn’t publish vehicle-level open data beyond Statistics Canada’s tables. Ontario, Quebec and Alberta do: pick them above.`);
+  return el;
+}
+function albertaCharts(el, ins) {
+  const A = D.alberta.fuel, Y = A.years, L = Y.at(-1), F = Y[0], S = A.series;
+  const keys = Object.keys(S).filter(k => !/total/i.test(k));
+  const t = y => (S.Total && S.Total[y]) || keys.reduce((s, k) => s + (S[k][y] || 0), 0);
+  const el2 = (S.Electric || {}), hy = (S.Hybrid || {});
+  ins.append(`Alberta’s own registry counts `, h('strong', {}, fmt(t(L))), ` motorized vehicles as of March 31, ${L}, including `, h('strong', {}, fmt(el2[L] || 0)), ` electric and ${fmt(hy[L] || 0)} hybrid. Electric vehicles have gone from ${fmt(el2[Y.at(-5)] || 0)} in ${Y.at(-5)} to ${fmt(el2[L] || 0)}.`);
+  const cols = ['--s1', '--s3', '--s4', '--s7', '--s5', '--s8', '--s6', '--s2', '--muted-bar', '--s1'];
+  const show = keys.filter(k => k !== 'Gasoline').sort((a, b) => (S[b][L] || 0) - (S[a][L] || 0));
+  const box = h('div', { class: 'chart' });
+  el.append(h('p', { class: 'note' }, 'Gasoline is left out so the smaller fuels can be seen; it is in the CSV.'), legend(show.map((k, i) => [k, css(cols[i % cols.length])])), box,
+    foot('Alberta Transportation and Economic Corridors, registered motorized vehicles by fuel type, as of March 31 (open.alberta.ca).', () => download('alberta-vehicles-by-fuel.csv', [['Year', ...Object.keys(S)], ...Y.map(y => [y, ...Object.keys(S).map(k => S[k][y] ?? '')])])));
+  requestAnimationFrame(() => chart('abfuel', box, { type: 'line', label: 'Alberta registered vehicles by fuel type, excluding gasoline',
+    data: { labels: Y, datasets: show.map((k, i) => ({ label: k, data: Y.map(y => S[k][y] ?? null), borderColor: css(cols[i % cols.length]), backgroundColor: css(cols[i % cols.length]), pointRadius: 2, borderWidth: 2 })) } }));
+  if (D.alberta.style) {
+    const B = D.alberta.style, BY = B.years, BL = BY.at(-1);
+    const want = ['Utility Vehicles', 'Trucks', 'Passenger Cars', 'Vans', 'Motorcycles', 'Motor Homes', 'Buses'].filter(k => B.series[k]);
+    if (want.length) {
+      const box2 = h('div', { class: 'chart' });
+      el.append(h('div', { class: 'card-h' }, h('span', { class: 'ref' }, 'Alberta'), h('h2', {}, 'Registered vehicles by body style'), h('p', { class: 'insight' }, `Utility vehicles numbered `, h('strong', {}, fmt((B.series['Utility Vehicles'] || {})[BL] || 0)), ` as of March 31, ${BL}, against ${fmt((B.series['Passenger Cars'] || {})[BL] || 0)} passenger cars.`)),
+        legend(want.map((k, i) => [k, css(cols[i])])), box2,
+        foot('Alberta Transportation and Economic Corridors, registered motor vehicles by style of vehicle, as of March 31 (open.alberta.ca).', () => download('alberta-vehicles-by-body-style.csv', [['Year', ...want], ...BY.map(y => [y, ...want.map(k => B.series[k][y] ?? '')])])));
+      requestAnimationFrame(() => chart('abstyle', box2, { type: 'line', label: 'Alberta registered vehicles by body style',
+        data: { labels: BY, datasets: want.map((k, i) => ({ label: k, data: BY.map(y => B.series[k][y] ?? null), borderColor: css(cols[i]), backgroundColor: css(cols[i]), pointRadius: 1, borderWidth: 2 })) } }));
+    }
+  }
+}
+function compare(p) {
+  const { el, ins } = card('compare', 'Compare provinces', 'Every province and territory side by side');
+  const rows = D.places.filter(x => x.key !== 'ca').map(x => {
+    const Y = years(x), L = Y.at(-1), F = Y[0], all = series(x, FT.all, 'All fuel types');
+    return { x, n: all[L] || 0, g: chg(all[L], all[F]), plug: lightShare(x, ['Battery electric', 'Plug-in hybrid electric'], L), hyb: lightShare(x, ['Hybrid electric'], L), ev4: evShare4(x), L, F };
+  });
+  const ca = PLACE('ca'), cay = years(ca).at(-1);
+  const best = rows.filter(r => r.ev4 != null).sort((a, b) => b.ev4 - a.ev4)[0];
+  ins.append(h('strong', {}, best.x.name), ` leads on electric share of new vehicles over the past four quarters (${pct(best.ev4)}), against ${pct(evShare4(ca) || 0)} for Canada as a whole.`);
+  const METRICS = [['ev4', 'Electric share of new vehicles', v => pct(v)], ['plug', 'Plug-in or battery share of light vehicles', v => pct(v, 2)], ['hyb', 'Hybrid share of light vehicles', v => pct(v, 2)], ['n', 'Vehicles on the road', v => fmt(v)], ['g', 'Growth in vehicles on the road', v => sgn(v)]];
+  let m = 'ev4';
+  const box = h('div', { class: 'chart tall' }), body = h('tbody');
+  const draw = () => {
+    const [, label, f] = METRICS.find(x => x[0] === m);
+    const r = rows.filter(r => r[m] != null).sort((a, b) => b[m] - a[m]);
+    chart('compare', box, { type: 'bar', label, data: { labels: r.map(r => r.x.name), datasets: [{ label, data: r.map(r => m === 'n' ? r[m] : +(r[m] * 100).toFixed(3)), backgroundColor: r.map(r => r.x.key === CUR ? css('--s2') : css('--s1')) }] },
+      options: { indexAxis: 'y' }, x: { grid: { color: css('--line-soft') }, ticks: { color: css('--ink-2'), callback: v => m === 'n' ? big(v) : v + '%' } }, y: { grid: { display: false }, ticks: { color: css('--ink-2'), autoSkip: false } },
+      tip: x => `${label}: ${m === 'n' ? fmt(x.parsed.x) : x.parsed.x.toFixed(2) + '%'}` });
+  };
+  body.replaceChildren(...rows.sort((a, b) => b.n - a.n).map(r => h('tr', { class: r.x.key === CUR ? 'cur' : '' }, h('th', { scope: 'row' }, r.x.name), h('td', {}, fmt(r.n)), h('td', { class: cls(r.g) }, sgn(r.g)), h('td', {}, r.plug == null ? '—' : pct(r.plug, 2)), h('td', {}, r.hyb == null ? '—' : pct(r.hyb, 2)), h('td', {}, r.ev4 == null ? '—' : pct(r.ev4)))));
+  el.append(h('div', { class: 'controls' }, seg(METRICS.map(([k, l]) => [k, l]), m, v => { m = v; draw(); })), box,
+    h('div', { class: 'body' }, h('div', { class: 'tbl-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['Province or territory', `Vehicles on the road, ${cay}`, `Change since ${years(ca)[0]}`, 'Plug-in or battery (light)', 'Hybrid (light)', 'Electric share of new, past 4 quarters'].map(c => h('th', { scope: 'col' }, c)))), body))),
+    foot(SRC_F + ' ' + SRC_N, () => download('provinces-compared.csv', [['Province or territory', 'Vehicles on the road', 'Change since first year', 'Plug-in or battery share of light vehicles', 'Hybrid share of light vehicles', 'Electric share of new vehicles, past 4 quarters'], ...rows.map(r => [r.x.name, r.n, r.g, r.plug, r.hyb, r.ev4])])));
+  requestAnimationFrame(draw);
+  return el;
+}
+boot().catch(e => { $('#main').replaceChildren(h('p', { class: 'loading' }, 'The data could not be loaded. Refresh the page to try again.')); console.error(e); });
+</script>
+</body>
+</html>
