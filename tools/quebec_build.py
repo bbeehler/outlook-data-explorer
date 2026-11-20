@@ -30,6 +30,47 @@ MAKES = {
     "BENTL": "Bentley", "ROLLS": "Rolls-Royce", "LAMBO": "Lamborghini", "ASTON": "Aston Martin", "MCLAR": "McLaren",
     "LOTUS": "Lotus", "ISUZU": "Isuzu", "FREIG": "Freightliner", "INTER": "International", "PLYMO": "Plymouth",
     "VINFA": "VinFast", "SCION": "Scion", "DAEWO": "Daewoo", "GEO": "Geo", "EAGLE": "Eagle", "AMC": "AMC",
+    "LANDR": "Land Rover", "AUSTI": "Austin", "DATSU": "Datsun", "CITRO": "Citroën", "TRIUM": "Triumph", "WILLY": "Willys",
+    "BOMBA": "Bombardier", "MG": "MG", "AC": "AC", "?": "Not stated",
+}
+# The SAAQ keeps the first 5 characters of each model name. Our reading of the common ones; the rest are shown as is.
+MODELS = {
+    "TOYOT": {"COROL": "Corolla", "MATRI": "Matrix", "TACOM": "Tacoma", "SIENN": "Sienna", "HIGHL": "Highlander", "TUNDR": "Tundra",
+              "VENZA": "Venza", "4RUNN": "4Runner", "TERCE": "Tercel", "CAMRY": "Camry", "YARIS": "Yaris", "PRIUS": "Prius", "ECHO": "Echo"},
+    "HONDA": {"ACCOR": "Accord", "ODYSS": "Odyssey", "RIDGE": "Ridgeline", "PILOT": "Pilot", "PASSP": "Passport", "HRV": "HR-V", "CIVIC": "Civic", "FIT": "Fit"},
+    "HYUND": {"ELANT": "Elantra", "ACCEN": "Accent", "TUCSO": "Tucson", "SANTA": "Santa Fe", "SONAT": "Sonata", "IONIQ": "Ioniq",
+              "VELOS": "Veloster", "PALIS": "Palisade", "GENES": "Genesis", "KONA": "Kona", "VENUE": "Venue"},
+    "FORD": {"F150": "F-150", "F250": "F-250", "F350": "F-350", "ESCAP": "Escape", "FOCUS": "Focus", "TRANS": "Transit", "RANGE": "Ranger",
+             "FUSIO": "Fusion", "EXPLO": "Explorer", "MUSTA": "Mustang", "FIEST": "Fiesta", "ECONO": "Econoline", "BRONC": "Bronco",
+             "ECOSP": "EcoSport", "TAURU": "Taurus", "EXPED": "Expedition", "EDGE": "Edge"},
+    "NISSA": {"ROGUE": "Rogue", "SENTR": "Sentra", "VERSA": "Versa", "MICRA": "Micra", "QASHQ": "Qashqai", "KICKS": "Kicks", "ALTIM": "Altima",
+              "MURAN": "Murano", "PATHF": "Pathfinder", "FRONT": "Frontier", "MAXIM": "Maxima", "TITAN": "Titan", "X-TRA": "X-Trail",
+              "XTERR": "Xterra", "LEAF": "Leaf", "JUKE": "Juke"},
+    "CHEVR": {"SILVE": "Silverado", "CRUZE": "Cruze", "EQUIN": "Equinox", "MALIB": "Malibu", "SPARK": "Spark", "COLOR": "Colorado",
+              "COBAL": "Cobalt", "EXPRE": "Express", "SONIC": "Sonic", "IMPAL": "Impala", "TRAVE": "Traverse", "TRAIL": "Trailblazer",
+              "UPLAN": "Uplander", "CAMAR": "Camaro", "CAVAL": "Cavalier", "BLAZE": "Blazer", "SUBUR": "Suburban", "TAHOE": "Tahoe",
+              "ORLAN": "Orlando", "CORVE": "Corvette", "BOLT": "Bolt", "VOLT": "Volt", "TRAX": "Trax", "AVEO": "Aveo"},
+    "MAZDA": {"3": "Mazda3", "5": "Mazda5", "6": "Mazda6", "2": "Mazda2", "CX-5": "CX-5", "CX5": "CX-5", "CX-3": "CX-3", "CX30": "CX-30",
+              "CX-9": "CX-9", "CX-7": "CX-7", "TRIBU": "Tribute", "MX-5": "MX-5", "B4000": "B4000"},
+    "KIA": {"FORTE": "Forte", "SOREN": "Sorento", "SPORT": "Sportage", "RONDO": "Rondo", "SELTO": "Seltos", "OPTIM": "Optima",
+            "SEDON": "Sedona", "TELLU": "Telluride", "SPECT": "Spectra", "SOUL": "Soul", "NIRO": "Niro", "RIO": "Rio"},
+    "VOLKS": {"JETTA": "Jetta", "GOLF": "Golf", "TIGUA": "Tiguan", "ATLAS": "Atlas", "PASSA": "Passat", "BEETL": "Beetle", "RABBI": "Rabbit",
+              "TOUAR": "Touareg", "E-GOL": "e-Golf", "NEWBE": "New Beetle", "TAOS": "Taos", "GTI": "GTI", "EOS": "Eos"},
+    "DODGE": {"GRAND": "Grand Caravan", "JOURN": "Journey", "RAM": "Ram", "DAKOT": "Dakota", "CARAV": "Caravan", "DURAN": "Durango",
+              "CHARG": "Charger", "CALIB": "Caliber", "DART": "Dart", "AVENG": "Avenger"},
+    "SUBAR": {"IMPRE": "Impreza", "OUTBA": "Outback", "CROSS": "Crosstrek", "FORES": "Forester", "LEGAC": "Legacy", "XVCRO": "XV Crosstrek",
+              "ASCEN": "Ascent", "WRX": "WRX"},
+    "GMC": {"SIERR": "Sierra", "TERRA": "Terrain", "SAVAN": "Savana", "CANYO": "Canyon", "ACADI": "Acadia", "YUKON": "Yukon"},
+    "JEEP": {"WRANG": "Wrangler", "CHERO": "Cherokee", "GRAND": "Grand Cherokee", "COMPA": "Compass", "PATRI": "Patriot", "LIBER": "Liberty", "GLADI": "Gladiator"},
+    "MITSU": {"OUTLA": "Outlander", "LANCE": "Lancer", "ECLIP": "Eclipse Cross", "MIRAG": "Mirage", "RVR": "RVR"},
+    "RAM": {"PROMA": "ProMaster", "1500": "1500", "2500": "2500"}, "TESLA": {"MODEL": "Model 3 / Y / S / X", "S": "Model S"},
+    "CHRYS": {"PACIF": "Pacifica", "SEBRI": "Sebring", "TOWN": "Town & Country", "PTCRU": "PT Cruiser", "200": "200", "300": "300"},
+    "BUICK": {"ENCOR": "Encore", "VERAN": "Verano", "ALLUR": "Allure", "ENCLA": "Enclave", "ENVIS": "Envision"},
+    "PONTI": {"VIBE": "Vibe", "MONTA": "Montana", "SUNFI": "Sunfire", "TORRE": "Torrent", "WAVE": "Wave", "G5": "G5", "G6": "G6"},
+    "MINI": {"COOPE": "Cooper"}, "MERCE": {"SPRIN": "Sprinter", "C": "C-Class", "E": "E-Class"},
+    "SUZUK": {"GRAND": "Grand Vitara"}, "SMART": {"FORTW": "Fortwo"}, "SATUR": {"ION": "Ion", "VUE": "Vue"},
+    "CADIL": {"ESCAL": "Escalade"}, "LINCO": {"MKX": "MKX"}, "PORSC": {"CAYEN": "Cayenne", "MACAN": "Macan"},
+    "LANDR": {"RANGE": "Range Rover"}, "LEXUS": {"RX": "RX", "NX": "NX", "IS": "IS", "ES": "ES"},
 }
 
 
@@ -82,7 +123,8 @@ def main():
             continue
         detail[m][mdl] = {"y": dict(sorted(ys.items())), "prev": sum(models.get(P, {}).get((m, mdl), {}).values())}
     out = {"years": [int(y) for y in years], "makes": makes, "fuel": fuel, "county": county, "age": age, "detail": detail,
-           "makeNames": {k: v for k, v in MAKES.items() if any(k in makes[y] for y in years)}, "modelNames": {},
+           "makeNames": {k: v for k, v in MAKES.items() if any(k in makes[y] for y in years)},
+           "modelNames": {mk: {c: n for c, n in mm.items() if c in detail.get(mk, {})} for mk, mm in MODELS.items() if mk in detail},
            "latest": int(L), "built": datetime.date.today().isoformat()}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, separators=(",", ":")))
