@@ -7,7 +7,7 @@
 // When 3 approves, the email is added to outlook_access (source = 'insightly'); the nightly outlook-member-sync
 // re-checks it and removes it if the organisation's membership lapses.
 // The page sends the sign-in link only after an approval, so non-members never get an account.
-// Every request is logged in outlook_registrations. Limits: 10 requests per IP and 5 per email per hour.
+// Every request is logged in outlook_registrations. Limits: 10 failed checks per IP and 5 per email per hour (approvals don't count).
 // Admins can also send { email, check: true } to get a full diagnosis (what Insightly holds and why the email would be
 // approved or denied) without adding anyone, sending anything or logging a request.
 // Secret needed: INSIGHTLY_API_KEY.
@@ -87,8 +87,9 @@ Deno.serve(async (req) => {
   // Rate limits
   const hourAgo = new Date(Date.now() - 3600_000).toISOString();
   const [byIp, byEmail] = await Promise.all([
-    ip ? db.from("outlook_registrations").select("id", { count: "exact", head: true }).eq("ip", ip).gte("requested_at", hourAgo) : Promise.resolve({ count: 0 }),
-    db.from("outlook_registrations").select("id", { count: "exact", head: true }).eq("email", email).gte("requested_at", hourAgo),
+    // Only failed checks count toward the limit: approved members asking for a new code (and earlier "rate_limited" replies) don't.
+    ip ? db.from("outlook_registrations").select("id", { count: "exact", head: true }).eq("ip", ip).gte("requested_at", hourAgo).not("result", "like", "approved%").neq("result", "rate_limited") : Promise.resolve({ count: 0 }),
+    db.from("outlook_registrations").select("id", { count: "exact", head: true }).eq("email", email).gte("requested_at", hourAgo).not("result", "like", "approved%").neq("result", "rate_limited"),
   ]);
   if ((byIp.count ?? 0) >= 10 || (byEmail.count ?? 0) >= 5) { await log("rate_limited"); return reply({ status: "rate_limited" }); }
 
