@@ -43,7 +43,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
           cp provinces/data.json.structure.txt provinces/sources.txt 2>/dev/null || true
-          ls "$RUNNER_TEMP/ab" >> provinces/sources.txt 2>/dev/null || true
+          for f in fuel_00 style_00 fuel_04; do echo "=== $f" >> provinces/sources.txt; head -70 "$RUNNER_TEMP/ab/$f.txt" >> provinces/sources.txt 2>/dev/null; done || true
           git add -N provinces/data.json provinces/sources.txt || true
           if git diff --quiet -- provinces/data.json provinces/sources.txt; then echo "No change"; exit 0; fi
           git add provinces/data.json provinces/sources.txt && git commit -m "Update provincial vehicle data" && git pull --rebase && git push
