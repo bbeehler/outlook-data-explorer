@@ -30,7 +30,8 @@ jobs:
                   if str(r.get("format", "")).upper() == "PDF":
                       fn = f"{kind}_{i:02d}.pdf"
                       try:
-                          urllib.request.urlretrieve(r["url"], fn); print("got", fn, r["name"])
+                          data = urllib.request.urlopen(urllib.request.Request(r["url"], headers={"User-Agent": "Mozilla/5.0"}), timeout=120).read()
+                          open(fn, "wb").write(data); print("got", fn, r["name"], len(data))
                       except Exception as e:
                           print("skip", r["url"], e)
           PY
@@ -42,6 +43,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
           cp provinces/data.json.structure.txt provinces/sources.txt 2>/dev/null || true
+          ls "$RUNNER_TEMP/ab" >> provinces/sources.txt 2>/dev/null || true
           git add -N provinces/data.json provinces/sources.txt || true
           if git diff --quiet -- provinces/data.json provinces/sources.txt; then echo "No change"; exit 0; fi
           git add provinces/data.json provinces/sources.txt && git commit -m "Update provincial vehicle data" && git pull --rebase && git push
