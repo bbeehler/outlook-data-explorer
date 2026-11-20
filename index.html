@@ -1117,7 +1117,7 @@ const rerender = () => { clearTimeout(rerender.t); rerender.t = setTimeout(rende
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerender);
 new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-const HUB_VERSION = '2026-11-20 12:01';
+const HUB_VERSION = '2026-11-20 12:32';
 /* ---------- AIA Canada Research Hub: sections, research reports, economy, links between sources, report manager ---------- */
 const BASE_TOPICS = TOPICS.filter(t => !['home', 'access'].includes(t.id)).map(t => ({ ...t, group: 'outlook' }));
 let REPORTS = [], ECON = null, CITIES = null;
@@ -2018,12 +2018,12 @@ function gate(kind, info = {}) {
       if (status === 'invalid') return fail('Enter a full email address, such as name@company.com.');
       if (status === 'rate_limited') return fail('Too many tries in a short time. Wait an hour, then try again.');
       if (status !== 'approved') return fail(`We could not check membership right now. Try again in a few minutes, or contact ${CFG.contactEmail}.`);
-      btn.textContent = 'Sending your sign-in link\u2026';
+      btn.textContent = 'Sending your sign-in code\u2026';
       const { error } = await SB.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname } });
       if (error) {
         return fail(/email rate limit/i.test(error.message) || error.code === 'over_email_send_rate_limit'
           ? `We can\u2019t send sign-in emails right now because too many were sent in the past hour. Please try again later, or contact ${CFG.contactEmail}.`
-          : /security purposes|seconds/i.test(error.message) ? 'A link was sent a moment ago. Wait a minute, then try again.' : 'The link could not be sent. Try again in a few minutes.');
+          : /security purposes|seconds/i.test(error.message) ? 'A code was sent a moment ago. Check your email, or wait a minute and try again.' : 'The sign-in email could not be sent. Try again in a few minutes.');
       }
       gate('sent', { email });
     });
@@ -2040,10 +2040,22 @@ function gate(kind, info = {}) {
       h('p', { class: 'contact-line' }, contact, h('button', { type: 'button', class: 'act', onclick: () => copyText(CFG.contactEmail, 'Email address copied.') }, 'Copy')),
       h('button', { type: 'button', class: 'act', onclick: () => gate('signin', { email: info.email }) }, 'Try a different email'));
   } else if (kind === 'sent') {
+    // A typed code, not a link: company email filters (e.g. Microsoft Safe Links) open links to scan them, which uses up a one-time link.
+    const code = h('input', { id: 'otp', type: 'text', inputmode: 'numeric', autocomplete: 'one-time-code', pattern: '[0-9]{6,10}', maxlength: '10', required: true, placeholder: '123456' });
+    const err = h('p', { class: 'gate-err', role: 'alert' }); err.hidden = true;
+    const form = h('form', { class: 'gate-form' }, h('label', { for: 'otp' }, 'Sign-in code'), code, h('button', { type: 'submit', class: 'btn-ask' }, 'Sign in'));
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = form.querySelector('button'); btn.disabled = true; btn.textContent = 'Signing in\u2026'; err.hidden = true;
+      const { error } = await SB.auth.verifyOtp({ email: info.email, token: code.value.replace(/\D/g, ''), type: 'email' });
+      if (error) { btn.disabled = false; btn.textContent = 'Sign in'; err.hidden = false; err.textContent = 'That code didn\u2019t work. Check it and try again, or request a new one (codes expire after an hour, and only the newest one works).'; }
+    });
     box.append(h('h1', {}, 'Check your email'),
-      h('p', {}, h('span', {}, 'We sent a sign-in link to '), h('strong', {}, info.email), h('span', {}, '. Open it on this device. The link works once and expires after an hour.')),
+      h('p', {}, h('span', {}, 'We sent a sign-in code to '), h('strong', {}, info.email), h('span', {}, '. Enter it below.')),
+      form, err,
       h('p', { class: 'gate-muted' }, 'No email after a few minutes? Check your junk folder.'),
-      h('button', { type: 'button', class: 'act', onclick: () => gate('signin', { email: info.email }) }, 'Use a different email'));
+      h('button', { type: 'button', class: 'act', onclick: () => gate('signin', { email: info.email }) }, 'Send a new code or use a different email'));
+    setTimeout(() => code.focus(), 50);
   } else if (kind === 'denied') {
     box.append(h('h1', {}, 'You’re signed in, but not on the access list yet'),
       h('p', {}, h('span', {}, 'You’re signed in as '), h('strong', {}, info.email), h('span', {}, `. The Research Hub is limited to approved members and staff. Ask ${CFG.contactEmail} to add this address, then sign in again.`)),
