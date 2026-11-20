@@ -16,8 +16,9 @@ jobs:
         run: sudo apt-get install -y -q poppler-utils >/dev/null
       - name: Find and describe tables
         run: |
+          set +e
           mkdir -p "$RUNNER_TEMP/out" && cd "$RUNNER_TEMP/out"
-          python3 - <<'PY'
+          python3 - <<'PY' 2>&1 | tee py.log
           import json, urllib.request, re
           W = "https://www150.statcan.gc.ca/t1/wds/rest/"
           def post(path, body):
@@ -35,11 +36,14 @@ jobs:
               except Exception as e:
                   summary.append(f"## {pid} ERROR {e}")
           # latest values for every province, to see which are published
-          for pid, coord in [(23100308, "{g}.2.1.1.0.0.0.0.0.0"), (20100024, "{g}.1.1.1.0.0.0.0.0.0"), (20100025, "{g}.4.1.1.0.0.0.0.0.0"), (20100025, "{g}.1.1.1.0.0.0.0.0.0")]:
-              res = post("getDataFromCubePidCoordAndLatestNPeriods", [{"productId": pid, "coordinate": coord.format(g=g), "latestN": 3} for g in range(1, 16)])
-              for g, r in zip(range(1, 16), res):
-                  pts = r.get("object", {}).get("vectorDataPoint", []) if r.get("status") == "SUCCESS" else []
-                  summary.append(f"DATA {pid} {coord.format(g=g)} -> " + ", ".join(f"{p['refPer'][:7]}={p['value']}" for p in pts))
+          try:
+           for pid, coord in [(23100308, "{g}.2.1.1.0.0.0.0.0.0"), (20100024, "{g}.1.1.1.0.0.0.0.0.0"), (20100025, "{g}.4.1.1.0.0.0.0.0.0"), (20100025, "{g}.1.1.1.0.0.0.0.0.0")]:
+               res = post("getDataFromCubePidCoordAndLatestNPeriods", [{"productId": pid, "coordinate": coord.format(g=g), "latestN": 3} for g in range(1, 16)])
+               for g, r in zip(range(1, 16), res):
+                   pts = r.get("object", {}).get("vectorDataPoint", []) if r.get("status") == "SUCCESS" else []
+                   summary.append(f"DATA {pid} {coord.format(g=g)} -> " + ", ".join(f"{p['refPer'][:7]}={p['value']}" for p in pts))
+          except Exception as e:
+              summary.append(f"DATA ERROR {e}")
           open("summary.txt", "w").write("\n".join(summary))
           # Quebec SAAQ and Alberta open data catalogues
           for name, url in [("saaq", "https://www.donneesquebec.ca/recherche/api/3/action/package_show?id=vehicules-en-circulation"),
@@ -58,9 +62,10 @@ jobs:
           NEW=$(grep -i "csv" saaq.txt | sort | tail -1 | awk -F' \\| ' '{print $4}'); echo "newest $NEW"; curl -sL -A Mozilla/5.0 -r 0-400000 "$NEW" | head -c 400000 | head -40 > saaq_head.csv || true
           # Alberta: newest PDF of each kind as text
           for f in ab_fuel ab_style ab_muni; do U=$(grep -i pdf $f.txt | tail -1 | awk -F' \\| ' '{print $4}'); [ -n "$U" ] && curl -sL -A Mozilla/5.0 "$U" -o $f.pdf && pdftotext -layout $f.pdf $f.pdf.txt || true; done
-          ls -la
+          ls -la; exit 0
           head -c 3000 summary.txt
       - name: Save
+        if: always()
         run: |
           cd "$RUNNER_TEMP/out"
           git init -q -b economy-raw
