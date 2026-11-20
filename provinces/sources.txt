@@ -103,63 +103,168 @@
     4 Multi-purpose vehicles
     5 Vans
   dim 4 Statistics (1 members)
-    1 Number of vehiclesfuel_00.pdf
-fuel_00.txt
-fuel_01.pdf
-fuel_01.txt
-fuel_02.pdf
-fuel_02.txt
-fuel_03.pdf
-fuel_03.txt
-fuel_04.pdf
-fuel_04.txt
-fuel_05.pdf
-fuel_05.txt
-fuel_06.pdf
-fuel_06.txt
-fuel_07.pdf
-fuel_07.txt
-fuel_08.pdf
-fuel_08.txt
-fuel_09.pdf
-fuel_09.txt
-fuel_10.pdf
-fuel_10.txt
-style_00.pdf
-style_00.txt
-style_01.pdf
-style_01.txt
-style_02.pdf
-style_02.txt
-style_03.pdf
-style_03.txt
-style_04.pdf
-style_04.txt
-style_05.pdf
-style_05.txt
-style_06.pdf
-style_06.txt
-style_07.pdf
-style_07.txt
-style_08.pdf
-style_08.txt
-style_09.pdf
-style_09.txt
-style_10.pdf
-style_10.txt
-style_11.pdf
-style_11.txt
-style_12.pdf
-style_12.txt
-style_13.pdf
-style_13.txt
-style_14.pdf
-style_14.txt
-style_15.pdf
-style_15.txt
-style_16.pdf
-style_16.txt
-style_17.pdf
-style_17.txt
-style_18.pdf
-style_18.txt
+    1 Number of vehicles=== fuel_00
+Motorized vehicle registrations
+By fuel type as of March 31
+
+                                                         2022                   2023              2024                 2025                  2026
+              (1)
+Convert                                                  1,499                 1,403             1,347                1,244                 1,141
+Diesel                                                 386,398              391,278            402,704             411,091              417,394
+Electric                                                 5,680                 9,338            14,189              19,863                24,582
+Flexible(2)                                            318,000              312,482            307,342             297,703              284,856
+Gasoline                                          2,828,313              2,846,067            2,935,246         3,007,861             3,045,216
+Gas & Oil(3)                                               401                    618              868                1,073                 1,247
+Hybrid(4)                                               35,341                43,648            61,673              84,564              110,932
+      (5)
+Multi                                                      262                    234              225                   217                  188
+Natural Gas                                                478                    510              544                   586                  706
+Propane                                                  1,646                 1,784             1,869                1,917                 1,992
+        (6)
+Other                                                        75                     87             102                   122                  124
+
+Total Vehicles in Alberta
+                                                  3,578,093              3,607,449            3,726,109         3,826,241             3,888,378
+by Fuel Type(7)
+
+(1) The vehicle can switch between butane and gasoline.
+
+(2) The vehicle can use ethanol up to E85 or gasoline.
+
+(3) The vehicle uses a mix of gas and oil - prior to July 2020 this category did not exist.
+
+(4) The vehicle has an electric and gasoline hybrid engine.
+
+(5) The vehicle burns both propane and gasoline.
+
+(6) No firm description of the fuel source provided.
+
+(7) The data provided in this table is derived from the MOVES Vehicle Research File, and cannot be directly compared with data in tables sourced
+from the Alberta Vehicle Geographical Reports due to both datasets not being compiled simultaneously.
+
+
+
+
+Page 1 of 1
+Source: MOVES Vehicle Research File (VEHFUEL)
+©2026 Government of Alberta | October 2026 | Ministry of Transportation and Economic Corridors
+Classification: Public
+=== style_00
+Motorized vehicle registrations
+By vehicle body style* as of March 31
+
+                                                        2022                   2023                 2024                  2025                  2026
+Motorized Vehicles
+2-door Coupe                                       107,678                103,842              104,133                102,662                 99,307
+3-door Coupe                                           2,743                  2,692                2,588                 2,502                 2,341
+4-door                                             719,904                707,815              708,882                702,848               686,928
+5-door Sedan                                           2,491                  2,359                2,355                 2,183                 2,126
+Convertibles                                         31,799                 31,035               32,040                32,329                 32,064
+Hatchbacks                                           25,361                 24,699               24,467                23,572                 22,717
+Sports Cars                                            1,897                  1,820                1,899                 1,927                 1,896
+Station Wagons                                       56,292                 52,813               50,087                46,829                 43,538
+Passenger Cars                                     948,165                927,075              926,451                914,852               890,917
+Motorcycles(1)                                     128,624                124,002              133,497                136,655               135,063
+Mopeds                                                 1,815                  1,759                1,914                 1,858                 1,739
+         (2)
+Buses                                                14,842                 15,178               15,245                15,663                 15,912
+Motorhomes                                           22,461                 21,295               21,617                21,758                 21,139
+Truck-Trailer Units                                  82,388                 83,314               85,034                85,416                 84,629
+Trucks(2)                                          994,459             1,005,924             1,035,136             1,054,859             1,068,270
+Utility Vehicles                                 1,195,086             1,247,285             1,332,167             1,426,453             1,508,959
+       (2)
+Vans                                               208,506                203,707              203,379                203,282               203,383
+Other Vehicles(3)                                         523                   539                  572                    658                   667
+Total Motorized Vehicles
+                                                 3,596,869             3,630,078             3,755,012             3,861,454             3,930,678
+in Alberta(4)
+* Counts of vehicles are determined by the general body styles of vehicles as collected on registration files and do not separate into sub-categories
+by vehicle operations or weight-related parameters.
+
+(1) This count includes motorcycles for highway use, and excludes off-highway motorcycles and dirt bikes.
+
+(2) Includes all categories and/or body types considered part of the specified style.
+
+(3) This count includes farm vehicles.
+
+(4) Total motorized vehicles by body style provides a count of all vehicles which could be driven on a highway bearing valid licence plates as of March
+31 that year. The count excludes vehicles using dealer plates, off-highway vehicles, and trailers.
+
+
+
+
+Page 1 of 3
+Source: MOVES Geographical Statistics (SDGEO030 and SDGEO010)
+©2026 Government of Alberta | October 2026 | Ministry of Transportation and Economic Corridors
+Classification: Public
+Motorized vehicle registrations
+By vehicle body style* as of March 31
+
+                                                          2022                    2023                    2024                   2025          2026
+Trailer Plates(5)
+Commercial Trailers                                   325,448                331,587                 337,742                 342,680        347,787
+Boat Trailers                                         195,223                198,009                 201,038                 203,707        206,253
+Tent Trailers                                           55,400                 55,341                  55,327                  55,297        55,281
+Travel Trailers                                       359,290                364,740                 370,292                 375,283        379,940
+Utility Trailers                                      720,281                738,754                 758,604                 778,155        798,406
+
+Total Trailers in Alberta(6)                       1,655,642               1,688,431              1,723,003               1,755,122        1,787,667
+
+(5) In Alberta, all trailers registered since 1984 have trailer plates with no expiry date. The plates are valid for the lifetime of the
+plate issue unless the owner specifically cancels the plate with no refund.
+
+(6) The trailer counts are for the number of valid trailer plates still in effect and may reflect a higher total than the actual number
+of trailer units existing in Alberta.
+
+
+
+Off-Highway Vehicles(7)
+ATV-Tracked                                              1,421                   1,309                   1,151                  1,199         1,167
+=== fuel_04
+Motorized vehicle registrations
+By fuel type as of March 31
+
+                                                         2018                   2019              2020                 2021                  2022
+              (1)
+Convert                                                  2,443                 2,156             1,893                1,669                 1,499
+Diesel                                                 391,800              396,096            387,544             387,765              386,398
+Electric                                                   635                 1,297             2,280                3,527                 5,680
+Flexible(2)                                            344,969              345,486            338,249             330,559              318,000
+Gasoline                                          2,796,539              2,870,921            2,847,966         2,875,843             2,828,313
+                (3)
+Gas & Oil                                                  N/A                    N/A              N/A                   104                  401
+Hybrid(4)                                               18,364                20,702            23,606              27,459                35,341
+      (5)
+Multi                                                      354                    328              311                   292                  262
+Natural Gas                                                182                    288              365                   392                  478
+Propane                                                  1,679                 1,595             1,687                1,642                 1,646
+        (6)
+Other                                                        40                     44               44                   62                       75
+
+Total Vehicles in Alberta
+                                                  3,557,005              3,638,913            3,603,945         3,629,314             3,578,093
+by Fuel Type(7)
+
+(1) The vehicle can switch between butane and gasoline.
+
+(2) The vehicle can use ethanol up to E85 or gasoline.
+
+(3) The vehicle uses a mix of gas and oil - prior to July 2020 this category did not exist.
+
+(4) The vehicle has an electric and gasoline hybrid engine.
+
+(5) The vehicle burns both propane and gasoline.
+
+(6) No firm description of the fuel source provided.
+
+(7) The data provided in this table is derived from the MOVES Vehicle Research File, and cannot be directly compared with data in tables sourced
+from the Alberta Vehicle Geographical Reports due to both datasets not being compiled simultaneously.
+
+
+
+
+Page 1 of 1
+Source: MOVES Vehicle Research File (VEHFUEL)
+©2023 Government of Alberta | January 2023 | Ministry of Transportation and Economic Corridors
+Classification: Public
+
