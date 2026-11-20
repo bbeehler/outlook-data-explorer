@@ -1,0 +1,107 @@
+23-10-0308: 1764 series for 14 places; dimension names: ['Geography', 'Vehicle Type', 'Fuel Type', 'Statistics']
+20-10-0025: 112 series; fuel members ['All fuel types', 'Gasoline', 'Diesel', 'All zero-emission vehicles', 'Battery electric', 'Plug-in hybrid electric', 'Hybrid electric', 'Other fuel types']; other dims at ['Total, vehicle type', 'Number of vehicles']
+Alberta: no tables could be read from the PDFs
+## 23100308 Vehicle registrations, by type of vehicle and fuel type | 2017-01-01 to 2025-01-01
+  dim 1 Geography (14 members)
+    1 Canada
+    2 Newfoundland and Labrador
+    3 Prince Edward Island
+    4 Nova Scotia
+    5 New Brunswick
+    6 Quebec
+    7 Ontario
+    8 Manitoba
+    9 Saskatchewan
+    10 Alberta
+    11 British Columbia
+    12 Yukon
+    13 Northwest Territories
+    14 Nunavut
+  dim 2 Vehicle Type (18 members)
+    1 Total, road motor vehicle registrations
+    2 Total, vehicles weighing 4,536 kilograms or less
+    3 Passenger cars, weighing 4,536 kilograms or less
+    4 Multi-purpose vehicles, weighing 4,536 kilograms or less
+    5 Pickup trucks, weighing 4,536 kilograms or less
+    6 Vans, weighing 4,536 kilograms or less
+    7 Other vehicles, weighing 4,536 kilograms or less
+    8 Total, vehicles weighing 4,536 to 11,793 kilograms
+    9 Passenger cars, weighing 4,536 to 11,793 kilograms
+    10 Multi-purpose vehicles, weighing 4,536 to 11,793 kilograms
+    11 Pickup trucks, weighing 4,536 to 11,793 kilograms
+    12 Vans, weighing 4,536 to 11,793 kilograms
+    13 Other vehicles, weighing 4,536 to 11,793 kilograms
+    14 Total, vehicles weighing 11,794 kilograms or more
+    22 Class 7 vehicles, weighing 11,794 to 14,969 kilograms
+    23 Class 8 vehicles, weighing 14,969 kilograms or more
+    15 Buses
+    21 Motorcycles and mopeds
+  dim 3 Fuel Type (7 members)
+    1 All fuel types
+    2 Gasoline
+    3 Diesel
+    4 Battery electric
+    5 Hybrid electric
+    6 Plug-in hybrid electric
+    7 Other fuel types
+  dim 4 Statistics (1 members)
+    1 Number of vehicles
+## 20100025 New motor vehicle registrations, quarterly, by geographic level | 2017-01-01 to 2026-04-01
+  dim 1 Geography (5345 members)
+    1 Canada
+    2 Newfoundland and Labrador
+    3 St. John's, Newfoundland and Labrador
+    4 Conception Bay South
+    5 Portugal Cove-St. Philip's
+    6 Pouch Cove
+    7 Flatrock
+    8 Torbay
+    9 Logy Bay-Middle Cove-Outer Cove
+    10 Bauline
+    11 Paradise
+    12 St. John's
+    13 Mount Pearl
+    14 Petty Harbour-Maddox Cove
+    15 Bay Bulls
+    16 Witless Bay
+    17 Bay Roberts, Newfoundland and Labrador
+    18 Upper Island Cove
+    19 Bishop's Cove
+    20 Spaniard's Bay
+    21 Bay Roberts
+    22 North River
+    23 Grand Falls-Windsor, Newfoundland and Labrador
+    24 Grand Falls-Windsor
+    25 Gander, Newfoundland and Labrador
+    26 Division No.  6, Subd. E
+    27 Gander
+    28 Appleton
+    29 Glenwood
+    30 Corner Brook, Newfoundland and Labrador
+    31 Division No.  5, Subd. F
+    32 Steady Brook
+    33 Pasadena
+    34 Gillams
+    35 Massey Drive
+    36 Corner Brook
+    37 Humber Arm South
+    38 McIvers
+    39 Meadows
+    40 Hughes Brook
+  dim 2 Fuel type (8 members)
+    4 All fuel types
+    5 Gasoline
+    6 Diesel
+    1 All zero-emission vehicles
+    2 Battery electric
+    3 Plug-in hybrid electric
+    7 Hybrid electric
+    8 Other fuel types
+  dim 3 Vehicle type (5 members)
+    1 Total, vehicle type
+    2 Passenger cars
+    3 Pickup trucks
+    4 Multi-purpose vehicles
+    5 Vans
+  dim 4 Statistics (1 members)
+    1 Number of vehicles
