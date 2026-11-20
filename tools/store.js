@@ -174,8 +174,24 @@ function renderLanding(box, info = {}) {
     q('Are taxes included?', 'Prices are in Canadian dollars. Applicable sales taxes are shown at checkout.'),
     q('Is payment secure?', 'Payments are handled by Stripe. AIA Canada never sees or stores your card details.'),
     h('p', { class: 'gate-muted' }, `Questions? Contact ${CFG.contactEmail}.`)));
-  box.append(h('section', { class: 'lp-pub' }, h('span', { class: 'pub-tag' }, 'Public data'),
-    h('span', {}, 'Government statistics on vehicles in every province are free to everyone: '), h('a', { href: 'provinces/' }, 'Vehicles by province'), h('span', {}, '. These are not AIA Canada research.')));
+  box.append(siteFooter());
+}
+// Footer in the style of aiacanada.com: who we are, how to reach us, where to go next
+function siteFooter() {
+  const col = (title, links) => h('div', { class: 'ft-col' }, h('h3', {}, title), h('ul', {}, links.map(([t, u]) => h('li', {}, h('a', { href: u }, t)))));
+  return h('footer', { class: 'site-foot' },
+    h('div', { class: 'ft-in' },
+      h('div', { class: 'ft-brand' },
+        h('a', { class: 'ft-mark', href: 'https://www.aiacanada.com/' }, h('b', {}, 'AIA'), h('span', {}, 'Canada')),
+        h('p', { class: 'ft-name' }, 'Automotive Industries Association of Canada'),
+        h('p', { class: 'ft-tag' }, 'We keep Canada moving.'),
+        h('address', {}, '180 Elgin St, Suite 1400', h('br'), 'Ottawa, ON K2P 2K3', h('br'),
+          h('a', { href: 'tel:+18008082920' }, 'Toll free: 1-800-808-2920'), h('br'), h('a', { href: 'mailto:info@aiacanada.com' }, 'info@aiacanada.com'))),
+      col('AIA Canada', [['aiacanada.com', 'https://www.aiacanada.com/'], ['Become a member', JOIN_URL], ['Become an affiliate', AFFILIATE_URL], ['Media kit', 'https://www.aiacanada.com/media/media-kit/']]),
+      col('Research Hub', [['Get access', '#plans'], ['Reports in the hub', '#reports'], ['Sign in', '#signin'], ['Contact us', 'mailto:' + CFG.contactEmail]]),
+      col('Our family', [['CCIF', 'https://www.ccif.ca/'], ['I-CAR Canada', 'https://www.i-car.ca/']])),
+    h('div', { class: 'ft-bottom' }, h('span', {}, `\u00a9 ${new Date().getFullYear()} Automotive Industries Association of Canada. All rights reserved.`),
+      h('a', { href: 'https://aiacanada.com/privacy-policy/' }, 'Privacy policy')));
 }
 function reportCard(r) {
   const finding = (r.key_findings || [])[0];
