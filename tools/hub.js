@@ -116,7 +116,7 @@ function render() {
   if (current === 'outlook') return renderOutlookOverview(main);
   if (t.section) return renderReportSection(main, t);
   if (t.report) return renderReport(main, t);
-  main.append(h('div', { class: 'banner', role: 'note' }, h('span', {}, h('b', {}, 'Member resource. '), 'Contains licensed S&P Global Mobility and IMR Inc. data. Do not redistribute outside AIA Canada membership. Figures are unaudited estimates; see the disclaimer at the bottom of the page.')));
+  main.append(h('div', { class: 'banner', role: 'note' }, h('span', {}, h('b', {}, 'For your own use. '), 'Contains S&P Global Mobility and IMR Inc. data licensed to AIA Canada. Please don\u2019t redistribute it. Figures are unaudited estimates; see the disclaimer at the bottom of the page.')));
   main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'Outlook Study 2025'), h('h1', {}, t.name), h('p', {}, t.blurb)));
   for (const ds of DS.filter(d => d.topic === current)) main.append(card(ds));
   main.append(pageFoot());
@@ -124,10 +124,10 @@ function render() {
 function lastVal(a) { for (let i = a.length - 1; i >= 0; i--) if (a[i] != null) return [a[i], i]; return [null, -1]; }
 // Every report in the hub, for the menu's report picker and the home page
 function reportList() {
-  const out = REPORTS.map(r => ({ id: 'r:' + r.slug, kind: 'research', overview: 'r:' + r.slug, short: r.title, title: r.title,
+  const out = REPORTS.filter(r => canOpen('r:' + r.slug)).map(r => ({ id: 'r:' + r.slug, kind: 'research', overview: 'r:' + r.slug, short: r.title, title: r.title,
     meta: [r.series || 'AIA Canada research', fmtDate(r.published_on)].filter(Boolean).join(' \u00b7 '), summary: r.summary,
     sections: TOPICS.filter(t => t.parent === 'r:' + r.slug), charts: DS.filter(d => d.topic === 'r:' + r.slug || d.topic.startsWith('r:' + r.slug + '~')).length }));
-  out.push({ id: 'outlook', kind: 'outlook', overview: 'outlook', short: 'Outlook Study 2025', title: 'Outlook Study 2025', meta: 'AIA Canada with EY \u00b7 January 2025',
+  if (canOpen('outlook')) out.push({ id: 'outlook', kind: 'outlook', overview: 'outlook', short: 'Outlook Study 2025', title: 'Outlook Study 2025', meta: 'AIA Canada with EY \u00b7 January 2025',
     summary: TOPICS.find(t => t.id === 'outlook').blurb, sections: TOPICS.filter(t => t.group === 'outlook'), charts: DS.filter(d => sourceOf(d) === 'outlook' && d.kind !== 'defs').length });
   out.push({ id: 'macro', kind: 'economy', overview: 'macro', short: 'Economic indicators', title: 'Economic indicators', meta: `Statistics Canada and Bank of Canada${ECON && ECON.built ? ' \u00b7 updated ' + fmtDay(ECON.built) : ''}`,
     summary: TOPICS.find(t => t.id === 'macro').blurb + (CITIES ? ' Includes a profile of every metro area.' : ''), sections: TOPICS.filter(t => t.group === 'economy-sec'), charts: DS.filter(d => sourceOf(d) === 'macro').length });
@@ -179,6 +179,7 @@ function renderHome(main) {
     h('span', { class: 'ref' }, r.meta), h('b', {}, r.title),
     h('span', {}, (r.summary || '').length > 200 ? r.summary.slice(0, 197) + '\u2026' : r.summary),
     h('span', { class: 'rstats' }, [r.sections.length ? `${r.sections.length} section${r.sections.length === 1 ? '' : 's'}` : null, `${r.charts} charts`].filter(Boolean).join(' \u00b7 '), h('span', { class: 'ropen' }, 'Open \u2192'))))));
+  const store = storeSection(); if (store) main.append(store);
   // public data, kept visibly apart from AIA Canada's research
   const pcard = (ref, title, text, onclick, href) => h(href ? 'a' : 'button', { class: 'tcard pcard', ...(href ? { href } : { type: 'button', onclick }) }, h('span', { class: 'ref' }, ref), h('b', {}, title), h('span', {}, text));
   main.append(h('section', { class: 'pubsec', 'aria-labelledby': 'pubsecH' },
@@ -199,8 +200,9 @@ function renderHome(main) {
 }
 function renderOutlookOverview(main) {
   const t = TOPICS.find(x => x.id === 'outlook');
-  main.append(h('div', { class: 'banner', role: 'note' }, h('span', {}, h('b', {}, 'Member resource. '), 'Contains licensed S&P Global Mobility and IMR Inc. data. Do not redistribute outside AIA Canada membership. Figures are unaudited estimates; see the disclaimer at the bottom of the page.')));
+  main.append(h('div', { class: 'banner', role: 'note' }, h('span', {}, h('b', {}, 'For your own use. '), 'Contains S&P Global Mobility and IMR Inc. data licensed to AIA Canada. Please don\u2019t redistribute it. Figures are unaudited estimates; see the disclaimer at the bottom of the page.')));
   main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'AIA Canada with EY \u00b7 January 2025'), h('h1', {}, 'Outlook Study 2025'), h('p', {}, t.blurb)));
+  main.append(h('div', { class: 'chips' }, pdfBtn('outlook')));
   const tiles = kpiTiles('outlook'); if (tiles) main.append(tiles);
   const secs = TOPICS.filter(x => x.group === 'outlook');
   main.append(h('h2', { class: 'sec-h' }, 'Sections'));
@@ -213,7 +215,7 @@ function renderReport(main, t) {
   main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, [r.series || 'AIA Canada research', fmtDate(r.published_on)].filter(Boolean).join(' · ')),
     h('h1', {}, r.title), r.summary ? h('p', {}, r.summary) : null));
   const acts = h('div', { class: 'chips' });
-  if (r.source_url) acts.append(h('a', { class: 'btn-ask', href: r.source_url, target: '_blank', rel: 'noopener' }, 'Get the full report'));
+  acts.append(pdfBtn('r:' + r.slug));
   if (SAMPLE) acts.append(h('button', { type: 'button', class: 'qchip', onclick: () => openDrawer({ ask: `Summarize the main findings of "${r.title}" and connect them to the economic data where it helps.` }) }, 'Ask about this report'));
   if (acts.childElementCount) main.append(acts);
   const kf = Array.isArray(r.key_findings) ? r.key_findings.filter(Boolean) : [];
@@ -450,6 +452,7 @@ function renderReportsAdmin(main) {
   if (ADM.view === 'review' && ADM.id) return renderReview(main, ADM.id);
   main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'Admin'), h('h1', {}, 'Research reports'),
     h('p', {}, 'Upload a research report as a PDF. Claude reads every chart and table and turns them into interactive charts, saved as a draft. Check them, then publish to make the report a section of the hub for members.')));
+  main.append(outlookPdfPanel());
   const file = h('input', { type: 'file', id: 'hubFile', accept: 'application/pdf' });
   const url = h('input', { type: 'url', id: 'hubUrl', class: 'tsearch', placeholder: 'Or paste a link to the PDF (https://…)' });
   const title = h('input', { id: 'hubTitle', class: 'tsearch', placeholder: 'Title (optional: read from the report)' });
@@ -779,10 +782,14 @@ function renderProfile() {
   const name = email.split('@')[0].split(/[._-]+/).filter(Boolean);
   $('#avatar').textContent = ((name[0] || '?')[0] + (name[1] ? name[1][0] : '')).toUpperCase();
   $('#pmEmail').textContent = email;
-  $('#pmRole').textContent = IS_ADMIN ? 'Admin' : 'Member';
+  $('#pmRole').textContent = IS_ADMIN ? 'Admin' : ACCESS && ACCESS.member ? 'Member' : ACCESS && ACCESS.subscribed ? 'All-reports subscriber' : ACCESS && (ACCESS.reports || []).length ? 'Report buyer' : 'Member';
   $('#pmRole').title = typeof HUB_VERSION !== 'undefined' ? 'Version ' + HUB_VERSION : '';
   const adm = $('#pmAdmin');
-  adm.replaceChildren(...(IS_ADMIN ? [h('div', { class: 'pm-label pm-sec' }, 'Admin'),
+  const acct = [];
+  if (ACCESS && ACCESS.subscription && ACCESS.subscription.portal) acct.push(h('button', { type: 'button', class: 'pm-item', role: 'menuitem', onclick: () => { closeProfile(); openPortal(); } }, 'Manage subscription and receipts'));
+  else if (ACCESS && (ACCESS.reports || []).length) acct.push(h('button', { type: 'button', class: 'pm-item', role: 'menuitem', onclick: () => { closeProfile(); openPortal(); } }, 'Receipts'));
+  if (!fullAccess()) acct.push(h('button', { type: 'button', class: 'pm-item', role: 'menuitem', onclick: () => { closeProfile(); closeNav(); go('home'); setTimeout(() => { const st = $('#store'); if (st) st.scrollIntoView({ behavior: 'smooth' }); }, 80); } }, 'Get more reports'));
+  adm.replaceChildren(...acct, ...(IS_ADMIN ? [h('div', { class: 'pm-label pm-sec' }, 'Admin'),
     ...TOPICS.filter(t => t.group === 'admin').map(t => h('button', { type: 'button', class: 'pm-item', role: 'menuitem', 'aria-current': String(current === t.id),
       onclick: () => { closeProfile(); closeNav(); go(t.id); } }, t.name))] : []));
 }

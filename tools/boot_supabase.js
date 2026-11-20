@@ -11,48 +11,19 @@ function gate(kind, info = {}) {
   for (const c of main.querySelectorAll('canvas')) { freeChart(c); }
   main.replaceChildren();
   const box = h('section', { class: 'gate', 'aria-live': 'polite' });
+  document.body.classList.toggle('is-landing', kind === 'signin' || kind === 'denied');
   if (kind === 'loading') {
     box.append(h('p', { class: 'gate-muted' }, info.msg || 'Loading the Research Hub…'));
   } else if (kind === 'signin') {
-    const form = h('form', { class: 'gate-form' },
-      h('label', { for: 'email' }, 'Work email'),
-      h('input', { id: 'email', type: 'email', required: true, autocomplete: 'email', placeholder: 'name@company.com', value: info.email || '' }),
-      h('button', { type: 'submit', class: 'btn-ask' }, 'Check my access'));
-    const err = h('p', { class: 'gate-err', role: 'alert' }, info.error || '');
-    err.hidden = !info.error;
-    const fail = (msg) => { const btn = form.querySelector('button'); btn.disabled = false; btn.textContent = 'Check my access'; err.hidden = false; err.textContent = msg; };
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      const email = $('#email').value.trim().toLowerCase();
-      const btn = form.querySelector('button'); btn.disabled = true; btn.textContent = 'Checking your membership\u2026';
-      let status = 'unavailable';
-      try {
-        const r = await fetch(`${CFG.supabaseUrl}/functions/v1/outlook-register`, { method: 'POST', headers: { 'content-type': 'application/json', apikey: CFG.supabaseKey }, body: JSON.stringify({ email }) });
-        status = (await r.json()).status || 'unavailable';
-      } catch {}
-      if (status === 'denied') return gate('notmember', { email });
-      if (status === 'invalid') return fail('Enter a full email address, such as name@company.com.');
-      if (status === 'rate_limited') return fail('Too many tries in a short time. Wait an hour, then try again.');
-      if (status !== 'approved') return fail(`We could not check membership right now. Try again in a few minutes, or contact ${CFG.contactEmail}.`);
-      btn.textContent = 'Sending your sign-in code\u2026';
-      const { error } = await SB.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname } });
-      if (error) {
-        return fail(/email rate limit/i.test(error.message) || error.code === 'over_email_send_rate_limit'
-          ? `We can\u2019t send sign-in emails right now because too many were sent in the past hour. Please try again later, or contact ${CFG.contactEmail}.`
-          : /security purposes|seconds/i.test(error.message) ? 'A code was sent a moment ago. Check your email, or wait a minute and try again.' : 'The sign-in email could not be sent. Try again in a few minutes.');
-      }
-      gate('sent', { email });
-    });
-    box.append(h('span', { class: 'eyebrow' }, 'For AIA Canada members'),
-      h('h1', {}, 'Get access to the AIA Canada Research Hub'),
-      h('p', {}, 'Enter the work email your company has on file with AIA Canada. We\u2019ll check it against our member records and email you a sign-in link. No password needed. Already registered? Use the same form to sign in.'),
-      form, err,
-      h('p', { class: 'gate-muted' }, `Questions about access? Contact ${CFG.contactEmail}.`));
+    renderLanding(box, info);
   } else if (kind === 'notmember') {
     const contact = h('a', { href: `mailto:${CFG.contactEmail}?subject=${encodeURIComponent('Research Hub access')}&body=${encodeURIComponent(`Hello,\n\nI would like access to the AIA Canada Research Hub. My work email is ${info.email}.\n\nCompany:\nName:\n`)}` }, CFG.contactEmail);
-    box.append(h('h1', {}, 'We couldn\u2019t confirm a current membership for this email'),
-      h('p', {}, h('span', {}, 'We checked '), h('strong', {}, info.email), h('span', {}, ' against AIA Canada\u2019s member records and didn\u2019t find a current membership.')),
-      h('p', {}, 'The Research Hub is a member benefit. If your company is a member, try the email address AIA Canada has on file for you. If you think this is a mistake, or you\u2019d like to become a member, contact:'),
+    box.append(h('h1', {}, 'We couldn\u2019t find a membership or purchase for this email'),
+      h('p', {}, h('span', {}, 'We checked '), h('strong', {}, info.email), h('span', {}, ' against AIA Canada\u2019s member records and Research Hub purchases.')),
+      h('p', {}, 'If your company is a member, try the email address AIA Canada has on file for you. Otherwise, you can join or buy access:'),
+      h('div', { class: 'chips' }, h('a', { class: 'btn-ask', href: JOIN_URL }, 'Become a member'), buyBtn('subscription', null, `All reports \u00b7 ${money(PRICE.monthly)}/month`, 'act'),
+        h('button', { type: 'button', class: 'act', onclick: () => { gate('signin', { email: info.email }); setTimeout(() => $('#reports').scrollIntoView(), 50); } }, `Buy one report \u00b7 ${money(PRICE.report)}`)),
+      h('p', {}, 'If you think this is a mistake, contact:'),
       h('p', { class: 'contact-line' }, contact, h('button', { type: 'button', class: 'act', onclick: () => copyText(CFG.contactEmail, 'Email address copied.') }, 'Copy')),
       h('button', { type: 'button', class: 'act', onclick: () => gate('signin', { email: info.email }) }, 'Try a different email'));
   } else if (kind === 'sent') {
@@ -73,9 +44,8 @@ function gate(kind, info = {}) {
       h('button', { type: 'button', class: 'act', onclick: () => gate('signin', { email: info.email }) }, 'Send a new code or use a different email'));
     setTimeout(() => code.focus(), 50);
   } else if (kind === 'denied') {
-    box.append(h('h1', {}, 'You’re signed in, but not on the access list yet'),
-      h('p', {}, h('span', {}, 'You’re signed in as '), h('strong', {}, info.email), h('span', {}, `. The Research Hub is limited to approved members and staff. Ask ${CFG.contactEmail} to add this address, then sign in again.`)),
-      h('button', { type: 'button', class: 'act', onclick: signOut }, 'Sign out'));
+    // signed in, but no membership, subscription or purchase (e.g. a subscription that has ended): show the store
+    renderLanding(box, { email: info.email, notice: h('span', {}, `You\u2019re signed in as ${info.email}, but this email has no current membership, subscription or purchase. Join, subscribe or buy a report below, or `, h('button', { type: 'button', class: 'linkbtn', onclick: signOut }, 'sign out'), '.') });
   } else if (kind === 'error') {
     box.append(h('h1', {}, 'The data could not be loaded'), h('p', {}, 'Check your connection and reload the page.'),
       h('button', { type: 'button', class: 'act', onclick: () => location.reload() }, 'Reload'));
@@ -83,7 +53,7 @@ function gate(kind, info = {}) {
   main.append(box);
 }
 
-async function signOut() { await SB.auth.signOut(); LOADED_FOR = null; IS_ADMIN = false; SAMPLE = null; $('#who').hidden = true; gate('signin'); }
+async function signOut() { await SB.auth.signOut(); LOADED_FOR = null; IS_ADMIN = false; SAMPLE = null; ACCESS = null; $('#who').hidden = true; gate('signin'); }
 $('#signOut').addEventListener('click', signOut);
 
 async function loadApp(session) {
@@ -91,9 +61,12 @@ async function loadApp(session) {
   LOADED_FOR = session.user.id;
   $('#whoEmail').textContent = session.user.email; $('#who').hidden = false;
   gate('loading');
+  const acc = await SB.rpc('hub_access');
+  if (acc.error) { LOADED_FOR = null; gate('error'); return; }
+  ACCESS = acc.data || {};
+  if (!(ACCESS.member || ACCESS.admin || ACCESS.subscribed || (ACCESS.reports || []).length)) { gate('denied', { email: session.user.email }); return; }
   const { data, error } = await SB.from('outlook_figures').select('payload').eq('edition', '2025').order('sort');
   if (error) { LOADED_FOR = null; gate('error'); return; }
-  if (!data.length) { gate('denied', { email: session.user.email }); return; }
   DS = data.map(r => r.payload);
   BYID = Object.fromEntries(DS.map(d => [d.id, d]));
   // Check admin rights, load the hub content and check whether AI answers are on, all before the first draw,
@@ -348,6 +321,7 @@ async function renderAccess(main) {
     draw();
   }
   list();
+  main.append(purchasesPanel());
 }
 
 /* ---------- boot ---------- */
@@ -358,7 +332,12 @@ async function renderAccess(main) {
     if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED')) loadApp(session);
     if (event === 'SIGNED_OUT') { LOADED_FOR = null; gate('signin'); }
   });
+  const back = new URLSearchParams(location.search).get('checkout') ? (gate('loading', { msg: 'Confirming your purchase\u2026' }), await checkoutReturn()) : null;
   const { data: { session } } = await SB.auth.getSession();
+  if (back && back.ready && session && session.user.email.toLowerCase() === back.email) { LOADED_FOR = null; toast('Thank you. Your purchase is ready.'); }
   if (session) loadApp(session);
+  else if (back && back.ready) gate('signin', { email: back.email, autoSend: true, notice: `Thank you. Your purchase is ready. We\u2019re emailing a sign-in code to ${back.email}.` });
+  else if (back && back.paid) gate('signin', { email: back.email, notice: `Thank you. Your payment went through and your access is being set up. In a minute, sign in with ${back.email}.` });
+  else if (back && back.cancelled) gate('signin', { notice: 'Checkout was cancelled. You haven\u2019t been charged.' });
   else gate('signin', { error: err ? 'That sign-in link has expired or was already used. Request a new one.' : '' });
 })();

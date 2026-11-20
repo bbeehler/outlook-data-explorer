@@ -207,3 +207,65 @@ body.is-gated .mast-link { display: none; }
 .tcard.pcard .ref { color: var(--pub-ink); }
 .pubbanner { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: var(--pub-bg); border: 1px dashed var(--pub-line); color: var(--pub-ink); padding: 10px 14px; font-size: 13px; }
 .eyebrow.pubeyebrow { color: var(--pub); }
+
+/* ---------- public landing page (signed out): replaces aiacanada.com/reports ---------- */
+.landing { max-width: 1120px; margin: 0 auto; padding: 8px 0 48px; display: flex; flex-direction: column; gap: 44px; width: 100%; }
+.lp-notice { background: var(--warn-bg); color: var(--warn-ink); padding: 12px 16px; font-size: 14px; font-weight: 600; }
+.lp-hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 36px; align-items: start; padding-top: 20px; }
+.lp-eyebrow { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); font-weight: 800; }
+.lp-hero h1 { font-size: 42px; line-height: 1.08; font-weight: 800; margin: 10px 0 14px; color: var(--ink); letter-spacing: -.01em; }
+.lp-lead { font-size: 18px; line-height: 1.5; color: var(--ink-2); margin: 0 0 16px; }
+.lp-ticks { list-style: none; padding: 0; margin: 0 0 22px; display: grid; gap: 8px; }
+.lp-ticks li { position: relative; padding-left: 28px; color: var(--ink); font-weight: 600; }
+.lp-ticks li::before { content: ""; position: absolute; left: 2px; top: 5px; width: 12px; height: 7px; border-left: 3px solid var(--accent); border-bottom: 3px solid var(--accent); transform: rotate(-45deg); }
+.lp-ctas { display: flex; flex-wrap: wrap; gap: 10px; }
+.lp-ctas a { text-decoration: none; }
+.landing a.btn-ask, .landing a.act { text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+.lp-signin { background: var(--surface); border: 1px solid var(--line); border-top: 5px solid var(--accent); padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+.lp-signin h2 { margin: 0; font-size: 22px; }
+.lp-signin p { margin: 0; color: var(--ink-2); }
+.lp-band { background: var(--mast); color: #fff; position: relative; overflow: hidden; }
+.lp-band::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: var(--accent); }
+.lp-band-in { padding: 40px 40px 40px 48px; max-width: 820px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+.lp-band-kicker { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--mast-2); font-weight: 800; }
+.lp-band h2 { margin: 0; font-size: 46px; line-height: 1; font-weight: 900; text-transform: uppercase; letter-spacing: -.01em; color: #fff; }
+.lp-band p { margin: 0; font-size: 18px; line-height: 1.5; color: #e6edf6; }
+.lp-band .btn-ask { background: var(--accent); border-color: var(--accent); color: #fff; }
+.lp-sec { display: flex; flex-direction: column; gap: 14px; }
+.lp-sec > h2 { font-size: 28px; margin: 0; color: var(--ink); }
+.lp-sub { margin: 0; color: var(--ink-2); font-size: 16px; }
+.lp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.lp-card { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--ink); padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.lp-card h3 { margin: 0; font-size: 19px; line-height: 1.25; color: var(--ink); }
+.lp-card p { margin: 0; color: var(--ink-2); font-size: 14px; line-height: 1.5; }
+.lp-card .ref { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+.lp-card .lp-finding { border-left: 3px solid var(--accent); padding-left: 10px; color: var(--ink); font-weight: 600; }
+.lp-stats { font-size: 13px; color: var(--muted); }
+.lp-card-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding-top: 8px; border-top: 1px solid var(--line-soft); }
+.lp-free { font-size: 13px; font-weight: 700; color: var(--ink); background: var(--chip); padding: 4px 8px; }
+.lp-plans-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.lp-plan { background: var(--surface); border: 1px solid var(--line); padding: 22px; display: flex; flex-direction: column; gap: 12px; position: relative; }
+.lp-plan h3 { margin: 0; font-size: 20px; color: var(--ink); }
+.lp-plan ul { margin: 0; padding-left: 18px; color: var(--ink-2); display: grid; gap: 6px; font-size: 14px; }
+.lp-plan > .btn-ask, .lp-plan > .act, .lp-plan > a { margin-top: auto; }
+.lp-plan-main { border: 2px solid var(--accent); }
+.lp-plan-tag { position: absolute; top: -12px; left: 18px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px; }
+.lp-price { margin: 0; font-size: 30px; font-weight: 800; color: var(--ink); }
+.lp-price span { font-size: 15px; font-weight: 600; color: var(--muted); }
+.lp-plan-main .lp-price { font-size: 20px; }
+.lp-faq { background: var(--surface); border: 1px solid var(--line); padding: 0 16px; }
+.lp-faq summary { cursor: pointer; padding: 14px 0; font-weight: 700; color: var(--ink); }
+.lp-faq p { margin: 0 0 14px; color: var(--ink-2); }
+.lp-pub { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: var(--pub-bg); border: 1px dashed var(--pub-line); color: var(--pub-ink); padding: 12px 16px; font-size: 14px; }
+.lp-pub a { color: inherit; font-weight: 700; }
+.storesec .lp-grid { margin-top: 10px; }
+.pdfbtn::before { content: "\2193"; margin-right: 6px; font-weight: 800; }
+body.is-landing .wrap { max-width: none; }
+@media (max-width: 900px) {
+  .lp-hero { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .lp-hero h1 { font-size: 32px; }
+  .lp-plans-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .lp-band-in { padding: 28px 22px 28px 30px; }
+  .lp-band h2 { font-size: 34px; }
+  .lp-grid { grid-template-columns: minmax(0, 1fr); }
+}
