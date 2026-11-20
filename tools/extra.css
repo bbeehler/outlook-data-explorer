@@ -255,10 +255,13 @@ body.is-gated .mast-link { display: none; }
 .lp-ico { width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; background: #192b56; color: #fff; border-bottom: 3px solid #e21c47; }
 /* campaign band */
 .lp-band { background: #e21c47; color: #fff; position: relative; overflow: hidden; isolation: isolate; }
-.lp-band::before { content: ""; position: absolute; right: -60px; top: -40px; bottom: -40px; width: 45%; z-index: -1; transform: skewX(-18deg);
-  background: linear-gradient(90deg, rgba(25,43,86,.55), rgba(25,43,86,.15) 45%, rgba(25,43,86,.05)), url("assets/keep-canada-moving.jpg") 50% 58% / cover no-repeat, #192b56; }
-.lp-band::after { content: ""; position: absolute; right: -60px; top: -40px; bottom: -40px; width: 45%; z-index: -1; transform: skewX(-18deg); border-left: 6px solid #192b56; pointer-events: none; }
-.lp-band-in { padding: 48px; max-width: 760px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+.lp-band::before { content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 64%; z-index: -2;
+  background: url("assets/keep-canada-moving.jpg") 50% 55% / cover no-repeat; filter: saturate(.85) contrast(1.05); }
+/* the red fades softly into the photo, with a touch of navy at the far edge, so the two read as one image */
+.lp-band::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(90deg, #e21c47 0%, #e21c47 40%, rgba(226,28,71,.9) 47%, rgba(226,28,71,.55) 55%, rgba(226,28,71,.18) 64%, rgba(226,28,71,0) 74%, rgba(25,43,86,.25) 100%),
+    linear-gradient(0deg, rgba(25,43,86,.35), transparent 40%); }
+.lp-band-in { padding: 48px; max-width: 640px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
 .lp-band-kicker { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: #fff; font-weight: 800; opacity: .85; }
 .lp-band h2 { margin: 0; font-size: 56px; line-height: .95; font-weight: 900; text-transform: uppercase; letter-spacing: -.02em; color: #fff; }
 .lp-band p { margin: 0; font-size: 18px; line-height: 1.55; color: #fff; }
@@ -313,9 +316,9 @@ body.is-landing .wrap { max-width: none; padding-top: 0; }
   .lp-sec-head h2 { font-size: 27px; }
   .lp-plans-grid { grid-template-columns: minmax(0, 1fr); gap: 26px; }
   .lp-band-in { padding: 34px 24px; }
-  .lp-band { display: flex; flex-direction: column; }
-  .lp-band::before, .lp-band::after { position: relative; display: block; right: auto; top: auto; bottom: auto; width: 100%; height: 240px; transform: none; order: -1; z-index: 0; border: 0; background-position: 50% 38%; }
-  .lp-band::after { display: none; }
+  .lp-band::before { width: 100%; height: 260px; bottom: auto; background-position: 50% 36%; }
+  .lp-band::after { background: linear-gradient(180deg, rgba(25,43,86,.15) 0, rgba(226,28,71,.12) 130px, rgba(226,28,71,.8) 225px, #e21c47 262px, #e21c47 100%); }
+  .lp-band-in { padding-top: 236px; }
   .lp-band h2 { font-size: 38px; }
   .lp-grid { grid-template-columns: minmax(0, 1fr); }
   .lp-feats { grid-template-columns: minmax(0, 1fr); }
