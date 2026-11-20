@@ -128,6 +128,12 @@ def statcan():
     return data, structure
 
 
+# Alberta renamed some rows over the years; one name per row so the years line up.
+AB_ALIASES = {"Gas": "Gasoline", "Motorhomes": "Motor Homes", "Buses (All Categories Of Bus)": "Buses", "Trucks (All Truck Types)": "Trucks",
+              "Vans (All Van Body Types)": "Vans", "Truck/Trailer Units": "Truck-Trailer Units", "2 Door Sedans": "2-Door Coupe",
+              "3 Door Coupe": "3-Door Coupe", "4 Door": "4-Door", "5 Door Sedan": "5-Door Sedan", "Flexible": "Flexible (E85)"}
+
+
 def alberta_tables(folder):
     """Read Alberta's 'as of March 31' PDF tables (as text from pdftotext -layout): returns {kind: {label: {year: n}}}."""
     out = {}
@@ -139,8 +145,8 @@ def alberta_tables(folder):
             continue
         years = None
         for line in f.read_text(errors="ignore").splitlines():
-            ys = re.findall(r"\b(20[0-3]\d)\b", line)
-            if len(ys) >= 3 and re.search(r"year", line, re.I):
+            ys = re.findall(r"\b((?:19|20)\d\d)\b", line)
+            if len(ys) >= 3 and (re.search(r"year", line, re.I) or not re.sub(r"(?:19|20)\d\d|\s", "", line)):
                 years = ys
                 continue
             if not years:
@@ -151,7 +157,8 @@ def alberta_tables(folder):
             nums = re.findall(r"\d[\d,]*", mt.group(2))
             if len(nums) != len(years):
                 continue
-            label = re.sub(r"\(\d\)|\s+", " ", mt.group(1)).strip(" *:").title().replace("  ", " ").strip()
+            label = re.sub(r"\s+", " ", re.sub(r"\(\d\)", " ", mt.group(1))).strip(" *:").title()
+            label = AB_ALIASES.get(label, label)
             for y, n in zip(years, nums):  # first table on the page wins when a label repeats (e.g. "Other vehicles")
                 out.setdefault(kind, {}).setdefault(label, {}).setdefault(y, int(n.replace(",", "")))
     return out
