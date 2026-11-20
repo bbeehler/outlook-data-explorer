@@ -11,7 +11,7 @@ const RATE_LIMIT = Number(Deno.env.get("OUTLOOK_AI_HOURLY_LIMIT") ?? "30");
 const MAX_CHARS = 120000;
 const MAX_TURNS = 16;
 const ORIGINS = (Deno.env.get("OUTLOOK_ALLOWED_ORIGINS") ??
-  "https://outlook.aiacanada.com,https://research.aiacanada.com,https://bbeehler.github.io,http://localhost:8000,http://127.0.0.1:8000").split(",").map((s) => s.trim());
+  "https://outlook.aiacanada.com,https://aia-research-hub.pages.dev,https://research.aiacanada.com,https://bbeehler.github.io,http://localhost:8000,http://127.0.0.1:8000").split(",").map((s) => s.trim());
 
 const RULES = `You answer questions inside the AIA Canada Research Hub, using only the figures provided in the conversation: AIA Canada research reports, the Outlook Study 2025, and Statistics Canada and Bank of Canada economic data.
 Every number must come from those figures, with the figure reference in square brackets. If the figures cannot answer the question, say so. Connections across sources are context, not proof of cause.

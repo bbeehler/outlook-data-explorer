@@ -18,7 +18,7 @@ const MODEL = (Deno.env.get("HUB_EXTRACT_MODEL") ?? "claude-sonnet-5-5").trim();
 const WORKSPACE = (Deno.env.get("ANTHROPIC_WORKSPACE_ID") ?? "").trim();
 const PAGES_PER_CHUNK = Number(Deno.env.get("HUB_PAGES_PER_CHUNK") ?? "4");
 const ORIGINS = (Deno.env.get("OUTLOOK_ALLOWED_ORIGINS") ??
-  "https://outlook.aiacanada.com,https://research.aiacanada.com,https://bbeehler.github.io,http://localhost:8000,http://127.0.0.1:8000").split(",").map((s) => s.trim());
+  "https://outlook.aiacanada.com,https://aia-research-hub.pages.dev,https://research.aiacanada.com,https://bbeehler.github.io,http://localhost:8000,http://127.0.0.1:8000").split(",").map((s) => s.trim());
 declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void };
 const SELF = `${Deno.env.get("SUPABASE_URL")}/functions/v1/hub-extract`;
 const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
