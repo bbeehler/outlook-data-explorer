@@ -98,7 +98,8 @@ Deno.serve(async (req) => {
   if (listed) { await log("approved_list"); return reply({ status: "approved" }); }
 
   // 1b. Bought a report or subscribed through the Research Hub store
-  const { data: bought } = await db.from("hub_entitlements").select("id").eq("email", email).in("status", ["active", "trialing", "past_due"]).limit(1).maybeSingle();
+  const { data: bought } = await db.from("hub_entitlements").select("id").eq("email", email).in("status", ["active", "trialing", "past_due"])
+    .or(`current_period_end.is.null,current_period_end.gt.${new Date().toISOString()}`).limit(1).maybeSingle();
   if (bought) { await log("approved_buyer"); return reply({ status: "approved" }); }
 
   // 2. Data Portal admin

@@ -91,3 +91,7 @@ language sql stable security definer set search_path = '' as $$
   order by r.published_on desc nulls last;
 $$;
 grant execute on function public.hub_catalog() to anon, authenticated;
+
+-- 2026-11-20 (later): no subscriptions are sold; a single-report purchase ($250) gives 3 days of access.
+-- Applied as migration hub_store_three_day_access: private.entitled / private.has_any_access only count report purchases
+-- whose current_period_end is in the future, and hub_access() also returns 'until' {report_key: access end} and 'receipts'.

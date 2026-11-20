@@ -18,10 +18,10 @@ function gate(kind, info = {}) {
     renderLanding(box, info);
   } else if (kind === 'notmember') {
     const contact = h('a', { href: `mailto:${CFG.contactEmail}?subject=${encodeURIComponent('Research Hub access')}&body=${encodeURIComponent(`Hello,\n\nI would like access to the AIA Canada Research Hub. My work email is ${info.email}.\n\nCompany:\nName:\n`)}` }, CFG.contactEmail);
-    box.append(h('h1', {}, 'We couldn\u2019t find a membership or purchase for this email'),
+    box.append(h('h1', {}, 'We couldn\u2019t find a membership, affiliation or purchase for this email'),
       h('p', {}, h('span', {}, 'We checked '), h('strong', {}, info.email), h('span', {}, ' against AIA Canada\u2019s member records and Research Hub purchases.')),
       h('p', {}, 'If your company is a member, try the email address AIA Canada has on file for you. Otherwise, you can join or buy access:'),
-      h('div', { class: 'chips' }, h('a', { class: 'btn-ask', href: JOIN_URL }, 'Become a member'), buyBtn('subscription', null, `All reports \u00b7 ${money(PRICE.monthly)}/month`, 'act'),
+      h('div', { class: 'chips' }, h('a', { class: 'btn-ask', href: JOIN_URL }, 'Become a member'), h('a', { class: 'act', href: AFFILIATE_URL }, 'Become an affiliate (free access)'),
         h('button', { type: 'button', class: 'act', onclick: () => { gate('signin', { email: info.email }); setTimeout(() => $('#reports').scrollIntoView(), 50); } }, `Buy one report \u00b7 ${money(PRICE.report)}`)),
       h('p', {}, 'If you think this is a mistake, contact:'),
       h('p', { class: 'contact-line' }, contact, h('button', { type: 'button', class: 'act', onclick: () => copyText(CFG.contactEmail, 'Email address copied.') }, 'Copy')),
@@ -45,7 +45,7 @@ function gate(kind, info = {}) {
     setTimeout(() => code.focus(), 50);
   } else if (kind === 'denied') {
     // signed in, but no membership, subscription or purchase (e.g. a subscription that has ended): show the store
-    renderLanding(box, { email: info.email, notice: h('span', {}, `You\u2019re signed in as ${info.email}, but this email has no current membership, subscription or purchase. Join, subscribe or buy a report below, or `, h('button', { type: 'button', class: 'linkbtn', onclick: signOut }, 'sign out'), '.') });
+    renderLanding(box, { email: info.email, notice: h('span', {}, `You\u2019re signed in as ${info.email}, but this email has no current membership or affiliation, and any report you bought has reached the end of its ${PRICE.days} days. Join, become an affiliate or buy a report below, or `, h('button', { type: 'button', class: 'linkbtn', onclick: signOut }, 'sign out'), '.') });
   } else if (kind === 'error') {
     box.append(h('h1', {}, 'The data could not be loaded'), h('p', {}, 'Check your connection and reload the page.'),
       h('button', { type: 'button', class: 'act', onclick: () => location.reload() }, 'Reload'));

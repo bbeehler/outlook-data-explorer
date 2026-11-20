@@ -269,3 +269,6 @@ body.is-landing .wrap { max-width: none; }
   .lp-band h2 { font-size: 34px; }
   .lp-grid { grid-template-columns: minmax(0, 1fr); }
 }
+.lp-plan-aff { border-top: 4px solid var(--ink); }
+.lp-plan-aff .lp-price, .lp-plan-main .lp-price { font-size: 20px; }
+.lp-until { display: inline-block; background: var(--warn-bg); color: var(--warn-ink); padding: 6px 10px; font-size: 13px; font-weight: 600; margin: 0; }

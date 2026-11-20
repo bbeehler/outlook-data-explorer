@@ -1,10 +1,9 @@
 // hub-checkout: starts a Stripe Checkout for the Research Hub store. Public (no sign-in needed to buy).
-//   { plan: "report", key: "r:<slug>" | "outlook", email? } -> one report, $199 CAD, one-time
-//   { plan: "subscription", email? }                        -> every report, $49 CAD a month
+//   { plan: "report", key: "r:<slug>" | "outlook", email? } -> one report, $250 CAD: the report's PDF and 3 days of access in the hub
 //   { action: "status", session_id }                        -> after paying: the email used and whether access is ready
 // Returns { url } to send the buyer to Stripe. The purchase itself is recorded by hub-stripe-webhook.
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { stripe, PRICES, CURRENCY, AUTO_TAX, cors, ORIGINS } from "./stripe.ts";
+import { stripe, PRICES, ACCESS_DAYS, CURRENCY, AUTO_TAX, cors, ORIGINS } from "./stripe.ts";
 
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -50,19 +49,9 @@ Deno.serve(async (req) => {
       const s = await stripe("POST", "checkout/sessions", {
         ...common, mode: "payment", customer_creation: "always", invoice_creation: { enabled: true },
         line_items: [{ quantity: 1, price_data: { currency: CURRENCY, unit_amount: PRICES.report, tax_behavior: "exclusive",
-          product_data: { name: `${name} (AIA Canada research report)`, description: "Access in the AIA Canada Research Hub: interactive charts, the full report as a PDF and Ask the data." } } }],
+          product_data: { name: `${name} (AIA Canada research report)`, description: `${ACCESS_DAYS} days of access in the AIA Canada Research Hub: the full report as a PDF, interactive charts and Ask the data.` } } }],
         metadata: { plan: "report", report_key: key },
         payment_intent_data: { metadata: { plan: "report", report_key: key } },
-      });
-      return reply({ url: s.url });
-    }
-    if (plan === "subscription") {
-      const s = await stripe("POST", "checkout/sessions", {
-        ...common, mode: "subscription",
-        line_items: [{ quantity: 1, price_data: { currency: CURRENCY, unit_amount: PRICES.subscription, tax_behavior: "exclusive", recurring: { interval: "month" },
-          product_data: { name: "AIA Canada Research Hub: all reports", description: "Every AIA Canada research report and the Outlook Study, with PDFs and Ask the data. Cancel any time." } } }],
-        metadata: { plan: "subscription" },
-        subscription_data: { metadata: { plan: "subscription" } },
       });
       return reply({ url: s.url });
     }

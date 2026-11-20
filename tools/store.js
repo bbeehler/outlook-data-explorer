@@ -1,8 +1,10 @@
 /* ---------- public landing page and store (replaces aiacanada.com/reports) ----------
    Signed-out visitors see what's in the hub, members sign in free, non-members join (join.aiacanada.com),
-   buy one report ($199) or subscribe to every report ($49/month) through Stripe Checkout. */
+   become an Industry Engagement Network affiliate (free access), or buy one report ($250, with 3 days of access to it in the hub)
+   through Stripe Checkout. */
 const JOIN_URL = 'https://join.aiacanada.com';
-const PRICE = { report: 199, monthly: 49 };
+const AFFILIATE_URL = 'https://join.aiacanada.com/join-aia-canada/become-an-industry-engagement-network-affiliate';
+const PRICE = { report: 250, days: 3 };
 let ACCESS = null;      // what the signed-in user can open (from hub_access)
 let CATALOG = null;     // published reports, for the landing page and the in-hub store
 const OUTLOOK_ITEM = { key: 'outlook', title: 'Outlook Study 2025', series: 'AIA Canada with EY', published_on: '2025-01-15',
@@ -53,7 +55,7 @@ async function openPortal() {
   if (j.url) location.href = j.url; else toast('Your billing details could not be opened. Contact ' + CFG.contactEmail + '.');
 }
 
-// Which research reports this user can open (members, admins and subscribers: all)
+// Which research reports this user can open (members, affiliates and admins: all; buyers: what they bought, for 3 days)
 function canOpen(key) {
   if (!ACCESS) return true;
   return ACCESS.member || ACCESS.admin || ACCESS.subscribed || (ACCESS.reports || []).includes(key);
@@ -87,7 +89,7 @@ function renderLanding(box, info = {}) {
       h('h1', {}, 'The research behind the businesses that keep Canada moving'),
       h('p', { class: 'lp-lead' }, 'AIA Canada’s consumer research and the Outlook Study on Canada’s automotive aftermarket, as interactive charts you can explore, download and ask questions about, plus each full report as a PDF.'),
       h('ul', { class: 'lp-ticks' }, ['Every chart as an interactive graph and a table', 'Full reports to download as PDFs', 'Ask the data: plain-language answers with sources', 'Government statistics for context, by province and city'].map(t => h('li', {}, t))),
-      h('div', { class: 'lp-ctas' }, h('a', { class: 'btn-ask lp-join', href: JOIN_URL }, 'Become a member'), h('a', { class: 'act lp-plans', href: '#plans', onclick: e => { e.preventDefault(); $('#plans').scrollIntoView({ behavior: 'smooth' }); } }, 'See plans and prices'))),
+      h('div', { class: 'lp-ctas' }, h('a', { class: 'btn-ask lp-join', href: JOIN_URL }, 'Become a member'), h('a', { class: 'act lp-plans', href: '#plans', onclick: e => { e.preventDefault(); $('#plans').scrollIntoView({ behavior: 'smooth' }); } }, 'See all the ways to get access'))),
     signin));
   if (info.notice) box.prepend(h('div', { class: 'lp-notice', role: 'status' }, info.notice));
   // campaign band
@@ -105,7 +107,7 @@ function renderLanding(box, info = {}) {
   // reports
   const grid = h('div', { class: 'lp-grid' }, h('p', { class: 'gate-muted' }, 'Loading the reports…'));
   box.append(h('section', { class: 'lp-sec', id: 'reports' }, h('h2', {}, 'Reports in the hub'),
-    h('p', { class: 'lp-sub' }, `Free for AIA Canada members. Not a member? Buy a single report for ${money(PRICE.report)} or get every report for ${money(PRICE.monthly)} a month.`), grid));
+    h('p', { class: 'lp-sub' }, 'Free for AIA Canada members and Industry Engagement Network affiliates. Not either? Buy a single report for ', h('strong', {}, money(PRICE.report)), ` and get ${PRICE.days} days of access to it in the hub, plus the full PDF.`), grid));
   loadCatalog().then(list => grid.replaceChildren(...list.map(reportCard)));
   // plans
   box.append(h('section', { class: 'lp-sec', id: 'plans' }, h('h2', {}, 'Choose how you get access'),
@@ -114,18 +116,18 @@ function renderLanding(box, info = {}) {
         h('ul', {}, ['All research reports and the Outlook Study, free', 'New reports as soon as they’re published', 'Advocacy, events, training and industry connections'].map(t => h('li', {}, t))),
         h('a', { class: 'btn-ask', href: JOIN_URL }, 'Become a member'),
         h('p', { class: 'gate-muted' }, 'Already a member? ', h('a', { href: '#signin', onclick: e => { e.preventDefault(); $('#email').focus(); $('#email').scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 'Sign in with your work email'), '.')),
-      h('div', { class: 'lp-plan' }, h('h3', {}, 'All reports'), h('p', { class: 'lp-price' }, money(PRICE.monthly), h('span', {}, ' a month')),
-        h('ul', {}, ['Every report in the hub, including the Outlook Study', 'Full reports as PDFs', 'Ask the data', 'Cancel any time'].map(t => h('li', {}, t))),
-        buyBtn('subscription', null, `Subscribe for ${money(PRICE.monthly)}/month`)),
-      h('div', { class: 'lp-plan' }, h('h3', {}, 'A single report'), h('p', { class: 'lp-price' }, money(PRICE.report), h('span', {}, ' one time')),
-        h('ul', {}, ['One report of your choice, yours to keep', 'Interactive charts and the full PDF', 'Ask the data about that report'].map(t => h('li', {}, t))),
+      h('div', { class: 'lp-plan lp-plan-aff' }, h('h3', {}, 'Become an affiliate'), h('p', { class: 'lp-price' }, 'Free access to the Research Hub'),
+        h('ul', {}, ['Join AIA Canada\u2019s Industry Engagement Network as an affiliate', 'Free access to every report in the Research Hub', 'Stay connected with the industry that keeps Canada moving'].map(t => h('li', {}, t))),
+        h('a', { class: 'btn-ask', href: AFFILIATE_URL }, 'Become an affiliate')),
+      h('div', { class: 'lp-plan' }, h('h3', {}, 'Buy a single report'), h('p', { class: 'lp-price' }, money(PRICE.report), h('span', {}, ' per report')),
+        h('ul', {}, ['The full report as a PDF', `${PRICE.days} days of access to it in the Research Hub`, 'Interactive charts, tables and Ask the data'].map(t => h('li', {}, t))),
         h('a', { class: 'act', href: '#reports', onclick: e => { e.preventDefault(); $('#reports').scrollIntoView({ behavior: 'smooth' }); } }, 'Choose a report')))));
   // FAQ
   const q = (qq, a) => h('details', { class: 'lp-faq' }, h('summary', {}, qq), h('p', {}, a));
   box.append(h('section', { class: 'lp-sec' }, h('h2', {}, 'Questions'),
     q('I work for an AIA Canada member. How do I get in?', 'Enter your work email in the sign-in box. We check it against our member records and email you a code. Every report is free for members.'),
-    q('What do I get when I buy a report?', 'Access in the Research Hub to that report’s interactive charts and tables, the full report as a PDF, and Ask the data for questions about it. It’s yours to keep.'),
-    q('How does the monthly plan work?', `For ${money(PRICE.monthly)} a month you can open every report in the hub, including new ones as they’re published. Cancel any time from your account; access continues to the end of the month you’ve paid for.`),
+    q('What do I get when I buy a report?', `${PRICE.days} days of access to that report in the Research Hub, starting when you pay: its interactive charts and tables, Ask the data, and the full report as a PDF. Download the PDF during your ${PRICE.days} days; it\u2019s yours to keep.`),
+    q('How do I get free access as an affiliate?', 'Join AIA Canada\u2019s Industry Engagement Network as an affiliate. Once you\u2019re on our records, sign in with your work email here.'),
     q('How do I sign in after buying?', 'Use the email address you paid with. We email you a sign-in code; there’s no password.'),
     q('Are taxes included?', 'Prices are in Canadian dollars. Applicable sales taxes are shown at checkout.'),
     q('Is payment secure?', 'Payments are handled by Stripe. AIA Canada never sees or stores your card details.'),
@@ -153,8 +155,8 @@ function signinCard(info) {
   const err = h('p', { class: 'gate-err', role: 'alert' }, info.error || ''); err.hidden = !info.error;
   const fail = (msg) => { const btn = form.querySelector('button'); btn.disabled = false; btn.textContent = 'Sign in'; err.hidden = false; err.textContent = msg; };
   form.addEventListener('submit', e => { e.preventDefault(); requestCode($('#email').value.trim().toLowerCase(), form.querySelector('button'), fail); });
-  card.append(h('h2', {}, 'Members and subscribers'), h('p', {}, 'Sign in with your work email, or the email you bought with. We’ll email you a sign-in code. No password needed.'), form, err,
-    h('p', { class: 'gate-muted' }, 'Not a member? ', h('a', { href: JOIN_URL }, 'Join AIA Canada'), ' or ', h('a', { href: '#plans', onclick: e => { e.preventDefault(); $('#plans').scrollIntoView({ behavior: 'smooth' }); } }, 'buy access'), '.'));
+  card.append(h('h2', {}, 'Sign in'), h('p', {}, 'Members, affiliates and report buyers: sign in with your work email, or the email you bought with. We’ll email you a sign-in code. No password needed.'), form, err,
+    h('p', { class: 'gate-muted' }, 'Not a member? ', h('a', { href: JOIN_URL }, 'Join AIA Canada'), ', ', h('a', { href: AFFILIATE_URL }, 'become an affiliate'), ' or ', h('a', { href: '#plans', onclick: e => { e.preventDefault(); $('#plans').scrollIntoView({ behavior: 'smooth' }); } }, 'buy a report'), '.'));
   if (info.autoSend && info.email) setTimeout(() => requestCode(info.email, form.querySelector('button'), fail), 50);
   return card;
 }
@@ -182,9 +184,11 @@ async function requestCode(email, btn, fail) {
 /* ---------- inside the hub: reports this user hasn't got yet ---------- */
 function storeSection() {
   if (fullAccess()) return null;
+  const until = Object.values(ACCESS.until || {}).sort().at(-1);
   const sec = h('section', { class: 'panel storesec', id: 'store' }, h('h2', {}, 'Get more reports'),
-    h('p', { class: 'gate-muted' }, `Open every report for ${money(PRICE.monthly)} a month, buy single reports for ${money(PRICE.report)}, or `, h('a', { href: JOIN_URL }, 'become an AIA Canada member'), ' to get them all free.'),
-    h('div', { class: 'chips' }, buyBtn('subscription', null, `Subscribe to all reports · ${money(PRICE.monthly)}/month`)));
+    until ? h('p', { class: 'lp-until' }, `Your access ends ${new Date(until).toLocaleString('en-CA', { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })}; download the PDF before then.`) : null,
+    h('p', { class: 'gate-muted' }, `Buy another report for ${money(PRICE.report)} (${PRICE.days} days of access), or get every report free: `, h('a', { href: JOIN_URL }, 'become an AIA Canada member'), ' or ', h('a', { href: AFFILIATE_URL }, 'an Industry Engagement Network affiliate'), '.'),
+    h('div', { class: 'chips' }, h('a', { class: 'btn-ask', href: AFFILIATE_URL }, 'Become an affiliate'), h('a', { class: 'act', href: JOIN_URL }, 'Become a member')));
   const grid = h('div', { class: 'lp-grid' });
   sec.append(grid);
   loadCatalog().then(list => grid.replaceChildren(...list.filter(r => !canOpen(r.key)).map(reportCard)));
@@ -205,18 +209,18 @@ function outlookPdfPanel() {
   return h('section', { class: 'panel' }, h('h2', {}, 'Outlook Study PDF'), msg, h('div', { class: 'chips' }, file, btn));
 }
 function purchasesPanel() {
-  const box = h('section', { class: 'panel' }, h('h2', {}, 'Store: purchases and subscriptions'), h('p', { class: 'gate-muted' }, 'Loading…'));
+  const box = h('section', { class: 'panel' }, h('h2', {}, 'Store: report purchases'), h('p', { class: 'gate-muted' }, 'Loading\u2026'));
   SB.from('hub_entitlements').select('email, kind, report_key, status, current_period_end, amount_cents, currency, created_at').order('created_at', { ascending: false }).limit(500).then(({ data, error }) => {
-    if (error) { box.replaceChildren(h('h2', {}, 'Store: purchases and subscriptions'), h('p', {}, 'Could not load purchases.')); return; }
+    if (error) { box.replaceChildren(h('h2', {}, 'Store: report purchases'), h('p', {}, 'Could not load purchases.')); return; }
     const titles = Object.fromEntries((CATALOG || []).map(r => [r.key, r.title]));
-    const subs = data.filter(r => r.kind === 'subscription' && ['active', 'trialing', 'past_due'].includes(r.status)).length;
+    const live = data.filter(r => r.kind === 'report' && r.status === 'active' && r.current_period_end && new Date(r.current_period_end) > new Date()).length;
     const sales = data.filter(r => r.kind === 'report' && r.status === 'active').length;
-    box.replaceChildren(h('h2', {}, 'Store: purchases and subscriptions'),
-      h('p', { class: 'gate-muted' }, `${subs} active ${subs === 1 ? 'subscription' : 'subscriptions'}, ${sales} single-report ${sales === 1 ? 'purchase' : 'purchases'}. Refunds and cancellations are handled in Stripe and update here automatically.`),
+    box.replaceChildren(h('h2', {}, 'Store: report purchases'),
+      h('p', { class: 'gate-muted' }, `${sales} report ${sales === 1 ? 'purchase' : 'purchases'} in total; ${live} still within ${PRICE.days} days of access. Refunds are made in Stripe and end access here automatically.`),
       data.length ? h('div', { class: 'tbl-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['When', 'Email', 'What', 'Status', 'Amount'].map(c => h('th', { scope: 'col' }, c)))),
         h('tbody', {}, data.map(r => h('tr', {}, h('td', {}, new Date(r.created_at).toLocaleDateString('en-CA')), h('th', { scope: 'row' }, r.email),
           h('td', {}, r.kind === 'subscription' ? 'All reports, monthly' : (titles[r.report_key] || r.report_key)),
-          h('td', {}, r.status + (r.kind === 'subscription' && r.current_period_end ? ` (paid to ${new Date(r.current_period_end).toLocaleDateString('en-CA')})` : '')),
+          h('td', {}, r.status === 'active' && r.current_period_end ? (new Date(r.current_period_end) > new Date() ? `Access until ${new Date(r.current_period_end).toLocaleString('en-CA', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}` : 'Access ended') : r.status),
           h('td', {}, r.amount_cents != null ? `$${(r.amount_cents / 100).toFixed(2)} ${String(r.currency || '').toUpperCase()}` : '')))))) : h('p', { class: 'gate-muted' }, 'No purchases yet.'));
   });
   loadCatalog();

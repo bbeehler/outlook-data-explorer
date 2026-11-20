@@ -174,7 +174,6 @@ function renderHome(main) {
       step('6', 'Search everything', 'Type a topic such as repair prices, EV owners or technicians in the search box to find matching charts in every report.'))));
   // reports
   main.append(h('h2', { class: 'sec-h' }, `Reports in the hub (${list.length})`));
-  main.append(h('p', { class: 'rep-store' }, 'Full reports and executive summaries are available from ', h('a', { href: 'https://www.aiacanada.com/reports/', target: '_blank', rel: 'noopener' }, 'aiacanada.com/reports'), '.'));
   main.append(h('div', { class: 'topics replist' }, list.map(r => h('button', { type: 'button', class: 'tcard rcard', onclick: () => go(r.overview) },
     h('span', { class: 'ref' }, r.meta), h('b', {}, r.title),
     h('span', {}, (r.summary || '').length > 200 ? r.summary.slice(0, 197) + '\u2026' : r.summary),
@@ -216,6 +215,8 @@ function renderReport(main, t) {
     h('h1', {}, r.title), r.summary ? h('p', {}, r.summary) : null));
   const acts = h('div', { class: 'chips' });
   acts.append(pdfBtn('r:' + r.slug));
+  const untilR = ACCESS && ACCESS.until && ACCESS.until['r:' + r.slug];
+  if (untilR && !fullAccess()) acts.append(h('span', { class: 'lp-until' }, `Your access ends ${new Date(untilR).toLocaleString('en-CA', { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })}; download the PDF before then.`));
   if (SAMPLE) acts.append(h('button', { type: 'button', class: 'qchip', onclick: () => openDrawer({ ask: `Summarize the main findings of "${r.title}" and connect them to the economic data where it helps.` }) }, 'Ask about this report'));
   if (acts.childElementCount) main.append(acts);
   const kf = Array.isArray(r.key_findings) ? r.key_findings.filter(Boolean) : [];
@@ -782,12 +783,11 @@ function renderProfile() {
   const name = email.split('@')[0].split(/[._-]+/).filter(Boolean);
   $('#avatar').textContent = ((name[0] || '?')[0] + (name[1] ? name[1][0] : '')).toUpperCase();
   $('#pmEmail').textContent = email;
-  $('#pmRole').textContent = IS_ADMIN ? 'Admin' : ACCESS && ACCESS.member ? 'Member' : ACCESS && ACCESS.subscribed ? 'All-reports subscriber' : ACCESS && (ACCESS.reports || []).length ? 'Report buyer' : 'Member';
+  $('#pmRole').textContent = IS_ADMIN ? 'Admin' : ACCESS && ACCESS.member ? 'Member' : ACCESS && (ACCESS.reports || []).length ? 'Report buyer' : 'Member';
   $('#pmRole').title = typeof HUB_VERSION !== 'undefined' ? 'Version ' + HUB_VERSION : '';
   const adm = $('#pmAdmin');
   const acct = [];
-  if (ACCESS && ACCESS.subscription && ACCESS.subscription.portal) acct.push(h('button', { type: 'button', class: 'pm-item', role: 'menuitem', onclick: () => { closeProfile(); openPortal(); } }, 'Manage subscription and receipts'));
-  else if (ACCESS && (ACCESS.reports || []).length) acct.push(h('button', { type: 'button', class: 'pm-item', role: 'menuitem', onclick: () => { closeProfile(); openPortal(); } }, 'Receipts'));
+  if (ACCESS && ACCESS.receipts) acct.push(h('button', { type: 'button', class: 'pm-item', role: 'menuitem', onclick: () => { closeProfile(); openPortal(); } }, 'Receipts'));
   if (!fullAccess()) acct.push(h('button', { type: 'button', class: 'pm-item', role: 'menuitem', onclick: () => { closeProfile(); closeNav(); go('home'); setTimeout(() => { const st = $('#store'); if (st) st.scrollIntoView({ behavior: 'smooth' }); }, 80); } }, 'Get more reports'));
   adm.replaceChildren(...acct, ...(IS_ADMIN ? [h('div', { class: 'pm-label pm-sec' }, 'Admin'),
     ...TOPICS.filter(t => t.group === 'admin').map(t => h('button', { type: 'button', class: 'pm-item', role: 'menuitem', 'aria-current': String(current === t.id),

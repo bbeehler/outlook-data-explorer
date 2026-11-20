@@ -2,9 +2,9 @@
 // Talks to Stripe's REST API directly (form-encoded), so no SDK is needed.
 export const STRIPE_KEY = (Deno.env.get("STRIPE_SECRET_KEY") ?? "").trim();
 export const PRICES = {
-  report: Number(Deno.env.get("HUB_PRICE_REPORT_CENTS") ?? "19900"),        // $199 CAD, one report, one-time
-  subscription: Number(Deno.env.get("HUB_PRICE_MONTHLY_CENTS") ?? "4900"),  // $49 CAD a month, every report
+  report: Number(Deno.env.get("HUB_PRICE_REPORT_CENTS") ?? "25000"),  // $250 CAD for one report
 };
+export const ACCESS_DAYS = Number(Deno.env.get("HUB_REPORT_ACCESS_DAYS") ?? "3"); // days of Research Hub access a purchase gives
 export const CURRENCY = "cad";
 export const AUTO_TAX = (Deno.env.get("STRIPE_AUTOMATIC_TAX") ?? "").trim() === "true"; // turn on once Stripe Tax is set up
 
