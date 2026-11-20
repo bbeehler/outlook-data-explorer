@@ -1,7 +1,7 @@
 // outlook-register: the "Get access" check for the Outlook Data Explorer.
 // A visitor submits a work email. Approved when ANY of these is true:
 //   1. the email is already on outlook_access (added by an admin, or registered before and still a member)
-//   2. the email belongs to an active Data Portal admin
+//   2. the email belongs to an active Data Portal admin (or bought a report / subscribed in the Research Hub store)
 //   3. Insightly has a contact with this email linked to an organisation whose Last Membership Year is current
 //      (this year or later; 2050 = lifetime; last year's members still count until March 31). Same rule as the MCE Dashboard.
 // When 3 approves, the email is added to outlook_access (source = 'insightly'); the nightly outlook-member-sync
@@ -96,6 +96,10 @@ Deno.serve(async (req) => {
   // 1. Already on the list
   const { data: listed } = await db.from("outlook_access").select("email").eq("email", email).maybeSingle();
   if (listed) { await log("approved_list"); return reply({ status: "approved" }); }
+
+  // 1b. Bought a report or subscribed through the Research Hub store
+  const { data: bought } = await db.from("hub_entitlements").select("id").eq("email", email).in("status", ["active", "trialing", "past_due"]).limit(1).maybeSingle();
+  if (bought) { await log("approved_buyer"); return reply({ status: "approved" }); }
 
   // 2. Data Portal admin
   const { data: adm } = await db.from("profiles").select("id").eq("email", email).eq("role", "admin").eq("membership_status", "active").maybeSingle();

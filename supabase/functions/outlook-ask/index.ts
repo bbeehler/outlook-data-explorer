@@ -1,6 +1,6 @@
 // AIA Canada Research Hub: "Ask the data"
 // Answers questions with Claude (Anthropic API) using only the figures the page sends (research reports, Outlook Study, economy).
-// - Caller must be signed in (Supabase JWT) AND on the outlook_access list (or a Data Portal admin).
+// - Caller must be signed in (Supabase JWT) AND be a member, an admin, a subscriber or a report buyer.
 // - The API key lives in the Supabase secret ANTHROPIC_API_KEY and never reaches the browser.
 // - Each user can ask up to RATE_LIMIT questions per hour; every question is logged in outlook_ai_log.
 import { createClient } from "jsr:@supabase/supabase-js@2";
@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
   const { data: userData } = await userClient.auth.getUser();
   const user = userData?.user;
   if (!user) return reply(401, { error: "Sign in" });
-  const { data: allowed } = await userClient.rpc("outlook_has_access");
+  const { data: allowed } = await userClient.rpc("hub_has_any_access"); // members, admins, subscribers and report buyers
   if (allowed !== true) return reply(403, { error: "Not on the access list" });
 
   let body: { ping?: boolean; messages?: { role: string; content: string }[] };
