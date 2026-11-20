@@ -92,7 +92,7 @@ function render() {
     items.push(h('div', { class: 'rgroup' }, 'All reports'));
     for (const r of list) items.push(railButton({ ...TOPICS.find(t => t.id === r.overview), name: r.short }, null, r.charts));
   }
-  items.push(h('div', { class: 'sep' }), h('a', { class: 'raillink', href: 'https://outlook.aiacanada.com/ontario/' }, h('span', {}, 'Ontario vehicles'), h('span', { class: 'count' }, 'Open data')));
+  items.push(h('div', { class: 'sep' }), h('a', { class: 'raillink', href: 'ontario/' }, h('span', {}, 'Ontario vehicles'), h('span', { class: 'count' }, 'Open data')));
   rail.replaceChildren(...items);
   renderProfile();
   const main = $('#main');
