@@ -76,24 +76,31 @@ function render() {
   RSEQ++;
   LAZY.clear();
   const rail = $('#rail');
-  const pick = currentReport();
-  const list = reportList();
+  const pickAny = currentReport();
+  const pick = pickAny && pickAny.kind !== 'economy' ? pickAny : null;
+  const list = reportList().filter(r => r.kind !== 'economy');
   const sel = h('select', { class: 'sel rpick', id: 'reportPick', 'aria-label': 'Choose a report',
     onchange: e => { const r = list.find(x => x.id === e.target.value); go(r ? r.overview : 'home'); } },
     h('option', { value: '', selected: !pick }, 'Choose a report\u2026'),
     ...list.map(r => h('option', { value: r.id, selected: pick && pick.id === r.id }, r.short)));
-  const items = [railButton({ ...TOPICS[0], name: 'Research Hub home' }),
+  // Two clearly separate blocks: AIA Canada's own research, then public data from governments.
+  const ours = [h('div', { class: 'ours-h' }, h('span', { class: 'ours-mark', 'aria-hidden': 'true' }), 'AIA Canada research'),
     h('label', { class: 'rgroup', for: 'reportPick' }, 'Report'), h('div', { class: 'rpick-wrap' }, sel)];
   if (pick) {
-    items.push(h('div', { class: 'rgroup' }, pick.kind === 'economy' ? 'Economy' : 'In this report'));
-    items.push(railButton({ ...TOPICS.find(t => t.id === pick.overview), name: pick.kind === 'economy' ? 'Economic indicators' : 'Report overview' }, null, pick.charts));
-    for (const t of pick.sections) items.push(railButton(t));
+    ours.push(h('div', { class: 'rgroup' }, 'In this report'));
+    ours.push(railButton({ ...TOPICS.find(t => t.id === pick.overview), name: 'Report overview' }, null, pick.charts));
+    for (const t of pick.sections) ours.push(railButton(t));
   } else {
-    items.push(h('div', { class: 'rgroup' }, 'All reports'));
-    for (const r of list) items.push(railButton({ ...TOPICS.find(t => t.id === r.overview), name: r.short }, null, r.charts));
+    ours.push(h('div', { class: 'rgroup' }, 'All reports'));
+    for (const r of list) ours.push(railButton({ ...TOPICS.find(t => t.id === r.overview), name: r.short }, null, r.charts));
   }
-  items.push(h('div', { class: 'sep' }), h('a', { class: 'raillink', href: 'provinces/' }, h('span', {}, 'Vehicles by province'), h('span', { class: 'count' }, 'Open data')));
-  rail.replaceChildren(...items);
+  const pub = h('div', { class: 'pubdata', role: 'group', 'aria-labelledby': 'pubdataH' },
+    h('div', { class: 'pub-h', id: 'pubdataH' }, h('span', { class: 'pub-tag' }, 'Public data')),
+    h('p', { class: 'pub-sub' }, 'Government statistics from Statistics Canada and the provinces. Not AIA Canada research.'),
+    railButton({ ...TOPICS.find(t => t.id === 'macro'), name: 'Economic indicators' }, 'pub', DS.filter(d => d.topic === 'macro').length),
+    CITIES ? railButton(TOPICS.find(t => t.id === 'cities'), 'pub') : null,
+    h('a', { class: 'raillink pub', href: 'provinces/' }, h('span', {}, 'Vehicles by province'), h('span', { class: 'count' }, 'Opens page \u2197')));
+  rail.replaceChildren(railButton({ ...TOPICS[0], name: 'Research Hub home' }), h('div', { class: 'ours' }, ours), pub);
   renderProfile();
   const main = $('#main');
   for (const c of main.querySelectorAll('canvas')) { freeChart(c); }
@@ -151,10 +158,10 @@ function kpiTiles(which) {
   return tiles.length ? h('div', { class: 'kpis' }, tiles) : null;
 }
 function renderHome(main) {
-  const list = reportList();
+  const list = reportList().filter(r => r.kind !== 'economy');
   main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'AIA Canada Research Hub'),
     h('h1', {}, 'Welcome to the Research Hub'),
-    h('p', {}, 'All of AIA Canada\u2019s research in one place: our consumer research reports, the 2025 Outlook Study and the latest economic data, as interactive charts you can explore, copy and ask questions about.')));
+    h('p', {}, 'All of AIA Canada\u2019s research in one place: our consumer research reports and the 2025 Outlook Study, as interactive charts you can explore, copy and ask questions about. Government statistics are kept separately under Public data, for context.')));
   // how to use
   const step = (n, title, text) => h('li', { class: 'howto-step' }, h('span', { class: 'howto-n', 'aria-hidden': 'true' }, n), h('div', {}, h('b', {}, title), h('span', {}, text)));
   main.append(h('details', { class: 'panel howto', open: innerWidth > 760 }, h('summary', {}, h('h2', {}, 'How to use the hub')),
@@ -172,6 +179,15 @@ function renderHome(main) {
     h('span', { class: 'ref' }, r.meta), h('b', {}, r.title),
     h('span', {}, (r.summary || '').length > 200 ? r.summary.slice(0, 197) + '\u2026' : r.summary),
     h('span', { class: 'rstats' }, [r.sections.length ? `${r.sections.length} section${r.sections.length === 1 ? '' : 's'}` : null, `${r.charts} charts`].filter(Boolean).join(' \u00b7 '), h('span', { class: 'ropen' }, 'Open \u2192'))))));
+  // public data, kept visibly apart from AIA Canada's research
+  const pcard = (ref, title, text, onclick, href) => h(href ? 'a' : 'button', { class: 'tcard pcard', ...(href ? { href } : { type: 'button', onclick }) }, h('span', { class: 'ref' }, ref), h('b', {}, title), h('span', {}, text));
+  main.append(h('section', { class: 'pubsec', 'aria-labelledby': 'pubsecH' },
+    h('div', { class: 'pubsec-h' }, h('span', { class: 'pub-tag' }, 'Public data'), h('h2', { id: 'pubsecH' }, 'Government statistics for context')),
+    h('p', { class: 'pub-sub' }, 'Official figures from Statistics Canada, the Bank of Canada and provincial governments, to set AIA Canada\u2019s research in context. These are not AIA Canada research.'),
+    h('div', { class: 'topics' },
+      pcard(`Statistics Canada and Bank of Canada${ECON && ECON.built ? ' \u00b7 updated ' + fmtDay(ECON.built) : ''}`, 'Economic indicators', 'Prices, vehicle sales, jobs, wages and interest rates that shape demand for repair and parts.', () => go('macro')),
+      CITIES ? pcard('Statistics Canada', 'Cities', 'Population, jobs, income, commuting and EV adoption for every metro area.', () => go('cities')) : null,
+      pcard('Statistics Canada and provincial governments', 'Vehicles by province \u2197', 'Vehicles on the road and new registrations in every province and territory, with makes and models for Ontario and Quebec.', null, 'provinces/'))));
   const tiles = kpiTiles();
   if (tiles) main.append(h('h2', { class: 'sec-h' }, 'At a glance'), tiles);
   if (SAMPLE) {
@@ -230,8 +246,10 @@ function renderReportSection(main, t) {
     next ? h('button', { type: 'button', class: 'tcard nx', onclick: () => go(next.id) }, h('span', { class: 'ref' }, 'Next section \u2192'), h('b', {}, next.name)) : h('button', { type: 'button', class: 'tcard nx', onclick: () => go(t.parent) }, h('span', { class: 'ref' }, 'Done \u2192'), h('b', {}, 'Report overview'))));
   main.append(pageFoot());
 }
+const pubBanner = (src) => h('div', { class: 'pubbanner', role: 'note' }, h('span', { class: 'pub-tag' }, 'Public data'), h('span', {}, `${src}. This is government data, not AIA Canada research.`));
 function renderEconomy(main) {
-  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'Economy'), h('h1', {}, 'The economic backdrop for auto care'),
+  main.append(pubBanner('Official figures from Statistics Canada and the Bank of Canada'));
+  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow pubeyebrow' }, 'Public data \u00b7 Economy'), h('h1', {}, 'The economic backdrop for auto care'),
     h('p', {}, 'Official figures on the prices, sales, jobs and rates that shape demand for repair and parts. Each chart links to research findings on the same topic.')));
   const figs = DS.filter(d => d.topic === 'macro');
   if (CITIES) main.append(h('div', { class: 'topics secs' }, h('button', { type: 'button', class: 'tcard', onclick: () => go('cities') },
@@ -324,8 +342,9 @@ function cityCompare(sel) {
   return out;
 }
 function renderCities(main) {
+  main.append(pubBanner('Official figures from Statistics Canada'));
   main.append(h('nav', { class: 'crumbs', 'aria-label': 'Breadcrumb' }, h('button', { type: 'button', class: 'linkbtn', onclick: () => go('macro') }, 'Economic indicators'), h('span', { 'aria-hidden': 'true' }, ' / '), h('span', {}, 'Cities')));
-  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'Economy · Statistics Canada'), h('h1', {}, 'Cities'),
+  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow pubeyebrow' }, 'Public data \u00b7 Statistics Canada'), h('h1', {}, 'Cities'),
     h('p', {}, 'Who lives in each metro area, how the local economy is doing, how people get around and how quickly they are switching to electric vehicles. Pick a city, and add up to two more to compare.')));
   if (!CITIES) { main.append(h('p', { class: 'empty' }, 'The city data is being prepared. Check back shortly.')); main.append(pageFoot()); return; }
   const sel = citySel();
