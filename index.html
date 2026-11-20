@@ -420,70 +420,115 @@ body.is-gated .mast-link { display: none; }
 .pubbanner { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: var(--pub-bg); border: 1px dashed var(--pub-line); color: var(--pub-ink); padding: 10px 14px; font-size: 13px; }
 .eyebrow.pubeyebrow { color: var(--pub); }
 
-/* ---------- public landing page (signed out): replaces aiacanada.com/reports ---------- */
-.landing { max-width: 1120px; margin: 0 auto; padding: 8px 0 48px; display: flex; flex-direction: column; gap: 44px; width: 100%; }
-.lp-notice { background: var(--warn-bg); color: var(--warn-ink); padding: 12px 16px; font-size: 14px; font-weight: 600; }
-.lp-hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 36px; align-items: start; padding-top: 20px; }
-.lp-eyebrow { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); font-weight: 800; }
-.lp-hero h1 { font-size: 42px; line-height: 1.08; font-weight: 800; margin: 10px 0 14px; color: var(--ink); letter-spacing: -.01em; }
-.lp-lead { font-size: 18px; line-height: 1.5; color: var(--ink-2); margin: 0 0 16px; }
-.lp-ticks { list-style: none; padding: 0; margin: 0 0 22px; display: grid; gap: 8px; }
-.lp-ticks li { position: relative; padding-left: 28px; color: var(--ink); font-weight: 600; }
-.lp-ticks li::before { content: ""; position: absolute; left: 2px; top: 5px; width: 12px; height: 7px; border-left: 3px solid var(--accent); border-bottom: 3px solid var(--accent); transform: rotate(-45deg); }
-.lp-ctas { display: flex; flex-wrap: wrap; gap: 10px; }
-.lp-ctas a { text-decoration: none; }
+/* ---------- public landing page (signed out): sells the Research Hub; replaces aiacanada.com/reports ---------- */
+.landing { max-width: 1160px; margin: 0 auto; padding: 0 0 56px; display: flex; flex-direction: column; gap: 56px; width: 100%; }
+.lp-notice { background: var(--warn-bg); color: var(--warn-ink); padding: 12px 16px; font-size: 14px; font-weight: 600; margin-bottom: -32px; }
+/* hero: dark brand panel, red accents, sign-in card on the right */
+.lp-hero { position: relative; display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr); gap: 40px; align-items: center;
+  background: #192b56; color: #fff; padding: 56px 48px; overflow: hidden; isolation: isolate; }
+.lp-hero::before { content: ""; position: absolute; inset: 0 0 0 auto; width: 46%; z-index: -1;
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,.035) 0 2px, transparent 2px 22px), linear-gradient(115deg, transparent 0 30%, rgba(226,28,71,.16) 30% 100%); }
+.lp-hero::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: #e21c47; }
+.lp-eyebrow { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: #84c8e3; font-weight: 800; }
+.lp-hero h1 { font-size: 50px; line-height: 1.04; font-weight: 900; margin: 12px 0 18px; color: #fff; letter-spacing: -.02em; }
+.lp-hero h1 em { font-style: normal; color: #fff; background: linear-gradient(transparent 62%, #e21c47 62%, #e21c47 92%, transparent 92%); }
+.lp-lead { font-size: 19px; line-height: 1.55; color: #d9e3f2; margin: 0 0 26px; max-width: 620px; }
+.lp-ctas { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
 .landing a.btn-ask, .landing a.act { text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
-.lp-signin { background: var(--surface); border: 1px solid var(--line); border-top: 5px solid var(--accent); padding: 24px; display: flex; flex-direction: column; gap: 12px; }
-.lp-signin h2 { margin: 0; font-size: 22px; }
+.lp-cta-main { font-size: 17px; padding: 14px 28px; background: #e21c47; border-color: #e21c47; color: #fff; box-shadow: 0 10px 24px rgba(226,28,71,.35); }
+.lp-cta-main:hover { transform: translateY(-1px); }
+.lp-cta-ghost { color: #fff; font-weight: 700; text-decoration: none; border-bottom: 2px solid rgba(255,255,255,.4); padding: 4px 0; }
+.lp-cta-ghost:hover { border-color: #fff; }
+.lp-proof { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: 34px; border-top: 1px solid rgba(255,255,255,.18); }
+.lp-stat { padding: 16px 12px 0 0; display: flex; flex-direction: column; gap: 2px; }
+.lp-stat b { font-size: 30px; font-weight: 900; color: #fff; line-height: 1; }
+.lp-stat span { font-size: 13px; color: #a9bcd6; }
+.lp-signin { background: var(--surface); color: var(--ink); border-top: 5px solid #e21c47; padding: 26px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 24px 48px rgba(5,12,30,.35); }
+.lp-signin-tag { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 800; color: var(--accent-ink); }
+.lp-signin h2 { margin: 0; font-size: 24px; color: var(--ink); }
 .lp-signin p { margin: 0; color: var(--ink-2); }
-.lp-band { background: var(--mast); color: #fff; position: relative; overflow: hidden; }
-.lp-band::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: var(--accent); }
-.lp-band-in { padding: 40px 40px 40px 48px; max-width: 820px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
-.lp-band-kicker { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--mast-2); font-weight: 800; }
-.lp-band h2 { margin: 0; font-size: 46px; line-height: 1; font-weight: 900; text-transform: uppercase; letter-spacing: -.01em; color: #fff; }
-.lp-band p { margin: 0; font-size: 18px; line-height: 1.5; color: #e6edf6; }
-.lp-band .btn-ask { background: var(--accent); border-color: var(--accent); color: #fff; }
-.lp-sec { display: flex; flex-direction: column; gap: 14px; }
-.lp-sec > h2 { font-size: 28px; margin: 0; color: var(--ink); }
-.lp-sub { margin: 0; color: var(--ink-2); font-size: 16px; }
-.lp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-.lp-card { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--ink); padding: 18px; display: flex; flex-direction: column; gap: 10px; }
-.lp-card h3 { margin: 0; font-size: 19px; line-height: 1.25; color: var(--ink); }
-.lp-card p { margin: 0; color: var(--ink-2); font-size: 14px; line-height: 1.5; }
-.lp-card .ref { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
-.lp-card .lp-finding { border-left: 3px solid var(--accent); padding-left: 10px; color: var(--ink); font-weight: 600; }
-.lp-stats { font-size: 13px; color: var(--muted); }
-.lp-card-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding-top: 8px; border-top: 1px solid var(--line-soft); }
-.lp-free { font-size: 13px; font-weight: 700; color: var(--ink); background: var(--chip); padding: 4px 8px; }
-.lp-plans-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.lp-plan { background: var(--surface); border: 1px solid var(--line); padding: 22px; display: flex; flex-direction: column; gap: 12px; position: relative; }
+/* section heads */
+.lp-sec { display: flex; flex-direction: column; gap: 20px; }
+.lp-sec-head { display: flex; flex-direction: column; gap: 8px; max-width: 760px; }
+.lp-kicker { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); font-weight: 800; }
+.lp-sec-head h2 { font-size: 34px; line-height: 1.12; margin: 0; color: var(--ink); font-weight: 900; letter-spacing: -.01em; }
+.lp-sub { margin: 0; color: var(--ink-2); font-size: 17px; }
+/* big numbers from the reports */
+.lp-teaser { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.lp-big { margin: 0; background: var(--surface); border: 1px solid var(--line); border-left: 6px solid #e21c47; padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+.lp-big b { font-size: 56px; line-height: .95; font-weight: 900; color: var(--accent-ink); letter-spacing: -.02em; }
+.lp-big figcaption { font-size: 16px; line-height: 1.45; color: var(--ink); font-weight: 600; }
+.lp-big .ref { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 700; margin-top: auto; }
+/* features */
+.lp-feats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.lp-feat { background: var(--surface); border: 1px solid var(--line); padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+.lp-feat h3 { margin: 0; font-size: 18px; color: var(--ink); }
+.lp-feat p { margin: 0; color: var(--ink-2); font-size: 14px; line-height: 1.55; }
+.lp-ico { width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; background: #192b56; color: #fff; border-bottom: 3px solid #e21c47; }
+/* campaign band */
+.lp-band { background: #e21c47; color: #fff; position: relative; overflow: hidden; isolation: isolate; }
+.lp-band::before { content: ""; position: absolute; right: -60px; top: -40px; bottom: -40px; width: 45%; z-index: -1; background: #192b56; transform: skewX(-18deg); }
+.lp-band-in { padding: 48px; max-width: 760px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+.lp-band-kicker { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: #fff; font-weight: 800; opacity: .85; }
+.lp-band h2 { margin: 0; font-size: 56px; line-height: .95; font-weight: 900; text-transform: uppercase; letter-spacing: -.02em; color: #fff; }
+.lp-band p { margin: 0; font-size: 18px; line-height: 1.55; color: #fff; }
+.lp-band .btn-ask { background: #fff; border-color: #fff; color: #192b56; font-weight: 800; }
+.lp-on-dark { color: #fff; }
+/* pricing */
+.lp-plans-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: stretch; }
+.lp-plan { background: var(--surface); border: 1px solid var(--line); padding: 28px 24px 24px; display: flex; flex-direction: column; gap: 14px; position: relative; }
 .lp-plan h3 { margin: 0; font-size: 20px; color: var(--ink); }
-.lp-plan ul { margin: 0; padding-left: 18px; color: var(--ink-2); display: grid; gap: 6px; font-size: 14px; }
-.lp-plan > .btn-ask, .lp-plan > .act, .lp-plan > a { margin-top: auto; }
-.lp-plan-main { border: 2px solid var(--accent); }
-.lp-plan-tag { position: absolute; top: -12px; left: 18px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px; }
-.lp-price { margin: 0; font-size: 30px; font-weight: 800; color: var(--ink); }
+.lp-plan ul { margin: 0; padding: 0; list-style: none; color: var(--ink-2); display: grid; gap: 8px; font-size: 15px; }
+.lp-plan li { position: relative; padding-left: 24px; }
+.lp-plan li::before { content: ""; position: absolute; left: 2px; top: 6px; width: 11px; height: 6px; border-left: 3px solid #e21c47; border-bottom: 3px solid #e21c47; transform: rotate(-45deg); }
+.lp-plan > .btn-ask, .lp-plan > .act { margin-top: auto; padding: 13px 16px; font-size: 16px; }
+.lp-plan-main { border: 2px solid #e21c47; box-shadow: 0 16px 36px rgba(226,28,71,.14); }
+.lp-plan-aff { border: 2px solid #192b56; }
+.lp-plan-tag { position: absolute; top: -13px; left: 22px; background: #e21c47; color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; }
+.lp-tag-ink { background: #192b56; }
+.lp-price { margin: 0; font-size: 40px; font-weight: 900; color: var(--ink); line-height: 1; }
 .lp-price span { font-size: 15px; font-weight: 600; color: var(--muted); }
-.lp-plan-main .lp-price { font-size: 20px; }
-.lp-faq { background: var(--surface); border: 1px solid var(--line); padding: 0 16px; }
-.lp-faq summary { cursor: pointer; padding: 14px 0; font-weight: 700; color: var(--ink); }
-.lp-faq p { margin: 0 0 14px; color: var(--ink-2); }
+.lp-plan-note { margin: 0; font-size: 13px; color: var(--muted); }
+/* report cards */
+.lp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
+.lp-card { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid #192b56; padding: 22px; display: flex; flex-direction: column; gap: 10px; transition: transform .15s ease, box-shadow .15s ease; }
+.lp-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(25,43,86,.12); }
+.lp-card h3 { margin: 0; font-size: 20px; line-height: 1.25; color: var(--ink); }
+.lp-card p { margin: 0; color: var(--ink-2); font-size: 14px; line-height: 1.55; }
+.lp-card .ref { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+.lp-card .lp-finding { border-left: 3px solid #e21c47; padding-left: 10px; color: var(--ink); font-weight: 600; }
+.lp-stats { font-size: 13px; color: var(--muted); }
+.lp-card-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid var(--line-soft); }
+.lp-free { font-size: 13px; font-weight: 700; color: var(--ink); background: var(--chip); padding: 4px 8px; }
+.lp-card .lp-buy { background: #e21c47; border-color: #e21c47; color: #fff; font-weight: 700; padding: 8px 14px; }
+/* questions and public data */
+.lp-faq { background: var(--surface); border: 1px solid var(--line); padding: 0 18px; }
+.lp-faq summary { cursor: pointer; padding: 16px 0; font-weight: 700; color: var(--ink); }
+.lp-faq p { margin: 0 0 16px; color: var(--ink-2); }
 .lp-pub { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: var(--pub-bg); border: 1px dashed var(--pub-line); color: var(--pub-ink); padding: 12px 16px; font-size: 14px; }
 .lp-pub a { color: inherit; font-weight: 700; }
 .storesec .lp-grid { margin-top: 10px; }
 .pdfbtn::before { content: "\2193"; margin-right: 6px; font-weight: 800; }
-body.is-landing .wrap { max-width: none; }
-@media (max-width: 900px) {
-  .lp-hero { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  .lp-hero h1 { font-size: 32px; }
-  .lp-plans-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
-  .lp-band-in { padding: 28px 22px 28px 30px; }
-  .lp-band h2 { font-size: 34px; }
-  .lp-grid { grid-template-columns: minmax(0, 1fr); }
-}
-.lp-plan-aff { border-top: 4px solid var(--ink); }
-.lp-plan-aff .lp-price, .lp-plan-main .lp-price { font-size: 20px; }
 .lp-until { display: inline-block; background: var(--warn-bg); color: var(--warn-ink); padding: 6px 10px; font-size: 13px; font-weight: 600; margin: 0; }
+body.is-landing .wrap { max-width: none; padding-top: 0; }
+@media (prefers-reduced-motion: reduce) { .lp-card, .lp-cta-main { transition: none; } .lp-card:hover, .lp-cta-main:hover { transform: none; } }
+@media (max-width: 1000px) { .lp-feats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 900px) {
+  .landing { gap: 40px; }
+  .lp-hero { grid-template-columns: minmax(0, 1fr); padding: 36px 22px 28px 28px; gap: 28px; }
+  .lp-hero::before { width: 70%; }
+  .lp-hero h1 { font-size: 36px; }
+  .lp-lead { font-size: 17px; }
+  .lp-proof { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; }
+  .lp-sec-head h2 { font-size: 27px; }
+  .lp-plans-grid { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  .lp-band-in { padding: 34px 24px; }
+  .lp-band::before { width: 30%; right: -80px; }
+  .lp-band h2 { font-size: 38px; }
+  .lp-grid { grid-template-columns: minmax(0, 1fr); }
+  .lp-feats { grid-template-columns: minmax(0, 1fr); }
+  .lp-big b { font-size: 46px; }
+}
 
 @media (max-width: 960px) {
   .wrap { grid-template-columns: minmax(0, 1fr); gap: 16px; }
@@ -1207,7 +1252,7 @@ const rerender = () => { clearTimeout(rerender.t); rerender.t = setTimeout(rende
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerender);
 new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-const HUB_VERSION = '2026-11-20 15:31';
+const HUB_VERSION = '2026-11-20 15:42';
 /* ---------- AIA Canada Research Hub: sections, research reports, economy, links between sources, report manager ---------- */
 const BASE_TOPICS = TOPICS.filter(t => !['home', 'access'].includes(t.id)).map(t => ({ ...t, group: 'outlook' }));
 let REPORTS = [], ECON = null, CITIES = null;
@@ -2181,53 +2226,95 @@ async function checkoutReturn() {
 /* ---------- the landing page ---------- */
 function renderLanding(box, info = {}) {
   box.className = 'landing';
-  const signin = signinCard(info);
-  // hero
+  const go = id => e => { e.preventDefault(); const el = $('#' + id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  const ico = d => h('span', { class: 'lp-ico', 'aria-hidden': 'true', html: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>` });
+  if (info.notice) box.append(h('div', { class: 'lp-notice', role: 'status' }, info.notice));
+
+  // 1. Hero: the promise, proof and sign-in
+  const proof = h('div', { class: 'lp-proof' });
   box.append(h('section', { class: 'lp-hero' },
     h('div', { class: 'lp-hero-copy' },
       h('span', { class: 'lp-eyebrow' }, 'AIA Canada Research Hub'),
-      h('h1', {}, 'The research behind the businesses that keep Canada moving'),
-      h('p', { class: 'lp-lead' }, 'AIA Canada’s consumer research and the Outlook Study on Canada’s automotive aftermarket, as interactive charts you can explore, download and ask questions about, plus each full report as a PDF.'),
-      h('ul', { class: 'lp-ticks' }, ['Every chart as an interactive graph and a table', 'Full reports to download as PDFs', 'Ask the data: plain-language answers with sources', 'Government statistics for context, by province and city'].map(t => h('li', {}, t))),
-      h('div', { class: 'lp-ctas' }, h('a', { class: 'btn-ask lp-join', href: JOIN_URL }, 'Become a member'), h('a', { class: 'act lp-plans', href: '#plans', onclick: e => { e.preventDefault(); $('#plans').scrollIntoView({ behavior: 'smooth' }); } }, 'See all the ways to get access'))),
-    signin));
-  if (info.notice) box.prepend(h('div', { class: 'lp-notice', role: 'status' }, info.notice));
-  // campaign band
-  const band = h('section', { class: 'lp-band' },
+      h('h1', {}, 'Know what Canada’s drivers will do ', h('em', {}, 'before your competitors do.')),
+      h('p', { class: 'lp-lead' }, 'The only research built for Canada’s automotive aftermarket: what vehicle owners think, where they take their vehicles, what the market is worth and where it’s heading. Interactive, searchable and ready for your next business decision.'),
+      h('div', { class: 'lp-ctas' },
+        h('a', { class: 'btn-ask lp-cta-main', href: '#plans', onclick: go('plans') }, 'Get access'),
+        h('a', { class: 'lp-cta-ghost', href: '#reports', onclick: go('reports') }, 'See what’s inside →')),
+      proof),
+    signinCard(info)));
+  const stat = (v, l) => h('div', { class: 'lp-stat' }, h('b', {}, v), h('span', {}, l));
+  const setProof = (reports, charts, vehicles) => proof.replaceChildren(
+    stat(String(reports), 'research reports'), stat(charts ? charts + '+' : '200+', 'interactive charts'), stat(vehicles || '27.6M', 'vehicles tracked'), stat('13', 'provinces and territories'));
+  setProof(4, 0, '');
+  let VEH = '';
+  fetch('provinces/data.json').then(r => r.ok ? r.json() : null).then(d => {
+    const ca = d && d.places.find(p => p.key === 'ca'); const s = ca && (ca.fleet || []).find(x => x.dims[0].startsWith('Total, road') && x.dims[1] === 'All fuel types');
+    if (s) { VEH = (s.vals.at(-1) / 1e6).toFixed(1) + 'M'; const v = $('#lpVehicles'); if (v) v.textContent = `AIA Canada members keep Canada’s ${(s.vals.at(-1) / 1e6).toFixed(1)} million vehicles on the road.`; }
+    if (CATALOG) setProof(CATALOG.length, CATALOG.reduce((t, r) => t + (r.charts || 0), 62), VEH);
+  }).catch(() => {});
+
+  // 2. Big numbers pulled from the reports themselves
+  const teaser = h('div', { class: 'lp-teaser' });
+  box.append(h('section', { class: 'lp-sec lp-insights' },
+    h('div', { class: 'lp-sec-head' }, h('span', { class: 'lp-kicker' }, 'A taste of what’s inside'), h('h2', {}, 'Answers you won’t find anywhere else')), teaser));
+
+  // 3. What you get
+  const feat = (icon, t, d) => h('div', { class: 'lp-feat' }, ico(icon), h('h3', {}, t), h('p', {}, d));
+  box.append(h('section', { class: 'lp-sec' },
+    h('div', { class: 'lp-sec-head' }, h('span', { class: 'lp-kicker' }, 'Why the Research Hub'), h('h2', {}, 'From finding to decision in minutes')),
+    h('div', { class: 'lp-feats' },
+      feat('<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>', 'Every chart, interactive', 'Hundreds of charts from AIA Canada’s research. Filter, switch to the table, and copy the numbers straight into your plan or presentation.'),
+      feat('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/><path d="M8 11h6M11 8v6"/>', 'Ask the data', 'Ask a question in plain language and get an answer drawn only from the research, with the chart behind every number.'),
+      feat('<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M12 12v6M9 15l3 3 3-3"/>', 'The full reports as PDFs', 'Download the designed report to share with your team, your board or your lender.'),
+      feat('<path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21l2-7.5L2 9h7z"/>', 'Context you can trust', 'Research linked to Statistics Canada and provincial data on prices, jobs and the vehicles on the road, by province and city.'))));
+
+  // 4. Campaign band
+  box.append(h('section', { class: 'lp-band' },
     h('div', { class: 'lp-band-in' },
       h('span', { class: 'lp-band-kicker' }, 'AIA Canada membership'),
       h('h2', {}, 'We keep Canada moving'),
-      h('p', { id: 'lpVehicles' }, 'AIA Canada members keep Canada’s vehicles on the road. Membership includes every report in the Research Hub, free, along with advocacy, events, training and the industry connections that keep your business moving.'),
-      h('a', { class: 'btn-ask lp-band-cta', href: JOIN_URL }, 'Join AIA Canada')));
-  box.append(band);
-  fetch('provinces/data.json').then(r => r.ok ? r.json() : null).then(d => {
-    const ca = d && d.places.find(p => p.key === 'ca'); const s = ca && (ca.fleet || []).find(x => x.dims[0].startsWith('Total, road') && x.dims[1] === 'All fuel types');
-    if (s) $('#lpVehicles').textContent = `AIA Canada members keep Canada’s ${(s.vals.at(-1) / 1e6).toFixed(1)} million vehicles on the road. Membership includes every report in the Research Hub, free, along with advocacy, events, training and the industry connections that keep your business moving.`;
-  }).catch(() => {});
-  // reports
-  const grid = h('div', { class: 'lp-grid' }, h('p', { class: 'gate-muted' }, 'Loading the reports…'));
-  box.append(h('section', { class: 'lp-sec', id: 'reports' }, h('h2', {}, 'Reports in the hub'),
-    h('p', { class: 'lp-sub' }, 'Free for AIA Canada members and Industry Engagement Network affiliates. Not either? Buy a single report for ', h('strong', {}, money(PRICE.report)), ` and get ${PRICE.days} days of access to it in the hub, plus the full PDF.`), grid));
-  loadCatalog().then(list => grid.replaceChildren(...list.map(reportCard)));
-  // plans
-  box.append(h('section', { class: 'lp-sec', id: 'plans' }, h('h2', {}, 'Choose how you get access'),
+      h('p', {}, h('span', { id: 'lpVehicles' }, 'AIA Canada members keep Canada’s vehicles on the road.'), ' Membership puts every report in the Research Hub in your hands, free, along with the advocacy, events, training and industry connections that keep your business moving.'),
+      h('div', { class: 'lp-ctas' }, h('a', { class: 'btn-ask', href: JOIN_URL }, 'Join AIA Canada'), h('a', { class: 'lp-cta-ghost lp-on-dark', href: AFFILIATE_URL }, 'Or become an affiliate →')))));
+
+  // 5. Pricing
+  box.append(h('section', { class: 'lp-sec', id: 'plans' },
+    h('div', { class: 'lp-sec-head' }, h('span', { class: 'lp-kicker' }, 'Pricing'), h('h2', {}, 'Choose how you get access'), h('p', { class: 'lp-sub' }, 'Members and affiliates get the whole hub free. Everyone else can buy the report they need.')),
     h('div', { class: 'lp-plans-grid' },
-      h('div', { class: 'lp-plan lp-plan-main' }, h('span', { class: 'lp-plan-tag' }, 'Best value'), h('h3', {}, 'AIA Canada membership'), h('p', { class: 'lp-price' }, 'Every report included'),
-        h('ul', {}, ['All research reports and the Outlook Study, free', 'New reports as soon as they’re published', 'Advocacy, events, training and industry connections'].map(t => h('li', {}, t))),
+      h('div', { class: 'lp-plan lp-plan-main' }, h('span', { class: 'lp-plan-tag' }, 'Best value'), h('h3', {}, 'AIA Canada membership'), h('p', { class: 'lp-price' }, 'Free', h('span', {}, ' with membership')),
+        h('ul', {}, ['Every report and the Outlook Study', 'New research the day it’s published', 'Advocacy, events, training and industry connections'].map(t => h('li', {}, t))),
         h('a', { class: 'btn-ask', href: JOIN_URL }, 'Become a member'),
-        h('p', { class: 'gate-muted' }, 'Already a member? ', h('a', { href: '#signin', onclick: e => { e.preventDefault(); $('#email').focus(); $('#email').scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 'Sign in with your work email'), '.')),
-      h('div', { class: 'lp-plan lp-plan-aff' }, h('h3', {}, 'Become an affiliate'), h('p', { class: 'lp-price' }, 'Free access to the Research Hub'),
-        h('ul', {}, ['Join AIA Canada\u2019s Industry Engagement Network as an affiliate', 'Free access to every report in the Research Hub', 'Stay connected with the industry that keeps Canada moving'].map(t => h('li', {}, t))),
+        h('p', { class: 'lp-plan-note' }, 'Already a member? ', h('a', { href: '#signin', onclick: e => { e.preventDefault(); $('#email').focus(); $('#email').scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 'Sign in'), '.')),
+      h('div', { class: 'lp-plan lp-plan-aff' }, h('span', { class: 'lp-plan-tag lp-tag-ink' }, 'Free access'), h('h3', {}, 'Industry affiliate'), h('p', { class: 'lp-price' }, 'Free', h('span', {}, ' as an affiliate')),
+        h('ul', {}, ['Every report in the Research Hub', 'Join AIA Canada’s Industry Engagement Network', 'Stay connected with the industry'].map(t => h('li', {}, t))),
         h('a', { class: 'btn-ask', href: AFFILIATE_URL }, 'Become an affiliate')),
-      h('div', { class: 'lp-plan' }, h('h3', {}, 'Buy a single report'), h('p', { class: 'lp-price' }, money(PRICE.report), h('span', {}, ' per report')),
-        h('ul', {}, ['The full report as a PDF', `${PRICE.days} days of access to it in the Research Hub`, 'Interactive charts, tables and Ask the data'].map(t => h('li', {}, t))),
-        h('a', { class: 'act', href: '#reports', onclick: e => { e.preventDefault(); $('#reports').scrollIntoView({ behavior: 'smooth' }); } }, 'Choose a report')))));
-  // FAQ
+      h('div', { class: 'lp-plan' }, h('h3', {}, 'Single report'), h('p', { class: 'lp-price' }, money(PRICE.report), h('span', {}, ' per report')),
+        h('ul', {}, ['The full report as a PDF, yours to keep', `${PRICE.days} days in the Research Hub with that report`, 'Interactive charts, tables and Ask the data'].map(t => h('li', {}, t))),
+        h('a', { class: 'act lp-plan-btn', href: '#reports', onclick: go('reports') }, 'Choose a report ↓')))));
+
+  // 6. The reports
+  const grid = h('div', { class: 'lp-grid' }, h('p', { class: 'gate-muted' }, 'Loading the reports…'));
+  box.append(h('section', { class: 'lp-sec', id: 'reports' },
+    h('div', { class: 'lp-sec-head' }, h('span', { class: 'lp-kicker' }, 'The research'), h('h2', {}, 'Reports in the hub'),
+      h('p', { class: 'lp-sub' }, 'Free for members and affiliates. Or buy one for ', h('strong', {}, money(PRICE.report)), ` and get the PDF plus ${PRICE.days} days in the hub.`)), grid));
+  loadCatalog().then(list => {
+    grid.replaceChildren(...list.map(reportCard));
+    setProof(list.length, list.reduce((t, r) => t + (r.charts || 0), 62), VEH);
+    // big numbers: the first finding with a figure in each report
+    const big = [];
+    for (const r of list) for (const f of (r.key_findings || [])) {
+      const m = /(\d{1,3}(?:[.,]\d+)?\s?%|\$\s?\d[\d,.]*\s?(?:billion|million|[BMK])?|\d[\d,.]*\s?(?:billion|million))/i.exec(f);
+      if (m && f.length < 220) { big.push({ v: m[1].replace(/\s/g, ''), f, r }); break; }
+    }
+    teaser.replaceChildren(...big.slice(0, 3).map(x => h('figure', { class: 'lp-big' }, h('b', {}, x.v), h('figcaption', {}, x.f), h('span', { class: 'ref' }, x.r.title))));
+    if (!big.length) teaser.closest('section').hidden = true;
+  });
+
+  // 7. Questions
   const q = (qq, a) => h('details', { class: 'lp-faq' }, h('summary', {}, qq), h('p', {}, a));
-  box.append(h('section', { class: 'lp-sec' }, h('h2', {}, 'Questions'),
+  box.append(h('section', { class: 'lp-sec' }, h('div', { class: 'lp-sec-head' }, h('h2', {}, 'Questions')),
     q('I work for an AIA Canada member. How do I get in?', 'Enter your work email in the sign-in box. We check it against our member records and email you a code. Every report is free for members.'),
-    q('What do I get when I buy a report?', `${PRICE.days} days of access to that report in the Research Hub, starting when you pay: its interactive charts and tables, Ask the data, and the full report as a PDF. Download the PDF during your ${PRICE.days} days; it\u2019s yours to keep.`),
-    q('How do I get free access as an affiliate?', 'Join AIA Canada\u2019s Industry Engagement Network as an affiliate. Once you\u2019re on our records, sign in with your work email here.'),
+    q('How do I get free access as an affiliate?', 'Join AIA Canada’s Industry Engagement Network as an affiliate. Once you’re on our records, sign in with your work email here.'),
+    q('What do I get when I buy a report?', `${PRICE.days} days of access to that report in the Research Hub, starting when you pay: its interactive charts and tables, Ask the data, and the full report as a PDF. Download the PDF during your ${PRICE.days} days; it’s yours to keep.`),
     q('How do I sign in after buying?', 'Use the email address you paid with. We email you a sign-in code; there’s no password.'),
     q('Are taxes included?', 'Prices are in Canadian dollars. Applicable sales taxes are shown at checkout.'),
     q('Is payment secure?', 'Payments are handled by Stripe. AIA Canada never sees or stores your card details.'),
@@ -2255,7 +2342,7 @@ function signinCard(info) {
   const err = h('p', { class: 'gate-err', role: 'alert' }, info.error || ''); err.hidden = !info.error;
   const fail = (msg) => { const btn = form.querySelector('button'); btn.disabled = false; btn.textContent = 'Sign in'; err.hidden = false; err.textContent = msg; };
   form.addEventListener('submit', e => { e.preventDefault(); requestCode($('#email').value.trim().toLowerCase(), form.querySelector('button'), fail); });
-  card.append(h('h2', {}, 'Sign in'), h('p', {}, 'Members, affiliates and report buyers: sign in with your work email, or the email you bought with. We’ll email you a sign-in code. No password needed.'), form, err,
+  card.append(h('span', { class: 'lp-signin-tag' }, 'Members \u00b7 affiliates \u00b7 buyers'), h('h2', {}, 'Sign in to the hub'), h('p', {}, 'Use your work email, or the email you bought with. We’ll email you a sign-in code. No password needed.'), form, err,
     h('p', { class: 'gate-muted' }, 'Not a member? ', h('a', { href: JOIN_URL }, 'Join AIA Canada'), ', ', h('a', { href: AFFILIATE_URL }, 'become an affiliate'), ' or ', h('a', { href: '#plans', onclick: e => { e.preventDefault(); $('#plans').scrollIntoView({ behavior: 'smooth' }); } }, 'buy a report'), '.'));
   if (info.autoSend && info.email) setTimeout(() => requestCode(info.email, form.querySelector('button'), fail), 50);
   return card;
