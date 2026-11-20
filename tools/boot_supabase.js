@@ -36,7 +36,11 @@ function gate(kind, info = {}) {
       if (status !== 'approved') return fail(`We could not check membership right now. Try again in a few minutes, or contact ${CFG.contactEmail}.`);
       btn.textContent = 'Sending your sign-in link\u2026';
       const { error } = await SB.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname } });
-      if (error) return fail(/rate|security purposes|seconds/i.test(error.message) ? 'A link was sent a moment ago. Wait a minute, then try again.' : 'The link could not be sent. Try again in a few minutes.');
+      if (error) {
+        return fail(/email rate limit/i.test(error.message) || error.code === 'over_email_send_rate_limit'
+          ? `We can\u2019t send sign-in emails right now because too many were sent in the past hour. Please try again later, or contact ${CFG.contactEmail}.`
+          : /security purposes|seconds/i.test(error.message) ? 'A link was sent a moment ago. Wait a minute, then try again.' : 'The link could not be sent. Try again in a few minutes.');
+      }
       gate('sent', { email });
     });
     box.append(h('span', { class: 'eyebrow' }, 'For AIA Canada members'),
