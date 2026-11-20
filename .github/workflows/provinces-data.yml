@@ -19,6 +19,7 @@ jobs:
       - name: Tools
         run: sudo apt-get install -y -q poppler-utils >/dev/null
       - name: Alberta tables (PDF to text)
+        continue-on-error: true
         run: |
           mkdir -p "$RUNNER_TEMP/ab" && cd "$RUNNER_TEMP/ab"
           python3 - <<'PY'
@@ -33,13 +34,13 @@ jobs:
                       except Exception as e:
                           print("skip", r["url"], e)
           PY
-          for f in *.pdf; do pdftotext -layout "$f" "${f%.pdf}.txt"; done; ls
+          for f in *.pdf; do pdftotext -layout "$f" "${f%.pdf}.txt" || echo "could not read $f"; done; ls; true
       - name: Build provinces/data.json
         run: python3 tools/provinces_build.py provinces/data.json "$RUNNER_TEMP/ab"
       - name: Save what was found (provinces-raw branch, for checking)
         if: always()
         run: |
-          mkdir -p "$RUNNER_TEMP/raw" && cp provinces/data.json.structure.txt "$RUNNER_TEMP/raw/" 2>/dev/null; cp "$RUNNER_TEMP"/ab/*.txt "$RUNNER_TEMP/raw/" 2>/dev/null; cp provinces/data.json "$RUNNER_TEMP/raw/" 2>/dev/null
+          mkdir -p "$RUNNER_TEMP/raw" && date > "$RUNNER_TEMP/raw/run.txt"; cp provinces/data.json.structure.txt "$RUNNER_TEMP/raw/" 2>/dev/null; cp "$RUNNER_TEMP"/ab/*.txt "$RUNNER_TEMP/raw/" 2>/dev/null; cp provinces/data.json "$RUNNER_TEMP/raw/" 2>/dev/null
           cd "$RUNNER_TEMP/raw" && git init -q -b provinces-raw && git config user.name "github-actions[bot]" && git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
           git add -A && git commit -qm "Provincial build check $(date -u +%F)" && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" provinces-raw
       - name: Commit if the numbers changed
