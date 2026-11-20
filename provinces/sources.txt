@@ -1,6 +1,5 @@
 23-10-0308: 1764 series for 14 places; dimension names: ['Geography', 'Vehicle Type', 'Fuel Type', 'Statistics']
 20-10-0025: 112 series; fuel members ['All fuel types', 'Gasoline', 'Diesel', 'All zero-emission vehicles', 'Battery electric', 'Plug-in hybrid electric', 'Hybrid electric', 'Other fuel types']; other dims at ['Total, vehicle type', 'Number of vehicles']
-Alberta: no tables could be read from the PDFs
 ## 23100308 Vehicle registrations, by type of vehicle and fuel type | 2017-01-01 to 2025-01-01
   dim 1 Geography (14 members)
     1 Canada
@@ -104,4 +103,63 @@ Alberta: no tables could be read from the PDFs
     4 Multi-purpose vehicles
     5 Vans
   dim 4 Statistics (1 members)
-    1 Number of vehicles
+    1 Number of vehiclesfuel_00.pdf
+fuel_00.txt
+fuel_01.pdf
+fuel_01.txt
+fuel_02.pdf
+fuel_02.txt
+fuel_03.pdf
+fuel_03.txt
+fuel_04.pdf
+fuel_04.txt
+fuel_05.pdf
+fuel_05.txt
+fuel_06.pdf
+fuel_06.txt
+fuel_07.pdf
+fuel_07.txt
+fuel_08.pdf
+fuel_08.txt
+fuel_09.pdf
+fuel_09.txt
+fuel_10.pdf
+fuel_10.txt
+style_00.pdf
+style_00.txt
+style_01.pdf
+style_01.txt
+style_02.pdf
+style_02.txt
+style_03.pdf
+style_03.txt
+style_04.pdf
+style_04.txt
+style_05.pdf
+style_05.txt
+style_06.pdf
+style_06.txt
+style_07.pdf
+style_07.txt
+style_08.pdf
+style_08.txt
+style_09.pdf
+style_09.txt
+style_10.pdf
+style_10.txt
+style_11.pdf
+style_11.txt
+style_12.pdf
+style_12.txt
+style_13.pdf
+style_13.txt
+style_14.pdf
+style_14.txt
+style_15.pdf
+style_15.txt
+style_16.pdf
+style_16.txt
+style_17.pdf
+style_17.txt
+style_18.pdf
+style_18.txt
