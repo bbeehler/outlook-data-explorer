@@ -1,4 +1,4 @@
-# Helper: finds Statistics Canada tables and saves their structure to the `economy-raw` branch, so new economy
+# Helper: profiles Statistics Canada tables (and provincial open-data catalogues) and saves their structure to the `economy-raw` branch, so new economy
 # series can be wired to the right table and members. Run on demand (Actions tab) or when this file changes.
 name: Economy table profile
 on:
@@ -12,38 +12,54 @@ jobs:
   profile:
     runs-on: ubuntu-latest
     steps:
+      - name: Tools
+        run: sudo apt-get install -y -q poppler-utils >/dev/null
       - name: Find and describe tables
         run: |
           mkdir -p "$RUNNER_TEMP/out" && cd "$RUNNER_TEMP/out"
           python3 - <<'PY'
           import json, urllib.request, re
           W = "https://www150.statcan.gc.ca/t1/wds/rest/"
-          def get(path): return json.load(urllib.request.urlopen(W + path, timeout=180))
           def post(path, body):
               req = urllib.request.Request(W + path, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
               return json.load(urllib.request.urlopen(req, timeout=180))
-          cubes = get("getAllCubesListLite")
-          keep = []
-          for c in cubes:
-              t = (c.get("cubeTitleEn") or "")
-              if re.search(r"census metropolitan|metropolitan area|census agglomeration", t, re.I) or (re.search(r"census profile|2021 census", t, re.I)):
-                  keep.append(f"{c['productId']} | {t} | {c.get('cubeStartDate')} to {c.get('cubeEndDate')} | {'archived' if c.get('archived')=='1' else ''}")
-          open("city_tables.txt", "w").write("\n".join(sorted(keep)))
           summary = []
-          for pid in [98100061, 98100457, 98100055]:
+          for pid in [23100308, 20100024, 20100025]:
               try:
                   m = post("getCubeMetadata", [{"productId": pid}])[0]["object"]
-                  json.dump(m, open(f"{pid}.json", "w"))
                   summary.append(f"## {pid} {m.get('cubeTitleEn')} | freq {m.get('frequencyCode')} | {m.get('cubeStartDate')} to {m.get('cubeEndDate')}")
                   for d in m.get("dimension", []):
                       mem = d.get("member", [])
                       summary.append(f"  dim {d['dimensionPositionId']} {d['dimensionNameEn']} ({len(mem)} members)")
-                      for x in mem[:120]: summary.append(f"    {x['memberId']} {x['memberNameEn']}")
+                      for x in mem[:60]: summary.append(f"    {x['memberId']} {x['memberNameEn']} (parent {x.get('parentMemberId')})")
               except Exception as e:
                   summary.append(f"## {pid} ERROR {e}")
+          # latest values for every province, to see which are published
+          for pid, coord in [(23100308, "{g}.2.1.1.0.0.0.0.0.0"), (20100024, "{g}.1.1.1.0.0.0.0.0.0"), (20100025, "{g}.4.1.1.0.0.0.0.0.0"), (20100025, "{g}.1.1.1.0.0.0.0.0.0")]:
+              res = post("getDataFromCubePidCoordAndLatestNPeriods", [{"productId": pid, "coordinate": coord.format(g=g), "latestN": 3} for g in range(1, 16)])
+              for g, r in zip(range(1, 16), res):
+                  pts = r.get("object", {}).get("vectorDataPoint", []) if r.get("status") == "SUCCESS" else []
+                  summary.append(f"DATA {pid} {coord.format(g=g)} -> " + ", ".join(f"{p['refPer'][:7]}={p['value']}" for p in pts))
           open("summary.txt", "w").write("\n".join(summary))
+          # Quebec SAAQ and Alberta open data catalogues
+          for name, url in [("saaq", "https://www.donneesquebec.ca/recherche/api/3/action/package_show?id=vehicules-en-circulation"),
+                            ("ab_fuel", "https://open.alberta.ca/api/3/action/package_show?id=c5eb22a7-f3e6-41ce-8363-17d1ea979bc7"),
+                            ("ab_style", "https://open.alberta.ca/api/3/action/package_show?id=553f5a93-0032-484a-b5d3-bcfd8c47bc11"),
+                            ("ab_muni", "https://open.alberta.ca/api/3/action/package_show?id=d6205817-b04b-4360-8bb0-79eaaecb9df9")]:
+              try:
+                  j = json.load(urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=120))["result"]
+                  open(f"{name}.txt", "w").write("\n".join(f"{r.get('name')} | {r.get('format')} | {r.get('size')} | {r.get('url')}" for r in j["resources"]))
+              except Exception as e:
+                  open(f"{name}.txt", "w").write(f"ERROR {e}")
           PY
-          wc -l city_tables.txt; head -c 2000 summary.txt
+          for f in saaq ab_fuel ab_style ab_muni; do echo "== $f"; cat $f.txt; echo; done
+          # SAAQ: documentation and the first lines of the newest file
+          DOC=$(grep -i "documentation" saaq.txt | head -1 | awk -F' \\| ' '{print $4}'); curl -sL -A Mozilla/5.0 "$DOC" -o saaq_doc.pdf && pdftotext -layout saaq_doc.pdf saaq_doc.txt || true
+          NEW=$(grep -i "csv" saaq.txt | sort | tail -1 | awk -F' \\| ' '{print $4}'); echo "newest $NEW"; curl -sL -A Mozilla/5.0 -r 0-400000 "$NEW" | head -c 400000 | head -40 > saaq_head.csv || true
+          # Alberta: newest PDF of each kind as text
+          for f in ab_fuel ab_style ab_muni; do U=$(grep -i pdf $f.txt | tail -1 | awk -F' \\| ' '{print $4}'); [ -n "$U" ] && curl -sL -A Mozilla/5.0 "$U" -o $f.pdf && pdftotext -layout $f.pdf $f.pdf.txt || true; done
+          ls -la
+          head -c 3000 summary.txt
       - name: Save
         run: |
           cd "$RUNNER_TEMP/out"
