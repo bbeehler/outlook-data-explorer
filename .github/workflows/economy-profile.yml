@@ -25,7 +25,7 @@ jobs:
               req = urllib.request.Request(W + path, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
               return json.load(urllib.request.urlopen(req, timeout=180))
           summary = []
-          for pid in [23100308, 20100024, 20100025]:
+          for pid in [11100065]:
               try:
                   m = post("getCubeMetadata", [{"productId": pid}])[0]["object"]
                   summary.append(f"## {pid} {m.get('cubeTitleEn')} | freq {m.get('frequencyCode')} | {m.get('cubeStartDate')} to {m.get('cubeEndDate')}")
@@ -37,11 +37,14 @@ jobs:
                   summary.append(f"## {pid} ERROR {e}")
           # latest values for every province, to see which are published
           try:
-           for pid, coord in [(23100308, "{g}.2.1.1.0.0.0.0.0.0"), (20100024, "{g}.1.1.1.0.0.0.0.0.0"), (20100025, "{g}.4.1.1.0.0.0.0.0.0"), (20100025, "{g}.1.1.1.0.0.0.0.0.0")]:
-               res = post("getDataFromCubePidCoordAndLatestNPeriods", [{"productId": pid, "coordinate": coord.format(g=g), "latestN": 3} for g in range(1, 16)])
-               for g, r in zip(range(1, 16), res):
-                   pts = r.get("object", {}).get("vectorDataPoint", []) if r.get("status") == "SUCCESS" else []
-                   summary.append(f"DATA {pid} {coord.format(g=g)} -> " + ", ".join(f"{p['refPer'][:7]}={p['value']}" for p in pts))
+              m = post("getCubeMetadata", [{"productId": 11100065}])[0]["object"]
+              dims = m["dimension"]
+              import itertools
+              combos = list(itertools.product(*[[x["memberId"] for x in d["member"]] for d in dims]))[:200]
+              res = post("getDataFromCubePidCoordAndLatestNPeriods", [{"productId": 11100065, "coordinate": ".".join(map(str, list(c) + [0] * (10 - len(c)))), "latestN": 2} for c in combos])
+              for r in res:
+                  o = r.get("object") or {}
+                  summary.append(f"DATA {o.get('coordinate')} -> " + ", ".join(f"{p['refPer'][:7]}={p['value']}" for p in o.get("vectorDataPoint", [])))
           except Exception as e:
               summary.append(f"DATA ERROR {e}")
           open("summary.txt", "w").write("\n".join(summary))
