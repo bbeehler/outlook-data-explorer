@@ -19,15 +19,14 @@ jobs:
           set +e
           mkdir -p "$RUNNER_TEMP/out" && cd "$RUNNER_TEMP/out"
           UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
-          B=https://www.services.labour.gov.on.ca/labourmarket
-          for n in 72411 72410 72401 73200 72420; do
-            curl -s -A "$UA" -H "Accept: application/json" "$B/api/jobProfile/$n" -o jp_$n.json; echo "$n $(wc -c < jp_$n.json) $(head -c 80 jp_$n.json)" >> api.txt; done
-          python3 -c "import json;d=json.load(open('jp_72411.json'));json.dump(d,open('jp_72411_pretty.json','w'),indent=1)" 2>>api.txt
-          for f in Apprenticeship AssociatedImportantLicensingBodies ComponentsOfJobGrowthGroup ComponentsOfJobGrowthNOC EmploymentCharacteristicsNOC EmploymentGrowthGroup EmploymentGrowthNOCLFS EmploymentIncome EmploymentLevelByEconomicRegion MainIndustries Mapping JobOutlooks; do
-            curl -sL -A "$UA" "$B/downloadFiles/$f.csv" -o $f.csv
-            { echo "== $f.csv $(wc -c < $f.csv) bytes, $(wc -l < $f.csv) lines"; head -3 $f.csv; grep -E '(^|[^0-9])7241[01]?([^0-9]|$)|(^|[^0-9])7321([^0-9]|$)' $f.csv | head -40; } >> csvs.txt
-          done
-          rm -f *.csv; ls -la > listing.txt; exit 0
+          B=https://www.services.labour.gov.on.ca
+          curl -s -A "$UA" "$B/labourmarket-ui/assets/i18n/en.json" -o en.json
+          for n in 72410 72411 74203 72401 72402 72422 62020 64100 64101 72400 73402 22312 72106 75101; do
+            curl -s -A "$UA" -H "Accept: application/json" "$B/labourmarket/api/jobProfile/$n" | python3 -c "import json,sys
+          try:
+              d=json.load(sys.stdin); w=d['nocWrapper']; print('$n', w['nocEnTitle'], '| outlook', w['jobOutlook']['jobOutlookCode'], '| openings', d.get('openingCategoryFormatted'))
+          except Exception as e: print('$n ERR', e)" >> titles.txt; done
+          ls -la > listing.txt; exit 0
       - name: Save
         if: always()
         run: |
