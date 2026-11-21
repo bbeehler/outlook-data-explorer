@@ -204,7 +204,7 @@ function reportCard(r) {
     h('p', {}, (r.summary || '').length > 280 ? r.summary.slice(0, 277) + '…' : r.summary),
     finding ? h('p', { class: 'lp-finding' }, finding) : null,
     stats ? h('span', { class: 'lp-stats' }, stats) : null,
-    h('div', { class: 'lp-card-foot' }, h('span', { class: 'lp-free' }, 'Free for members'), buyBtn('report', r.key, `Buy · ${money(PRICE.report)}`, 'act lp-buy')));
+    h('div', { class: 'lp-card-foot' }, h('span', { class: 'lp-free' }, 'Free for members and affiliates'), buyBtn('report', r.key, `Buy · ${money(PRICE.report)}`, 'act lp-buy')));
 }
 function signinCard(info) {
   const card = h('div', { class: 'lp-signin', id: 'signin' });
