@@ -17,40 +17,54 @@ jobs:
       - name: Find and describe tables
         run: |
           set +e
+          pip install -q openpyxl >/dev/null 2>&1
           mkdir -p "$RUNNER_TEMP/out" && cd "$RUNNER_TEMP/out"
           python3 - <<'PY' 2>&1 | tee py.log
-          import json, urllib.request, csv, io, re
-          UA = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"}
-          def get(u, n=None):
-              r = urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=300)
-              return r.read(n) if n else r.read()
+          import json, urllib.request, re, io
+          UA = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36", "Content-Type": "application/json", "Accept": "application/json"}
+          def get(u, body=None):
+              return urllib.request.urlopen(urllib.request.Request(u, data=body, headers=UA), timeout=300).read()
           out = []
-          for ds in ["1dc7cdcd-5a1c-450a-9544-2a98a3011d61", "adad580f-76b0-4502-bd05-20c125de9116", "b0e112e9-cf53-4e79-8838-23cd98debe5b"]:
+          AUTO = re.compile(r"(7241[01]|74203|72401|72410)")
+          C = "https://open.canada.ca/data/dataset/e80851b8-de68-43bd-a85c-c72e1b3a3890/resource/"
+          for name, u in [("summary", C + "7c4767a5-f807-441d-9776-a0074b5870a0/download/summary_sommaire_2026_2035.csv"),
+                          ("flmc", C + "446fe474-96e7-47cd-a3f9-3bb391b2df60/download/flmc_cfmt_2026_2035.csv"),
+                          ("rlmc", C + "ff795791-0728-4dcf-8fdd-d7ba9e1210b8/download/rlmc_crmt_2023_2025.csv"),
+                          ("employment", C + "da1135c5-a1df-4a07-a81e-de308ae6cce6/download/employment_emploi_2026_2035.csv"),
+                          ("structure", C + "033499af-369b-45d4-af2f-5327f4e9e18a/download/files_structure_definitions_definition_structure_fichiers_2026_2035.txt")]:
               try:
-                  j = json.loads(get(f"https://open.canada.ca/data/api/action/package_show?id={ds}"))["result"]
-                  out.append(f"## {ds} {j['title']} | modified {j.get('metadata_modified')}")
-                  for r in j["resources"]:
-                      out.append(f"  {r.get('name')} | {r.get('format')} | {r.get('language')} | {r.get('last_modified') or r.get('created')} | {r.get('url')}")
-                      if str(r.get("format")).upper() == "CSV" and ("en" in str(r.get("language")) or "Eng" in str(r.get("name")) or "EN" in str(r.get("url"))):
-                          try:
-                              raw = get(r["url"])
-                              txt = raw.decode("utf-8-sig", "replace") if raw[:3] == b"\xef\xbb\xbf" or True else raw.decode("latin-1")
-                              lines = txt.splitlines()
-                              out.append(f"    {len(raw)} bytes, {len(lines)} lines")
-                              out += ["    " + l[:400] for l in lines[:3]]
-                              out += ["    " + l[:400] for l in lines if re.search(r"\b(7241[01]|74203|7321|7322)\b", l)][:40]
-                          except Exception as e:
-                              out.append(f"    ERROR {e}")
+                  raw = get(u); txt = raw.decode("utf-8-sig", "replace"); L = txt.splitlines()
+                  out.append(f"## COPS {name} {len(raw)} bytes {len(L)} lines")
+                  out += ["  " + l[:500] for l in (L[:3] if name != "structure" else L[:120])]
+                  out += ["  " + l[:500] for l in L if AUTO.search(l)][:12]
+                  out += ["  " + l[:300] for l in L if "7241" in l or "Automotive" in l][:6]
               except Exception as e:
-                  out.append(f"## {ds} ERROR {e}")
-          # national projections (COPS) and other candidates
+                  out.append(f"## COPS {name} ERROR {e}")
+          # 2025-2027 outlooks (xlsx)
           try:
-              j = json.loads(get("https://open.canada.ca/data/api/action/package_search?q=Canadian%20Occupational%20Projection%20System%202024&rows=5"))
-              for p in j["result"]["results"]:
-                  out.append(f"## COPS? {p['id']} {p['title']}")
-                  for r in p["resources"][:30]: out.append(f"  {r.get('name')} | {r.get('format')} | {r.get('language')} | {r.get('url')}")
+              import openpyxl
+              raw = get("https://open.canada.ca/data/dataset/b0e112e9-cf53-4e79-8838-23cd98debe5b/resource/cb52e1d0-ab62-4357-91cc-d8f5a2114e02/download/20252027_outlook_n21_en_251208.xlsx")
+              wb = openpyxl.load_workbook(io.BytesIO(raw), read_only=True)
+              for ws in wb.worksheets:
+                  rows = list(ws.iter_rows(values_only=True))
+                  out.append(f"## OUTLOOK sheet {ws.title} {len(rows)} rows")
+                  out += ["  " + str(r)[:600] for r in rows[:3]]
+                  out += ["  " + str(r)[:900] for r in rows if any(AUTO.search(str(c or "")) for c in r[:3])][:30]
           except Exception as e:
-              out.append(f"COPS ERROR {e}")
+              out.append(f"## OUTLOOK ERROR {e}")
+          # Census: occupation by province with age, gender, education, labour force status
+          W = "https://www150.statcan.gc.ca/t1/wds/rest/"
+          for pid in [98100449, 98100593, 98100412]:
+              try:
+                  m = json.loads(get(W + "getCubeMetadata", json.dumps([{"productId": pid}]).encode()))[0]["object"]
+                  out.append(f"## STATCAN {pid} {m.get('cubeTitleEn')}")
+                  for d in m["dimension"]:
+                      mem = d["member"]
+                      out.append(f"  dim {d['dimensionPositionId']} {d['dimensionNameEn']} ({len(mem)})")
+                      sel = mem[:25] if len(mem) < 60 else [x for x in mem if AUTO.search(x["memberNameEn"])] + mem[:5]
+                      out += [f"    {x['memberId']} {x['memberNameEn']} (parent {x.get('parentMemberId')})" for x in sel]
+              except Exception as e:
+                  out.append(f"## STATCAN {pid} ERROR {e}")
           open("summary.txt", "w").write("\n".join(out))
           PY
           ls -la > listing.txt; exit 0
