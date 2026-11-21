@@ -153,6 +153,7 @@ function kpiTiles(which) {
     try { const c = BYID['econ-cpi-repair'], [r, ri] = lastVal(c.series[1].vals), [all] = lastVal(c.series[0].vals); tiles.push(tile((r >= 0 ? '+' : '') + fmt(r, '%'), 'Repair and parts prices, past year', `${c.cats[ri]} \u00b7 all items ${(all >= 0 ? '+' : '') + fmt(all, '%')}`, 'econ-cpi-repair')); } catch {}
     try { const j = BYID['econ-repair-jobs'], [n, ni] = lastVal(j.series[0].vals); tiles.push(tile(Math.round(n).toLocaleString('en-CA'), 'Jobs in automotive repair', `${j.cats[ni]} \u00b7 Statistics Canada`, 'econ-repair-jobs')); } catch {}
     try { const p = BYID['econ-policy-rate'], [v, vi] = lastVal(p.series[0].vals); tiles.push(tile(fmt(v, p.unit), 'Bank of Canada policy rate', `${p.cats[vi]}`, 'econ-policy-rate')); } catch {}
+    if (which === 'economy') try { const d = BYID['econ-debt-service'], [v, vi] = lastVal(d.series[0].vals); tiles.push(tile(fmt(v, '%'), 'Household debt service ratio', `${d.cats[vi]} \u00b7 share of disposable income`, 'econ-debt-service')); } catch {}
   }
   return tiles.length ? h('div', { class: 'kpis' }, tiles) : null;
 }
@@ -251,6 +252,7 @@ function renderEconomy(main) {
   main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow pubeyebrow' }, 'Macro data \u00b7 Economy'), h('h1', {}, 'The economic backdrop for auto care'),
     h('p', {}, 'Official figures on the prices, sales, jobs and rates that shape demand for repair and parts. Each chart links to research findings on the same topic.')));
   const figs = DS.filter(d => d.topic === 'macro');
+  { const k = kpiTiles('economy'); if (k) main.append(k); }
   if (CITIES) main.append(h('div', { class: 'topics secs' }, h('button', { type: 'button', class: 'tcard', onclick: () => go('cities') },
     h('span', { class: 'ref' }, `${CITIES.cities.length} metro areas`), h('b', {}, 'Cities: compare metro areas'), h('span', {}, TOPICS.find(t => t.id === 'cities').blurb))));
   if (!figs.length) main.append(h('p', { class: 'empty' }, 'The economic data is being prepared. Check back shortly.'));

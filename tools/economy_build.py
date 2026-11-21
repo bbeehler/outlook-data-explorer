@@ -187,6 +187,30 @@ def main():
         return fig("econ-unemployment", "Unemployment rate, Canada", cats, series, "%", ["household-finances", "labour"],
                    f"{SC}, Table 14-10-0287-01 (Labour Force Survey, seasonally adjusted)")
 
+    DSR = f"{SC}, Table 11-10-0065-01 (Debt service indicators of households, national balance sheet accounts)"
+
+    def debt_service():
+        s = OrderedDict((n, OrderedDict((k, v / 100) for k, v in statcan(11100065, [1, 1, m], 40).items())) for n, m in [
+            ("Total debt service ratio", 22), ("Mortgage", 23), ("Non-mortgage", 24)])
+        cats, series = align(s, quarter_label, since)
+        return fig("econ-debt-service", "Household debt service ratio, Canada", cats, series, "%", ["household-finances", "interest-rates", "maintenance"], DSR,
+                   "Obligated payments of principal and interest as a share of household disposable income, seasonally adjusted. "
+                   "The more income goes to debt payments, the less is left for discretionary spending, including deferrable vehicle maintenance.")
+
+    def debt_interest():
+        s = OrderedDict((n, OrderedDict((k, v / 100) for k, v in statcan(11100065, [1, 1, m], 40).items())) for n, m in [
+            ("Total, interest only", 25), ("Mortgage", 26), ("Non-mortgage", 27), ("Consumer debt", 28)])
+        cats, series = align(s, quarter_label, since)
+        return fig("econ-debt-interest", "Household interest payments as a share of disposable income, Canada", cats, series, "%",
+                   ["household-finances", "interest-rates"], DSR, "Interest-only debt service ratios, seasonally adjusted. Consumer debt includes car loans, credit cards and lines of credit.")
+
+    def debt_payments():
+        s = OrderedDict((n, OrderedDict((k, (v if v > 1e7 else v * 1e6) / 1e9) for k, v in statcan(11100065, [1, 1, m], 40).items())) for n, m in [
+            ("Mortgage debt payments", 14), ("Non-mortgage debt payments", 15)])
+        cats, series = align(s, quarter_label, since)
+        return fig("econ-debt-payments", "Household debt payments, Canada", cats, series, "$B", ["household-finances", "vehicle-sales"], DSR,
+                   "Principal and interest paid on household debt, seasonally adjusted at annual rates.")
+
     def rates():
         s = OrderedDict([("Bank of Canada policy rate", OrderedDict((k, v / 100) for k, v in monthly_last(boc("V39079", since)).items()))])
         cats, series = align(s, month_label, since)
@@ -199,7 +223,7 @@ def main():
         return fig("econ-cad-usd", "Canadian dollar in US cents", cats, series, "index", ["parts", "repair-prices"],
                    "Bank of Canada, Valet API (series FXUSDCAD, monthly average)", "Most replacement parts are priced in US dollars, so a weaker Canadian dollar tends to raise parts costs.")
 
-    for fn in [cpi_repair, cpi_ownership, zev_share, new_regs, fleet_fuel, parts_sales, repair_jobs, repair_pay, repair_gdp, unemployment, rates, fx]:
+    for fn in [cpi_repair, cpi_ownership, zev_share, new_regs, fleet_fuel, parts_sales, repair_jobs, repair_pay, repair_gdp, unemployment, debt_service, debt_interest, debt_payments, rates, fx]:
         safe(fn)
     out = {"datasets": figs, "errors": errors, "built": datetime.date.today().isoformat()}
     if OUT.exists():
