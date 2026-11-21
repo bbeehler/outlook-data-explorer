@@ -19,26 +19,15 @@ jobs:
           set +e
           mkdir -p "$RUNNER_TEMP/out" && cd "$RUNNER_TEMP/out"
           UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
-          B=https://www.services.labour.gov.on.ca
-          # Ontario labour market: the new job profile app, its scripts, and the API paths they call
-          curl -sL -A "$UA" "$B/labourmarket-ui/jobProfile?nocCode=72411" -o ui.html; cat ui.html > ui_html.txt
-          for s in $(grep -oE '(src|href)="[^"]+\.(js|json)[^"]*"' ui.html | sed -E 's/^(src|href)="//; s/"$//'); do
-            case "$s" in http*) u="$s";; /*) u="$B$s";; *) u="$B/labourmarket-ui/$s";; esac
-            n=$(basename "${s%%\?*}"); curl -sL -A "$UA" "$u" -o "js_$n"; echo "$u $(wc -c < js_$n)" >> scripts.txt
+          B=https://www.services.labour.gov.on.ca/labourmarket
+          for n in 72411 72410 72401 73200 72420; do
+            curl -s -A "$UA" -H "Accept: application/json" "$B/api/jobProfile/$n" -o jp_$n.json; echo "$n $(wc -c < jp_$n.json) $(head -c 80 jp_$n.json)" >> api.txt; done
+          python3 -c "import json;d=json.load(open('jp_72411.json'));json.dump(d,open('jp_72411_pretty.json','w'),indent=1)" 2>>api.txt
+          for f in Apprenticeship AssociatedImportantLicensingBodies ComponentsOfJobGrowthGroup ComponentsOfJobGrowthNOC EmploymentCharacteristicsNOC EmploymentGrowthGroup EmploymentGrowthNOCLFS EmploymentIncome EmploymentLevelByEconomicRegion MainIndustries Mapping JobOutlooks; do
+            curl -sL -A "$UA" "$B/downloadFiles/$f.csv" -o $f.csv
+            { echo "== $f.csv $(wc -c < $f.csv) bytes, $(wc -l < $f.csv) lines"; head -3 $f.csv; grep -E '(^|[^0-9])7241[01]?([^0-9]|$)|(^|[^0-9])7321([^0-9]|$)' $f.csv | head -40; } >> csvs.txt
           done
-          cat js_* 2>/dev/null | grep -oE '["'"'"'`][^"'"'"'` ]*(api|labourmarket|rest|json|nocCode|jobProfile|download)[^"'"'"'` ]*["'"'"'`]' | sort -u > api_strings.txt
-          # the bulk download files
-          curl -sL -A "$UA" "$B/labourmarket/downloadFiles/" -o dl_index.html
-          curl -sL -A "$UA" "$B/labourmarket/downloadFiles/Data_Dictionary_EN.txt" -o dict.txt
-          curl -sL -A "$UA" "$B/labourmarket/jobProfile/jobProfileFullView.xhtml?nocCode=72411" -o old_profile.html
-          grep -oE 'href="[^"]*(download|\.csv|\.xlsx|\.txt|\.zip)[^"]*"' ui.html old_profile.html dl_index.html | sort -u > links.txt
-          # try likely API routes
-          for path in labourmarket-api/jobProfile/72411 labourmarket-api/api/jobProfile/72411 labourmarket-api/jobProfile?nocCode=72411 labourmarket-ws/jobProfile/72411 labourmarket-ui/api/jobProfile/72411 labourmarket-api/v1/jobProfile/72411; do
-            c=$(curl -s -A "$UA" -o /dev/null -w "%{http_code} %{content_type}" "$B/$path"); echo "$path $c" >> tries.txt; done
-          # test every API-looking string found in the scripts
-          grep -oE '/[A-Za-z0-9_/-]*(api|ws|rest)[A-Za-z0-9_/{}.-]*' api_strings.txt | sort -u | head -60 > api_paths.txt
-          while read p; do q=$(echo "$p" | sed 's/{[^}]*}/72411/g'); c=$(curl -s -A "$UA" -o "resp_$(echo $q | tr '/?=&' '____').json" -w "%{http_code} %{content_type} %{size_download}" "$B$q?nocCode=72411"); echo "$q $c" >> tries.txt; done < api_paths.txt
-          ls -la > listing.txt; exit 0
+          rm -f *.csv; ls -la > listing.txt; exit 0
       - name: Save
         if: always()
         run: |
