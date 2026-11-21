@@ -26,7 +26,7 @@ rep("  if (current === 'home') return renderHome(main);","  if (current === 'hom
 rep("`${DS.length - 1} figures","`${Math.max(DS.length - 1, 0)} figures")
 # ---- Research Hub ----
 rep('<span class="eyebrow">AIA Canada · Outlook Study 2025</span>\n      <span class="name">Outlook Data Explorer</span>',
-    '<span class="eyebrow">AIA Canada · Research and data</span>\n      <span class="name">Research Hub</span>')
+    '<span class="eyebrow">AIA Canada · Built for decisions not just dashboards</span>\n      <span class="name">Research Hub</span>')
 rep('placeholder="Find a figure: EV share, technicians, F-150…"', 'placeholder="Search reports and data"')
 rep("  el.append(h('div', { class: 'foot' }, src, acts));", "  const rel = relatedFor(ds); if (rel) el.append(rel);\n  el.append(h('div', { class: 'foot' }, src, acts));")
 i0=t.index("const RULES = `"); j0=t.index("`;", i0)+2

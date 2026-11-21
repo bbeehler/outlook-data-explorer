@@ -91,6 +91,7 @@ function renderLanding(box, info = {}) {
     h('div', { class: 'lp-hero-copy' },
       h('span', { class: 'lp-eyebrow' }, 'AIA Canada Research Hub'),
       h('h1', {}, 'Know what Canada’s drivers will do ', h('em', {}, 'before your competitors do.')),
+      h('p', { class: 'lp-tag' }, 'Built for decisions not just dashboards.'),
       h('p', { class: 'lp-lead' }, 'The only research built for Canada’s automotive aftermarket: what vehicle owners think, where they take their vehicles, what the market is worth and where it’s heading. Interactive, searchable and ready for your next business decision.'),
       h('div', { class: 'lp-ctas' },
         h('a', { class: 'btn-ask lp-cta-main', href: '#plans', onclick: go('plans') }, 'Get access'),

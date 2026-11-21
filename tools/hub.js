@@ -160,7 +160,7 @@ function kpiTiles(which) {
 }
 function renderHome(main) {
   const list = reportList().filter(r => r.kind !== 'economy');
-  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'AIA Canada Research Hub'),
+  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'AIA Canada Research Hub · Built for decisions not just dashboards'),
     h('h1', {}, 'Welcome to the Research Hub'),
     h('p', {}, 'All of AIA Canada\u2019s research in one place: our consumer research reports and the 2025 Outlook Study, as interactive charts you can explore, copy and ask questions about. Economic, city and provincial vehicle data are under Macro data.')));
   // how to use

@@ -553,6 +553,11 @@ body.is-landing .wrap { max-width: none; padding-top: 0; }
 .ft-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding: 16px 44px; border-top: 1px solid rgba(255,255,255,.15); font-size: 13px; color: #a9bcd6; }
 @media (max-width: 900px) { .ft-in { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 34px 24px 24px; } .ft-brand { grid-column: 1 / -1; } .ft-bottom { padding: 14px 24px; } }
 
+/* tagline pill on the landing hero */
+.lp-tag { display: inline-block; margin: 0 0 18px; padding: 6px 14px; border-radius: 999px; font-size: 15px; font-weight: 700; color: #fff;
+  background: linear-gradient(90deg, rgba(226,28,71,.95), rgba(226,28,71,.6)); box-shadow: 0 6px 18px rgba(226,28,71,.25); }
+@media (max-width: 640px) { .lp-tag { font-size: 13.5px; } }
+
 @media (max-width: 960px) {
   .wrap { grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .topics, .lcards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -577,7 +582,7 @@ body.is-landing .wrap { max-width: none; padding-top: 0; }
   <div class="mast-in">
     <button class="menu-btn" id="menuBtn" type="button" aria-controls="navPanel" aria-expanded="false" aria-label="Open the menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="lbl">Menu</span></button>
     <div class="brand">
-      <span class="eyebrow">AIA Canada · Research and data</span>
+      <span class="eyebrow">AIA Canada · Built for decisions not just dashboards</span>
       <span class="name">Research Hub</span>
     </div>
     <label class="search" for="q">
@@ -1275,7 +1280,7 @@ const rerender = () => { clearTimeout(rerender.t); rerender.t = setTimeout(rende
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerender);
 new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-const HUB_VERSION = '2026-11-20 20:36';
+const HUB_VERSION = '2026-11-20 20:42';
 /* ---------- AIA Canada Research Hub: sections, research reports, economy, links between sources, report manager ---------- */
 const BASE_TOPICS = TOPICS.filter(t => !['home', 'access'].includes(t.id)).map(t => ({ ...t, group: 'outlook' }));
 let REPORTS = [], ECON = null, CITIES = null;
@@ -1438,7 +1443,7 @@ function kpiTiles(which) {
 }
 function renderHome(main) {
   const list = reportList().filter(r => r.kind !== 'economy');
-  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'AIA Canada Research Hub'),
+  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'AIA Canada Research Hub · Built for decisions not just dashboards'),
     h('h1', {}, 'Welcome to the Research Hub'),
     h('p', {}, 'All of AIA Canada\u2019s research in one place: our consumer research reports and the 2025 Outlook Study, as interactive charts you can explore, copy and ask questions about. Economic, city and provincial vehicle data are under Macro data.')));
   // how to use
@@ -2258,6 +2263,7 @@ function renderLanding(box, info = {}) {
     h('div', { class: 'lp-hero-copy' },
       h('span', { class: 'lp-eyebrow' }, 'AIA Canada Research Hub'),
       h('h1', {}, 'Know what Canada’s drivers will do ', h('em', {}, 'before your competitors do.')),
+      h('p', { class: 'lp-tag' }, 'Built for decisions not just dashboards.'),
       h('p', { class: 'lp-lead' }, 'The only research built for Canada’s automotive aftermarket: what vehicle owners think, where they take their vehicles, what the market is worth and where it’s heading. Interactive, searchable and ready for your next business decision.'),
       h('div', { class: 'lp-ctas' },
         h('a', { class: 'btn-ask lp-cta-main', href: '#plans', onclick: go('plans') }, 'Get access'),
