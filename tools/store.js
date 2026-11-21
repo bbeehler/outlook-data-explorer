@@ -142,7 +142,8 @@ function renderLanding(box, info = {}) {
         h('p', { class: 'lp-plan-note' }, 'Already a member? ', h('a', { href: '#signin', onclick: e => { e.preventDefault(); $('#email').focus(); $('#email').scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 'Sign in'), '.')),
       h('div', { class: 'lp-plan lp-plan-aff' }, h('span', { class: 'lp-plan-tag lp-tag-ink' }, 'Free access'), h('h3', {}, 'Industry affiliate'), h('p', { class: 'lp-price' }, 'Free', h('span', {}, ' as an affiliate')),
         h('ul', {}, ['Every report in the Research Hub', 'Join AIA Canada’s Industry Engagement Network', 'Stay connected with the industry'].map(t => h('li', {}, t))),
-        h('a', { class: 'btn-ask', href: AFFILIATE_URL }, 'Become an affiliate')),
+        h('a', { class: 'btn-ask', href: AFFILIATE_URL }, 'Become an affiliate'),
+        h('p', { class: 'lp-plan-note' }, 'Already an affiliate? ', h('a', { href: '#signin', onclick: e => { e.preventDefault(); $('#email').focus(); $('#email').scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 'Sign in'), '.')),
       h('div', { class: 'lp-plan' }, h('h3', {}, 'Single report'), h('p', { class: 'lp-price' }, money(PRICE.report), h('span', {}, ' per report')),
         h('ul', {}, ['The full report as a PDF, yours to keep', `${PRICE.days} days in the Research Hub with that report`, 'Interactive charts, tables and Ask the data'].map(t => h('li', {}, t))),
         h('a', { class: 'act lp-plan-btn', href: '#reports', onclick: go('reports') }, 'Choose a report ↓')))));
