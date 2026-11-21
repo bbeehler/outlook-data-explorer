@@ -8,6 +8,7 @@ data.json
 !provinces/data.json
 !quebec/data.json
 !jobs/data.json
+!jobs/ontario.json
 load*.sql
 x/
 provinces/*.structure.txt

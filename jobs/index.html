@@ -259,7 +259,7 @@ const REG = ['Toronto', 'Kitchener–Waterloo–Barrie', 'Hamilton–Niagara Pen
 const openNum = s => s ? Number(String(s).replace(/[^\d]/g, '')) : null;
 
 async function boot() {
-  D = await (await fetch('data.json', { cache: 'no-cache' })).json();
+  D = await (await fetch('ontario.json', { cache: 'no-cache' })).json();
   const sel = $('#pick');
   sel.replaceChildren(...D.occupations.map(o => h('option', { value: o.noc }, `${o.short} (NOC ${o.noc})`)));
   const fromHash = location.hash.slice(1); if (OCC(fromHash)) CUR = fromHash;
