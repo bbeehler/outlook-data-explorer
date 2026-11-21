@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Auto Care Jobs in Ontario | AIA Canada</title>
-<meta name="description" content="Workers, job openings, wages, outlook and skills for Ontario's collision, automotive service and parts installer trades.">
+<title>Auto Care Jobs in Canada | AIA Canada</title>
+<meta name="description" content="Workers, wages, job outlooks and 10-year projections for collision, automotive service and parts installer trades, for Canada and every province and territory.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400;500;600;700;800&family=Sofia+Sans+Semi+Condensed:wght@500;600&display=swap">
@@ -159,30 +159,38 @@ tr.cur th, tr.cur td { background: var(--chip-on); color: var(--chip-on-ink); }
 .aka { padding: 8px 18px 0; font-size: 13px; color: var(--muted); }
 .desc { color: var(--ink-2); max-width: 80ch; margin: 0; }
 @media (max-width: 760px) { .pickrow label { width: 100%; } .pickrow .sel { width: 100%; min-width: 0; } .split { grid-template-columns: minmax(0, 1fr); } .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 10px 12px 0; } .list { grid-template-columns: minmax(0, 1fr); padding: 8px 12px 0; } .trend, .trades, .aka { padding-left: 12px; padding-right: 12px; } }
+
+<style>
+.pick2 { gap: 10px 22px; }
+@media (max-width: 760px) { .pick2 label { width: 100%; } .pick2 .sel { width: 100%; min-width: 0; } }
 </style>
 </head>
 <body>
 <div class="edge" aria-hidden="true"></div>
 <header class="mast"><div class="mast-in">
-  <div class="brand"><span class="eyebrow">Macro data · Ontario labour market</span><span class="name">Auto Care Jobs in Ontario</span></div>
+  <div class="brand"><span class="eyebrow">Macro data · Labour market</span><span class="name">Auto Care Jobs in Canada</span></div>
   <a class="back" href="../">AIA Canada Research Hub</a>
 </div></header>
 <div class="wrap">
   <div class="head">
-    <span class="eyebrow" id="asAt">Ontario labour market information</span>
-    <h1 id="title">Who fixes Ontario's vehicles, and who's next</h1>
-    <p class="desc" id="desc">How many people work in each auto care trade, how many jobs are opening up, what they pay in each region, the outlook to 2027, and the skills employers ask for.</p>
+    <span class="eyebrow" id="asAt">Job Bank, COPS and the 2021 Census</span>
+    <h1 id="title">Who fixes Canada's vehicles, and who's next</h1>
+    <p class="desc" id="desc"></p>
   </div>
-  <div class="controls pickrow"><label>Trade <select class="sel" id="pick" aria-label="Trade"></select></label></div>
+  <div class="controls pickrow pick2">
+    <label>Trade <select class="sel" id="pick" aria-label="Trade"></select></label>
+    <label>Where <select class="sel" id="geo" aria-label="Province or territory"></select></label>
+  </div>
   <section class="kpis" id="kpis" aria-label="Key figures"></section>
-  <nav class="jump" aria-label="Sections">
-    <a href="#outlook">Outlook by region</a><a href="#demand">Hiring demand</a><a href="#pay">Pay</a><a href="#where">Where they work</a><a href="#people">The workforce</a><a href="#skills">Skills</a><a href="#path">Becoming one</a><a href="#compare">Compare trades</a>
-  </nav>
+  <nav class="jump" id="jump" aria-label="Sections"></nav>
   <main id="main" style="display:flex;flex-direction:column;gap:22px"><p class="loading">Loading the data…</p></main>
   <footer class="pagefoot">
     <h2>About this data</h2>
-    <p>All figures come from the Government of Ontario's <a href="https://www.services.labour.gov.on.ca/labourmarket-ui/jobProfile?nocCode=72411">labour market information job profiles</a> (Ministry of Labour, Immigration, Training and Skills Development), by 2021 National Occupational Classification (NOC) code. The ministry draws on several sources: projected job openings for 2024 to 2028 from Stokes Economics; annual online job postings from Signal49 Research (public job sites and company pages, not sites that require a login); employment change from Statistics Canada's Labour Force Survey; hourly wages from Job Bank; and the workforce profile (age, gender, education, unemployment) from the 2021 Census.</p>
-    <p>Employment change for a single occupation rests on a small Labour Force Survey sample and can swing sharply from year to year, so read the trend rather than any single year. Outlooks are the ministry's rating for 2025 to 2027.</p>
+    <p><b>Wages</b>: Job Bank wages by occupation (Employment and Social Development Canada), hourly low (10th percentile), median and high (90th percentile), for Canada, each province and territory and their economic regions, on <a href="https://open.canada.ca/data/en/dataset/adad580f-76b0-4502-bd05-20c125de9116">open.canada.ca</a>. Where Job Bank can't publish a reliable wage for a small area, it's left blank.</p>
+    <p><b>Outlooks</b>: Job Bank 3-year employment outlooks by province and economic region, with the reasons for each rating and worker counts. Job Bank reports a few neighbouring regions together (for example Montréal and Laval), so they show the same worker count (<a href="https://open.canada.ca/data/en/dataset/b0e112e9-cf53-4e79-8838-23cd98debe5b">open.canada.ca</a>).</p>
+    <p><b>Ten-year projections</b>: the Canadian Occupational Projection System (COPS), Canada-wide job openings (new jobs, retirements and other replacement) and job seekers (school leavers, immigrants and others) by occupation, with ESDC's assessment of shortage or surplus (<a id="copsLink" href="https://open.canada.ca/data/en/dataset/e80851b8-de68-43bd-a85c-c72e1b3a3890">open.canada.ca</a>). COPS is national only.</p>
+    <p><b>Workforce</b>: Statistics Canada 2021 Census, tables <a href="https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810044901">98-10-0449-01</a> and <a href="https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810059301">98-10-0593-01</a>: people in the labour force in each occupation (employed or looking for work), by age, gender and education; unemployment rate; and the share of workers who are self-employed. Census figures are randomly rounded, so small provinces can be blank or uneven.</p>
+    <p><b>Ontario detail</b>: the Government of Ontario's <a href="https://www.services.labour.gov.on.ca/labourmarket-ui/jobProfile?nocCode=72411">labour market information job profiles</a> add online job postings (Signal49 Research), employment change from the Labour Force Survey, in-demand skills and Ontario's skilled trades.</p>
     <p id="built"></p>
   </footer>
 </div>
@@ -249,70 +257,192 @@ function card(id, ref, title) {
 }
 function foot(src, onCsv) { return h('div', { class: 'foot' }, h('span', { class: 'src' }, src), h('button', { type: 'button', class: 'act', onclick: onCsv }, 'Download CSV')); }
 
-let D, CUR = '72411';
-const OCC = k => D.occupations.find(o => o.noc === k);
-const SRC = 'Government of Ontario, labour market information job profiles';
+let D, ON = null, CUR = '72411', GEO = 'CA';
+const P = () => D.parts;
+const T = () => D.trades.find(t => t.noc === CUR);
+const PN = c => (D.provinces.find(p => p.code === c) || {}).name || c;
+const W = (noc, g) => ((P().wages || {})[noc] || {})[g] || {};
+const OL = (noc, g) => ((P().outlooks || {})[noc] || {})[g] || {};
+const CE = (noc, g) => ((P().census || {})[noc] || {})[g] || null;
+const CO = noc => (P().cops || {})[noc] || null;
 const OLC = { 'Very good': 'ol-vg', Good: 'ol-g', Moderate: 'ol-m', Limited: 'ol-l', 'Very limited': 'ol-vl' };
 const ol = t => t ? h('span', { class: 'ol ' + (OLC[t] || '') }, t) : '—';
 const money = (v, d = 2) => v == null || !v ? '—' : '$' + Number(v).toFixed(d);
-const REG = ['Toronto', 'Kitchener–Waterloo–Barrie', 'Hamilton–Niagara Peninsula', 'Ottawa', 'London', 'Windsor–Sarnia', 'Northeast', 'Stratford–Bruce Peninsula', 'Kingston–Pembroke', 'Muskoka–Kawarthas', 'Northwest'];
-const openNum = s => s ? Number(String(s).replace(/[^\d]/g, '')) : null;
+const nk = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]/g, '');
+const sc = s => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : s;
+const PROVS = () => D.provinces.filter(p => p.code !== 'CA');
+const SRC_JB = 'Job Bank (Employment and Social Development Canada)';
+const workersOf = (noc, g) => g === 'CA' ? (CO(noc) || {}).employment || (CE(noc, 'CA') || {}).labourForce : OL(noc, g).workers || (CE(noc, g) || {}).labourForce;
+const OCC = k => ON && ON.occupations.find(o => o.noc === k);
 
 async function boot() {
-  D = await (await fetch('ontario.json', { cache: 'no-cache' })).json();
-  const sel = $('#pick');
-  sel.replaceChildren(...D.occupations.map(o => h('option', { value: o.noc }, `${o.short} (NOC ${o.noc})`)));
-  const fromHash = location.hash.slice(1); if (OCC(fromHash)) CUR = fromHash;
-  sel.value = CUR;
-  sel.addEventListener('change', () => { CUR = sel.value; history.replaceState(null, '', '#' + CUR); renderAll(); });
-  $('#built').textContent = `Built ${D.built}. The page checks for new figures each month.`;
+  const [d, o] = await Promise.all([fetch('data.json', { cache: 'no-cache' }).then(r => r.json()), fetch('ontario.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).catch(() => null)]);
+  D = d; ON = o;
+  const sel = $('#pick'), geo = $('#geo');
+  sel.replaceChildren(...D.trades.map(t => h('option', { value: t.noc }, `${t.short} (NOC ${t.noc})`)));
+  geo.replaceChildren(...D.provinces.map(p => h('option', { value: p.code }, p.code === 'CA' ? 'Canada (all provinces)' : p.name)));
+  const [a, b] = location.hash.slice(1).split('-');
+  if (D.trades.some(t => t.noc === a)) CUR = a;
+  if (D.provinces.some(p => p.code === b)) GEO = b;
+  sel.value = CUR; geo.value = GEO;
+  sel.addEventListener('change', () => { CUR = sel.value; nav(); });
+  geo.addEventListener('change', () => { GEO = geo.value; nav(); });
+  $('#built').textContent = `Built ${D.built}. Wages ${D.meta.wagesYear || ''}; outlooks ${D.meta.outlookPeriod || ''}; projections ${D.meta.copsPeriod || ''}. The page checks for new figures each month.`;
+  if (D.meta.copsUrl) $('#copsLink').href = D.meta.copsUrl;
   renderAll();
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderAll);
 }
+function nav() { $('#pick').value = CUR; $('#geo').value = GEO; history.replaceState(null, '', `#${CUR}-${GEO}`); renderAll(); }
+function setGeo(g) { GEO = g; nav(); scrollTo({ top: 0, behavior: 'smooth' }); }
 function renderAll() {
-  const o = OCC(CUR);
-  $('#asAt').textContent = `Ontario labour market information · NOC ${o.noc}`;
-  $('#title').textContent = o.title;
-  $('#desc').textContent = o.description;
-  kpis(o);
-  $('#main').replaceChildren(outlook(o), h('div', { class: 'split' }, postings(o), growth(o)), pay(o), where(o), people(o), skills(o), path(o), compare());
+  const t = T(), oo = OCC(CUR), where = GEO === 'CA' ? 'Canada' : PN(GEO);
+  $('#asAt').textContent = `${where} · NOC ${CUR}`;
+  $('#title').textContent = `${t.short} in ${where}`;
+  $('#desc').textContent = ((oo && oo.description) || '').split(/(?<=\.)\s/)[0];
+  kpis();
+  const parts = GEO === 'CA'
+    ? [['outlook', 'Outlook by province', outlookTable()], ['future', 'Outlook to 2035', future()], ['pay', 'Pay', pay()], ['people', 'The workforce', people()], ['compare', 'Compare trades', compare()]]
+    : [['outlook', 'Outlook', outlookTable()], ['pay', 'Pay', pay()], ['people', 'The workforce', people()]];
+  if (GEO === 'ON' && oo) parts.push(['demand', 'Job postings', h('div', { class: 'split' }, postings(oo), growth(oo))], ['where', 'Where in Ontario', where_(oo)], ['skills', 'Skills', skills(oo)], ['path', 'Becoming one', path(oo)]);
+  if (GEO !== 'CA') parts.push(['future', 'Canada to 2035', future()], ['compare', 'Compare trades', compare()]);
+  $('#jump').replaceChildren(...parts.map(([id, l]) => h('a', { href: '#' + id, onclick: e => { e.preventDefault(); document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); } }, l)));
+  $('#main').replaceChildren(...parts.map(p => p[2]));
 }
-function kpis(o) {
-  const w = o.wages.Ontario || [], ys = Object.keys(o.postings), ly = ys.at(-1), py = ys.at(-2);
+function kpis() {
+  const w = W(CUR, GEO), o = OL(CUR, GEO), c = CE(CUR, GEO), co = CO(CUR), all = CE('all', GEO);
+  const k = (v, l, s) => h('div', { class: 'kpi' }, h('span', { class: 'v' }, v), h('span', { class: 'l' }, l), h('span', { class: 's' }, s || ''));
+  const wk = workersOf(CUR, GEO);
   $('#kpis').replaceChildren(
-    h('div', { class: 'kpi' }, h('span', { class: 'v' }, o.workers.Ontario ? fmt(o.workers.Ontario) : '—'), h('span', { class: 'l' }, 'People working in the trade'), h('span', { class: 's' }, 'Ontario')),
-    h('div', { class: 'kpi' }, h('span', { class: 'v' }, o.openings || '—'), h('span', { class: 'l' }, 'Projected job openings'), h('span', { class: 's' }, '2024 to 2028, new jobs plus replacements')),
-    h('div', { class: 'kpi' }, h('span', { class: 'v' }, money(w[1])), h('span', { class: 'l' }, 'Median hourly wage'), h('span', { class: 's' }, w.length ? `Range ${money(w[0])} to ${money(w[2])}` : '')),
-    h('div', { class: 'kpi' }, h('span', { class: 'v' }, o.outlook || '—'), h('span', { class: 'l' }, 'Job outlook, 2025 to 2027'), h('span', { class: 's' }, ly ? `${fmt(o.postings[ly])} job postings in ${ly}` + (py ? ` (${sgn(chg(o.postings[ly], o.postings[py]), 0)})` : '') : '')),
-  );
+    k(wk ? fmt(wk) : '—', 'People working in the trade', GEO === 'CA' ? '2025 estimate, COPS' : (o.workers ? `Job Bank, ${D.meta.outlookPeriod} outlook` : '2021 Census labour force')),
+    k(money(w.median), 'Median hourly wage', w.low ? `Range ${money(w.low)} to ${money(w.high)}` : `Job Bank ${D.meta.wagesYear}`),
+    GEO === 'CA'
+      ? k(co ? fmt(co.openings) : '—', `Job openings, ${D.meta.copsPeriod}`, co ? `vs ${fmt(co.seekers)} job seekers` : '')
+      : k(o.outlook || '—', `Job outlook, ${D.meta.outlookPeriod.replace('-', ' to ')}`, 'Job Bank'),
+    GEO === 'CA'
+      ? k(co ? sc(co.future) : '—', 'Ten-year labour market', co ? `Now: ${co.recent.toLowerCase()}` : '')
+      : k(c && c.unemployment != null ? c.unemployment + '%' : '—', 'Unemployment rate, 2021', all && all.unemployment != null ? `All occupations ${all.unemployment}%` : ''));
 }
-function outlook(o) {
-  const c = card('outlook', 'Outlook · 2025 to 2027', 'Job outlook and workers by region');
-  let reg = 'Ontario';
-  const rows = ['Ontario', ...REG].filter(r => o.outlookByRegion[r] || o.workers[r]);
-  const tb = h('tbody');
-  const txt = h('div', { class: 'trend' });
-  const drawText = () => {
-    const all = o.trend[reg] || [], cut = all.findIndex(p => /^Here are some key facts/i.test(p)), ps = cut > 0 ? all.slice(0, cut) : all;
-    const out = [h('p', { class: 'q' }, reg === 'Ontario' ? 'The ministry’s outlook for Ontario' : `The ministry’s outlook for the ${reg} region`)];
-    let ul = null;
-    for (const p of ps) {
-      if (p.startsWith('• ')) { if (!ul) { ul = h('ul'); out.push(ul); } ul.append(h('li', {}, p.slice(2))); }
-      else { ul = null; out.push(h('p', { class: /\?$|:$/.test(p) ? 'q' : '' }, p)); }
+function outlookTable() {
+  const isCA = GEO === 'CA';
+  const c = card('outlook', isCA ? `Outlook · ${D.meta.outlookPeriod}` : `Outlook · ${D.meta.outlookPeriod} · ${PN(GEO)}`, isCA ? 'Job outlook, workers and pay by province' : 'Job outlook, workers and pay by region');
+  let rows;
+  if (isCA) {
+    rows = PROVS().map(p => [p.code, p.name, OL(CUR, p.code).outlook, workersOf(CUR, p.code), W(CUR, p.code).median, (CE(CUR, p.code) || {}).unemployment]);
+    const good = rows.filter(r => /good/i.test(r[2] || '')).map(r => r[1]);
+    c.ins.append(good.length ? h('strong', {}, `Good or better in ${good.join(', ')}`) : h('strong', {}, 'No province rates the outlook as good'), '. Select a province to see its regions and the reasons behind its rating.');
+  } else {
+    const o = OL(CUR, GEO);
+    rows = [[GEO, PN(GEO), o.outlook, o.workers, W(CUR, GEO).median, null]];
+    const wr = {}; for (const [n, x] of Object.entries(W(CUR, GEO).regions || {})) wr[nk(n)] = x;
+    const names = Object.keys(o.regions || {}), seen = new Set(names.map(nk));
+    for (const n of Object.keys(W(CUR, GEO).regions || {})) if (!seen.has(nk(n))) { names.push(n); seen.add(nk(n)); }
+    rows.push(...names.map(n => [null, n, ((o.regions || {})[n] || {}).outlook, ((o.regions || {})[n] || {}).workers, (wr[nk(n)] || {}).median, null]));
+    c.ins.append(names.length ? `${PN(GEO)} and its ${names.length} economic regions.` : `${PN(GEO)} is a single economic region.`);
+  }
+  const head = isCA ? ['Province or territory', 'Outlook', 'Workers', 'Median wage', 'Unemployment 2021'] : ['Region', 'Outlook', 'Workers', 'Median wage'];
+  const tb = h('tbody', {}, rows.map((r, i) => h('tr', isCA ? { class: 'pick', tabindex: '0', onclick: () => setGeo(r[0]), onkeydown: e => { if (e.key === 'Enter') setGeo(r[0]); } } : { class: i === 0 ? 'cur' : '' },
+    h('th', {}, r[1]), h('td', {}, ol(r[2])), h('td', {}, r[3] ? fmt(r[3]) : '—'), h('td', {}, money(r[4])), isCA ? h('td', {}, r[5] != null ? r[5] + '%' : '—') : null)));
+  c.el.append(h('div', { class: 'body' }, h('div', { class: 'tbl-wrap', style: 'max-height:none' }, h('table', {}, h('thead', {}, h('tr', {}, head.map(x => h('th', {}, x)))), tb))));
+  if (!isCA) {
+    const ps = OL(CUR, GEO).text || [];
+    if (ps.length) {
+      const txt = h('div', { class: 'trend' }, h('p', { class: 'q' }, `Job Bank’s outlook for ${PN(GEO)}`));
+      let ul = null;
+      for (const p of ps) { if (p.startsWith('• ')) { if (!ul) { ul = h('ul'); txt.append(ul); } ul.append(h('li', {}, p.slice(2))); } else { ul = null; txt.append(h('p', { class: /\?$|:$/.test(p) ? 'q' : '' }, p)); } }
+      c.el.append(txt);
     }
-    txt.replaceChildren(...out);
-    tb.querySelectorAll('tr').forEach(tr => tr.setAttribute('aria-selected', String(tr.dataset.r === reg)));
-  };
-  tb.append(...rows.map(r => h('tr', { class: 'pick', 'data-r': r, tabindex: '0', onclick: () => { reg = r; drawText(); }, onkeydown: e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reg = r; drawText(); } } },
-    h('th', {}, r), h('td', {}, ol(o.outlookByRegion[r])), h('td', {}, o.workers[r] ? fmt(o.workers[r]) : '—'), h('td', {}, money((o.wages[r] || [])[1])))));
-  c.ins.append('Select a region to read why the ministry rates it the way it does, along with key facts about the people in this trade there.');
-  c.el.append(h('div', { class: 'body' }, h('div', { class: 'tbl-wrap', style: 'max-height:none' }, h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, 'Region'), h('th', {}, 'Outlook'), h('th', {}, 'Workers'), h('th', {}, 'Median wage'))), tb))), txt,
-    foot(`${SRC}. Outlook ratings and worker counts by economic region; wages from Job Bank.`, () => download(`outlook-${o.noc}.csv`, [['Region', 'Outlook 2025-2027', 'Workers', 'Median hourly wage'], ...rows.map(r => [r, o.outlookByRegion[r] || '', o.workers[r] || '', (o.wages[r] || [])[1] || ''])])));
-  drawText();
+  }
+  c.el.append(foot(`${SRC_JB}: ${D.meta.outlookPeriod} employment outlooks and ${D.meta.wagesYear} wages; unemployment from the 2021 Census.`, () => download(`outlook-${CUR}-${GEO}.csv`, [head, ...rows.map(r => [r[1], r[2] || '', r[3] || '', r[4] || '', ...(isCA ? [r[5] ?? ''] : [])])])));
   return c.el;
 }
+function future() {
+  const co = CO(CUR), all = CO('00000');
+  const c = card('future', `Canada-wide · ${D.meta.copsPeriod} projections`, 'Job openings against job seekers to 2035');
+  if (!co) { c.ins.append('Projections are not available for this trade.'); return c.el; }
+  const ratio = co.openings / co.seekers, aRatio = all ? all.openings / all.seekers : null;
+  c.ins.append(h('strong', {}, `${fmt(co.openings)} openings for ${fmt(co.seekers)} job seekers`), ` across Canada over ${D.meta.copsPeriod}: ${ratio.toFixed(2)} openings per new job seeker` + (aRatio ? `, against ${aRatio.toFixed(2)} for all occupations` : '') + `. ESDC’s assessment: ${co.future.toLowerCase()} over the decade, after ${co.recent.toLowerCase()} in 2023 to 2025.`);
+  const box = h('div', { class: 'chart' }), line = h('div', { class: 'chart' });
+  const comps = [['New jobs (growth)', co.growth, '--s1', 0], ['Retirements', co.retirements, '--s2', 0], ['Other replacement', co.otherReplacement, '--s5', 0],
+    ['School leavers', co.schoolLeavers, '--s3', 1], ['New immigrants', co.immigrants, '--s4', 1], ['Other job seekers', co.otherSeekers, '--s7', 1]];
+  c.el.append(legend(comps.map(([n, , v]) => [n, css(v)])), h('div', { class: 'split' }, box, line),
+    foot(`Employment and Social Development Canada, Canadian Occupational Projection System (COPS), ${D.meta.copsPeriod}. Canada-wide; COPS has no provincial figures.`, () => download(`cops-${CUR}.csv`, [['Component', 'Count'], ...comps.map(([n, v]) => [n, v]), ['Total job openings', co.openings], ['Total job seekers', co.seekers], ['Recent conditions', co.recent], ['Projected conditions', co.future], ...Object.entries(co.path || {}).map(([y, v]) => ['Employment ' + y, v])])));
+  requestAnimationFrame(() => {
+    chart('cops', box, { type: 'bar', stacked: true, label: 'Job openings and job seekers', options: { indexAxis: 'y' }, tip: x => `${x.dataset.label}: ${fmt(x.parsed.x)}`,
+      x: { stacked: true, grid: { color: css('--line-soft') }, ticks: { color: css('--ink-2'), callback: v => big(v) } }, y: { stacked: true, grid: { display: false }, beginAtZero: false, ticks: { color: css('--ink-2'), callback: function (v) { return this.getLabelForValue(v); } } },
+      data: { labels: ['Job openings', 'Job seekers'], datasets: comps.map(([n, v, col, row]) => ({ label: n, data: row ? [null, v] : [v, null], backgroundColor: css(col) })) } });
+    const ys = Object.keys(co.path || {});
+    chart('copspath', line, { type: 'line', label: 'Projected employment', ytick: v => fmt(v), y: { beginAtZero: false }, tip: x => `Employment ${x.label}: ${fmt(x.parsed.y)}`,
+      data: { labels: ys, datasets: [{ label: 'Employment', data: ys.map(y => co.path[y]), borderColor: css('--s2'), backgroundColor: css('--s2'), borderWidth: 3, pointRadius: 2, tension: .25 }] } });
+  });
+  return c.el;
+}
+function rangeChart(id, box, rows) {
+  requestAnimationFrame(() => chart(id, box, { type: 'bar', label: 'Hourly wages', options: { indexAxis: 'y', interaction: { mode: 'nearest', axis: 'y', intersect: false } },
+    tip: x => x.dataset.type === 'scatter' ? `Median: ${money(x.parsed.x)}` : `Low ${money(x.raw[0])} · high ${money(x.raw[1])}`,
+    x: { min: Math.max(0, Math.floor((Math.min(...rows.map(r => r[1] || r[2])) - 2) / 5) * 5), grid: { color: css('--line-soft') }, ticks: { color: css('--ink-2'), callback: v => '$' + v } },
+    y: { grid: { display: false }, beginAtZero: false, ticks: { color: css('--ink-2'), autoSkip: false, callback: function (v) { return this.getLabelForValue(v); } } },
+    data: { labels: rows.map(r => r[0]), datasets: [
+      { type: 'scatter', label: 'Median', data: rows.map(r => ({ x: r[2], y: r[0] })), backgroundColor: css('--s2'), pointRadius: 5 },
+      { label: 'Range', data: rows.map(r => r[1] && r[3] ? [r[1], r[3]] : null), backgroundColor: css('--s1') + '55', borderColor: css('--s1'), borderWidth: 1, barPercentage: .6 }] } }));
+}
+function pay() {
+  const isCA = GEO === 'CA', w = W(CUR, GEO);
+  const c = card('pay', `Pay · Job Bank ${D.meta.wagesYear}`, isCA ? 'Hourly wages by province' : `Hourly wages in ${PN(GEO)} by region`);
+  let rows = isCA ? [['Canada', w.low, w.median, w.high], ...PROVS().map(p => { const x = W(CUR, p.code); return [p.name, x.low, x.median, x.high]; })]
+    : [[PN(GEO), w.low, w.median, w.high], ...Object.entries(w.regions || {}).map(([n, x]) => [n, x.low, x.median, x.high])];
+  rows = rows.filter(r => r[2]);
+  if (!rows.length) { c.ins.append('Job Bank does not publish a reliable wage for this trade here.'); return c.el; }
+  const others = rows.slice(1).sort((a, b) => b[2] - a[2]);
+  c.ins.append(h('strong', {}, `Median ${money(rows[0][2])} an hour in ${rows[0][0]}`), others.length ? `; highest in ${others[0][0]} at ${money(others[0][2])}, lowest in ${others.at(-1)[0]} at ${money(others.at(-1)[2])}.` : '.', ' Bars run from the low to the high wage; the dot is the median.');
+  const box = h('div', { class: 'chart' + (rows.length > 8 ? ' tall' : '') });
+  c.el.append(legend([['Low to high', css('--s1') + '55'], ['Median', css('--s2')]]), box, foot(`${SRC_JB}, wages by occupation, ${D.meta.wagesYear}.`, () => download(`wages-${CUR}-${GEO}.csv`, [['Area', 'Low', 'Median', 'High'], ...rows])));
+  rangeChart('pay', box, rows);
+  return c.el;
+}
+function people() {
+  const c0 = CE(CUR, GEO), all = CE('all', GEO), where = GEO === 'CA' ? 'Canada' : PN(GEO);
+  const c = card('people', `The workforce · 2021 Census · ${where}`, 'Who works in the trade');
+  if (!c0) { c.ins.append('The Census does not publish figures for this trade here.'); return c.el; }
+  const old = c0.ages.filter(([l]) => /55|65/.test(l)).reduce((s, [, v]) => s + v, 0), aOld = all ? all.ages.filter(([l]) => /55|65/.test(l)).reduce((s, [, v]) => s + v, 0) : null;
+  c.ins.append(h('strong', {}, `${old.toFixed(0)}% are 55 or older`), aOld != null ? ` (all occupations ${aOld.toFixed(0)}%).` : '.', ' Retirements drive most future openings.');
+  const fact = (v, l) => h('div', { class: 'fact' }, h('b', {}, v), h('span', {}, l));
+  const appr = (c0.education.find(([l]) => /Apprentice/.test(l)) || [])[1], aAppr = all ? (all.education.find(([l]) => /Apprentice/.test(l)) || [])[1] : null;
+  c.el.append(h('div', { class: 'facts' },
+    fact(fmt(c0.labourForce), 'In the labour force (working or looking)'),
+    fact(c0.women != null ? c0.women + '%' : '—', `Women (all occupations ${all ? all.women + '%' : '—'})`),
+    fact(c0.unemployment != null ? c0.unemployment + '%' : '—', `Unemployment rate (all ${all && all.unemployment != null ? all.unemployment + '%' : '—'})`),
+    fact(c0.selfEmployed != null ? c0.selfEmployed + '%' : '—', `Self-employed (all ${all && all.selfEmployed != null ? all.selfEmployed + '%' : '—'})`),
+    fact(old.toFixed(0) + '%', 'Aged 55 or older'),
+    fact(appr != null ? appr + '%' : '—', `Apprenticeship or trades certificate (all ${aAppr != null ? aAppr + '%' : '—'})`)));
+  const a = h('div', { class: 'chart' }), e = h('div', { class: 'chart' });
+  c.el.append(legend([['This trade', css('--s1')], ['All occupations', css('--muted-bar')]]), h('div', { class: 'split' }, a, e),
+    foot('Statistics Canada, 2021 Census, tables 98-10-0449-01 and 98-10-0593-01. Labour force: people working or looking for work.', () => download(`workforce-${CUR}-${GEO}.csv`, [['Group', 'This trade (%)', 'All occupations (%)'], ...c0.ages.map(([l, v], i) => ['Age ' + l, v, all ? all.ages[i][1] : '']), ...c0.education.map(([l, v], i) => [l, v, all ? all.education[i][1] : ''])])));
+  requestAnimationFrame(() => {
+    chart('ages', a, { type: 'bar', label: 'Age', tip: x => `${x.dataset.label}: ${x.parsed.y}%`, ytick: v => v + '%', data: { labels: c0.ages.map(([l]) => l), datasets: [{ label: 'This trade', data: c0.ages.map(([, v]) => v), backgroundColor: css('--s1') }, ...(all ? [{ label: 'All occupations', data: all.ages.map(([, v]) => v), backgroundColor: css('--muted-bar') }] : [])] } });
+    chart('edu', e, { type: 'bar', label: 'Education', options: { indexAxis: 'y' }, tip: x => `${x.dataset.label}: ${x.parsed.x}%`, x: { grid: { color: css('--line-soft') }, ticks: { color: css('--ink-2'), callback: v => v + '%' } },
+      y: { grid: { display: false }, beginAtZero: false, ticks: { color: css('--ink-2'), autoSkip: false, callback: function (v) { return this.getLabelForValue(v); } } },
+      data: { labels: c0.education.map(([l]) => l), datasets: [{ label: 'This trade', data: c0.education.map(([, v]) => v), backgroundColor: css('--s1') }, ...(all ? [{ label: 'All occupations', data: all.education.map(([, v]) => v), backgroundColor: css('--muted-bar') }] : [])] } });
+  });
+  return c.el;
+}
+function compare() {
+  const where = GEO === 'CA' ? 'Canada' : PN(GEO);
+  const c = card('compare', `Compare · ${where}`, 'The trades side by side');
+  c.ins.append('Select a row to switch the page to that trade. *Canada-wide, from COPS.');
+  const rows = D.trades.map(t => { const co = CO(t.noc) || {}, ce = CE(t.noc, GEO) || {}; return [t, workersOf(t.noc, GEO), W(t.noc, GEO).median, GEO === 'CA' ? co.future : OL(t.noc, GEO).outlook, ce.unemployment, ce.labourForce ? (ce.ages || []).filter(([l]) => /55|65/.test(l)).reduce((s, [, v]) => s + v, 0) : null, co.openings, co.seekers]; });
+  const head = ['Trade', 'Workers', 'Median wage', GEO === 'CA' ? 'Ten-year outlook' : `Outlook ${D.meta.outlookPeriod}`, 'Jobless 2021', 'Aged 55+', 'Openings to 2035*', 'Job seekers to 2035*'];
+  c.el.append(h('div', { class: 'body' }, h('div', { class: 'tbl-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, head.map(x => h('th', {}, x)))),
+    h('tbody', {}, rows.map(r => h('tr', { class: 'pick' + (r[0].noc === CUR ? ' cur' : ''), tabindex: '0', onclick: () => { CUR = r[0].noc; nav(); scrollTo({ top: 0, behavior: 'smooth' }); } },
+      h('th', {}, r[0].short, h('span', { class: 'code' }, r[0].noc)), h('td', {}, r[1] ? fmt(r[1]) : '—'), h('td', {}, money(r[2])), h('td', {}, GEO === 'CA' ? (sc(r[3]) || '—') : ol(r[3])),
+      h('td', {}, r[4] != null ? r[4] + '%' : '—'), h('td', {}, r[5] != null ? r[5].toFixed(0) + '%' : '—'), h('td', {}, r[6] ? fmt(r[6]) : '—'), h('td', {}, r[7] ? fmt(r[7]) : '—'))))))),
+    foot(`${SRC_JB}; COPS; 2021 Census.`, () => download(`auto-care-trades-${GEO}.csv`, [['NOC', ...head], ...rows.map(r => [r[0].noc, r[0].short, r[1] || '', r[2] || '', r[3] || '', r[4] ?? '', r[5] != null ? r[5].toFixed(1) : '', r[6] || '', r[7] || ''])])));
+  return c.el;
+}
+/* ---------- Ontario-only sections (Government of Ontario job profiles) ---------- */
+const SRC = 'Government of Ontario, labour market information job profiles';
+const REG = ['Toronto', 'Kitchener–Waterloo–Barrie', 'Hamilton–Niagara Peninsula', 'Ottawa', 'London', 'Windsor–Sarnia', 'Northeast', 'Stratford–Bruce Peninsula', 'Kingston–Pembroke', 'Muskoka–Kawarthas', 'Northwest'];
 function postings(o) {
-  const c = card('demand', 'Hiring demand · online job postings', 'Job postings each year');
+  const c = card('demand', 'Ontario · online job postings', 'Job postings each year');
   const ys = Object.keys(o.postings), vs = ys.map(y => o.postings[y]);
   const peak = ys[vs.indexOf(Math.max(...vs))];
   c.ins.append(h('strong', {}, `${fmt(vs.at(-1))} postings in ${ys.at(-1)}`), `, ${sgn(chg(vs.at(-1), o.postings[peak]), 0)} from the ${peak} peak of ${fmt(o.postings[peak])}.`);
@@ -321,7 +451,7 @@ function postings(o) {
   return c.el;
 }
 function growth(o) {
-  const c = card('growth', 'Employment change · since 2016', 'Employment compared with 2016');
+  const c = card('growth', 'Ontario · employment change since 2016', 'Employment compared with 2016');
   const g = o.growth, ys = Object.keys(g.occupation);
   const last = ys.at(-1);
   c.ins.append(h('strong', {}, `${g.occupation[last] > 0 ? '+' : ''}${g.occupation[last]}% in ${last}`), ` for this trade, against ${g.all[last] > 0 ? '+' : ''}${g.all[last] ?? '—'}% for all Ontario occupations. Small-sample survey data: read the trend, not single years.`);
@@ -332,23 +462,7 @@ function growth(o) {
     data: { labels: ys, datasets: sets.map(([n, s, v]) => ({ label: n, data: ys.map(y => s[y] ?? null), borderColor: css(v), backgroundColor: css(v), borderWidth: n === 'This trade' ? 3 : 2, pointRadius: 2, tension: .25 })) } }));
   return c.el;
 }
-function pay(o) {
-  const c = card('pay', 'Pay · hourly wages', 'Hourly wages by region');
-  const regs = ['Ontario', 'Canada', ...REG].filter(r => (o.wages[r] || [])[1]);
-  const on = o.wages.Ontario || [];
-  const top = REG.filter(r => (o.wages[r] || [])[1]).sort((a, b) => o.wages[b][1] - o.wages[a][1])[0];
-  c.ins.append(h('strong', {}, `Median ${money(on[1])} an hour in Ontario`), top ? `; highest in ${top} at ${money(o.wages[top][1])}. Bars run from the low to the high wage; the dot is the median.` : '.');
-  const box = h('div', { class: 'chart tall' });
-  c.el.append(legend([['Low to high', css('--s1') + '55'], ['Median', css('--s2')]]), box, foot(`${SRC}; wages from Job Bank.`, () => download(`wages-${o.noc}.csv`, [['Region', 'Low', 'Median', 'High'], ...regs.map(r => [r, ...o.wages[r]])])));
-  requestAnimationFrame(() => chart('pay', box, { type: 'bar', label: 'Hourly wages by region', options: { indexAxis: 'y', interaction: { mode: 'nearest', axis: 'y', intersect: false } },
-    tip: x => x.dataset.type === 'scatter' ? `Median: ${money(x.parsed.x)}` : `Low ${money(x.raw[0])} · high ${money(x.raw[1])}`,
-    x: { min: Math.max(0, Math.floor((Math.min(...regs.map(r => o.wages[r][0] || o.wages[r][1])) - 2) / 5) * 5), grid: { color: css('--line-soft') }, ticks: { color: css('--ink-2'), callback: v => '$' + v } }, y: { grid: { display: false }, beginAtZero: false, ticks: { color: css('--ink-2'), autoSkip: false, callback: function (v) { return this.getLabelForValue(v); } } },
-    data: { labels: regs, datasets: [
-      { type: 'scatter', label: 'Median', data: regs.map(r => ({ x: o.wages[r][1], y: r })), backgroundColor: css('--s2'), pointRadius: 5, yAxisID: 'y' },
-      { label: 'Range', data: regs.map(r => [o.wages[r][0], o.wages[r][2]]), backgroundColor: css('--s1') + '55', borderColor: css('--s1'), borderWidth: 1, barPercentage: .6 }] } }));
-  return c.el;
-}
-function where(o) {
+function where_(o) {
   const c = card('where', 'Where they work · share of Ontario workers', 'Where the trade’s workers are, compared with all workers');
   const regs = REG.filter(r => o.share[r] != null);
   const over = regs.filter(r => o.share[r] > (o.shareAll[r] || 0)).sort((a, b) => (o.share[b] - o.shareAll[b]) - (o.share[a] - o.shareAll[a]));
@@ -360,31 +474,8 @@ function where(o) {
     data: { labels: regs, datasets: [{ label: 'This trade', data: regs.map(r => o.share[r]), backgroundColor: css('--s2') }, { label: 'All occupations', data: regs.map(r => o.shareAll[r] ?? null), backgroundColor: css('--muted-bar') }] } }));
   return c.el;
 }
-function people(o) {
-  const c = card('people', 'The workforce · 2021 Census', 'Who works in the trade');
-  const old = o.ages.filter(([l]) => /55|65|75/.test(l)).reduce((s, [, v]) => s + v, 0);
-  c.ins.append(h('strong', {}, `${old}% are 55 or older`), ' and will retire over the next decade or so, which is where most future openings come from.');
-  const fact = (v, l) => h('div', { class: 'fact' }, h('b', {}, v), h('span', {}, l));
-  c.el.append(h('div', { class: 'facts' },
-    fact(o.men != null ? `${o.men}% / ${o.women}%` : '—', 'Men / women'),
-    fact(o.unemployment != null ? o.unemployment + '%' : '—', 'Unemployment rate, 2021'),
-    fact(o.selfEmployed != null ? o.selfEmployed + '%' : '—', `Self-employed (all occupations ${o.allSelfEmployed ?? '—'}%)`),
-    fact(o.fullTime != null ? o.fullTime + '%' : '—', `Work full time (all occupations ${o.allFullTime ?? '—'}%)`),
-    fact(old + '%', 'Aged 55 or older'),
-    fact(((o.education.find(([l]) => /apprentice/i.test(l)) || [])[1] ?? '—') + '%', 'Hold an apprenticeship or trades certificate')));
-  const a = h('div', { class: 'chart' }), e = h('div', { class: 'chart' });
-  c.el.append(h('div', { class: 'split' }, a, e), foot(`${SRC}; Statistics Canada 2021 Census.`, () => download(`workforce-${o.noc}.csv`, [['Group', 'Share (%)'], ...o.ages.map(([l, v]) => ['Age ' + l, v]), ...o.education.map(([l, v]) => [l, v])])));
-  const short = l => l.replace('Secondary (high) school diploma or equivalency certificate', 'High school').replace('Apprenticeship or trades certificate or diploma', 'Apprenticeship or trades').replace('College, CEGEP or other non-university certificate or diploma', 'College').replace('No certificate, diploma or degree', 'No certificate').replace("Bachelor's degree", 'Bachelor’s');
-  requestAnimationFrame(() => {
-    chart('ages', a, { type: 'bar', label: 'Age of workers', tip: x => `${x.label}: ${x.parsed.y}%`, ytick: v => v + '%', data: { labels: o.ages.map(([l]) => l.replace(' years', '').replace(' and over', '+')), datasets: [{ label: 'Workers', data: o.ages.map(([, v]) => v), backgroundColor: css('--s1') }] } });
-    const ed = o.education.filter(([, v]) => v >= 1);
-    chart('edu', e, { type: 'bar', label: 'Education of workers', options: { indexAxis: 'y' }, tip: x => `${x.label}: ${x.parsed.x}%`, x: { grid: { color: css('--line-soft') }, ticks: { color: css('--ink-2'), callback: v => v + '%' } }, y: { grid: { display: false }, beginAtZero: false, ticks: { color: css('--ink-2'), autoSkip: false, callback: function (v) { return this.getLabelForValue(v); } } },
-      data: { labels: ed.map(([l]) => short(l)), datasets: [{ label: 'Workers', data: ed.map(([, v]) => v), backgroundColor: css('--s3') }] } });
-  });
-  return c.el;
-}
 function skills(o) {
-  const c = card('skills', 'Skills · from online job postings', 'What employers ask for');
+  const c = card('skills', 'Ontario · skills from online job postings', 'What employers ask for');
   c.ins.append('The skills mentioned most often in Ontario job postings for this trade, and the industries its workers are in.');
   const li = arr => h('ol', {}, arr.map(([n, k]) => h('li', {}, n, k ? h('span', { class: 'code' }, fmt(k) + ' postings') : null)));
   c.el.append(h('div', { class: 'list' },
@@ -395,7 +486,7 @@ function skills(o) {
   return c.el;
 }
 function path(o) {
-  const c = card('path', 'Becoming one · skilled trades', 'Trades, certification and requirements');
+  const c = card('path', 'Ontario · skilled trades', 'Trades, certification and requirements');
   const comp = o.apprenticeships.filter(a => a.mandatory).length;
   c.ins.append(comp ? h('strong', {}, `${comp} compulsory ${comp === 1 ? 'trade' : 'trades'} in Ontario`) : 'No compulsory trades in Ontario', comp ? ': you need a certificate of qualification to work in them.' : '.');
   c.el.append(h('div', { class: 'trades' }, o.apprenticeships.map(a => h('div', { class: 'trade' },
@@ -404,19 +495,6 @@ function path(o) {
     o.requirements.length ? h('div', { class: 'trend' }, h('p', { class: 'q' }, 'Employment requirements'), h('ul', {}, o.requirements.map(r => h('li', {}, r)))) : null,
     o.titles.length ? h('p', { class: 'aka' }, h('b', {}, 'Also called: '), o.titles.slice(0, 18).join(', ') + (o.titles.length > 18 ? '…' : '')) : null,
     h('div', { class: 'foot' }, h('span', { class: 'src' }, `${SRC}; trades from Skilled Trades Ontario.`), h('span', {}, h('a', { class: 'act', href: o.url, target: '_blank', rel: 'noopener' }, 'Full profile on ontario.ca ↗'), ' ', o.jobBank ? h('a', { class: 'act', href: o.jobBank, target: '_blank', rel: 'noopener' }, 'Job postings on Job Bank ↗') : null)));
-  return c.el;
-}
-function compare() {
-  const c = card('compare', 'Compare · auto care trades', 'The trades side by side');
-  c.ins.append('Select a row to switch the page to that trade.');
-  const ly = o => Object.keys(o.postings).at(-1);
-  const rows = D.occupations.map(o => h('tr', { class: 'pick' + (o.noc === CUR ? ' cur' : ''), tabindex: '0', onclick: () => { $('#pick').value = o.noc; $('#pick').dispatchEvent(new Event('change')); scrollTo({ top: 0, behavior: 'smooth' }); } },
-    h('th', {}, o.short, h('span', { class: 'code' }, o.noc)), h('td', {}, o.workers.Ontario ? fmt(o.workers.Ontario) : '—'), h('td', {}, o.openings || '—'),
-    h('td', {}, o.workers.Ontario && openNum(o.openings) ? pct(openNum(o.openings) / o.workers.Ontario, 0) : '—'),
-    h('td', {}, money((o.wages.Ontario || [])[1])), h('td', {}, ol(o.outlook)), h('td', {}, ly(o) ? fmt(o.postings[ly(o)]) : '—'), h('td', {}, o.unemployment != null ? o.unemployment + '%' : '—')));
-  c.el.append(h('div', { class: 'body' }, h('div', { class: 'tbl-wrap' }, h('table', {}, h('thead', {}, h('tr', {}, ['Trade', 'Workers', 'Openings 2024–28', 'Openings vs workers', 'Median wage', 'Outlook', 'Postings (latest year)', 'Unemployment 2021'].map(t => h('th', {}, t)))), h('tbody', {}, rows)))),
-    foot(SRC + '.', () => download('auto-care-trades-ontario.csv', [['NOC', 'Trade', 'Workers', 'Projected openings 2024-2028', 'Median hourly wage', 'Outlook 2025-2027', 'Latest annual postings', 'Unemployment rate 2021 (%)'],
-      ...D.occupations.map(o => [o.noc, o.title, o.workers.Ontario || '', o.openings || '', (o.wages.Ontario || [])[1] || '', o.outlook, o.postings[ly(o)] || '', o.unemployment ?? ''])])));
   return c.el;
 }
 boot().catch(e => { console.error(e); $('#main').replaceChildren(h('p', { class: 'loading' }, 'The data could not be loaded. Try again shortly.')); });

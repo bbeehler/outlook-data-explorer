@@ -99,7 +99,7 @@ function render() {
     railButton({ ...TOPICS.find(t => t.id === 'macro'), name: 'Economic indicators' }, 'pub', DS.filter(d => d.topic === 'macro').length),
     CITIES ? railButton(TOPICS.find(t => t.id === 'cities'), 'pub') : null,
     h('a', { class: 'raillink pub', href: 'provinces/' }, h('span', {}, 'Vehicles by province'), h('span', { class: 'count' }, 'Opens page \u2197')),
-    h('a', { class: 'raillink pub', href: 'jobs/' }, h('span', {}, 'Auto care jobs in Ontario'), h('span', { class: 'count' }, 'Opens page \u2197')));
+    h('a', { class: 'raillink pub', href: 'jobs/' }, h('span', {}, 'Auto care jobs'), h('span', { class: 'count' }, 'Opens page \u2197')));
   rail.replaceChildren(railButton({ ...TOPICS[0], name: 'Research Hub home' }), h('div', { class: 'ours' }, ours), pub);
   renderProfile();
   const main = $('#main');
@@ -188,7 +188,7 @@ function renderHome(main) {
       pcard(`Statistics Canada and Bank of Canada${ECON && ECON.built ? ' \u00b7 updated ' + fmtDay(ECON.built) : ''}`, 'Economic indicators', 'Prices, vehicle sales, jobs, wages and interest rates that shape demand for repair and parts.', () => go('macro')),
       CITIES ? pcard('Statistics Canada', 'Cities', 'Population, jobs, income, commuting and EV adoption for every metro area.', () => go('cities')) : null,
       pcard('Statistics Canada and provincial governments', 'Vehicles by province \u2197', 'Vehicles on the road and new registrations in every province and territory, with makes and models for Ontario and Quebec.', null, 'provinces/'),
-      pcard('Government of Ontario', 'Auto care jobs in Ontario \u2197', 'Workers, projected job openings, wages and outlook by region for collision, automotive service and parts installer trades.', null, 'jobs/'))));
+      pcard('Job Bank, COPS and the 2021 Census', 'Auto care jobs \u2197', 'Workers, wages, job outlooks and projections to 2035 for collision, automotive service and parts installer trades, in every province and territory.', null, 'jobs/'))));
   const tiles = kpiTiles();
   if (tiles) main.append(h('h2', { class: 'sec-h' }, 'At a glance'), tiles);
   if (SAMPLE) {
