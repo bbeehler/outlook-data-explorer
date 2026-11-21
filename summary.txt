@@ -1,0 +1,370 @@
+## COPS summary 114230 bytes 540 lines
+  NOC2021_CNP2021,Occupation_Name,Nom_de_la_profession,Employment_emploi_2025,Employment_Growth_Croissance_emploi,Retirements_retraites,Other_Replacement_Autres_remplacements,Total_Job_Openings_Ouvertures_emploi,School_Leavers_Sortants_systeme_scolaires,Imm_26_35,Others_26_35,Total_Job_Seekers_Chercheurs_emploi,Recent_Labour_Market_Conditions,Conditions_r�centes_sur_le_march�_du_travail,Future_Labour_Market_Conditions,Conditions_futures_sur_le_march�_du_travail
+  00000,All Occupations,Toutes les professions,21028700,1743000,4358200,1345100,7446400,5704900,2086500,-632700,7158700,N/A,N/D,N/A,N/D
+  TEER_0,TEER 0: Management occupations,F�ER 0: Professions en gestion,2043900,143000,598700,145400,887100,76800,160100,595300,832200,N/A,N/D,N/A,N/D
+  72401,Heavy-duty equipment mechanics,M�caniciens/m�caniciennes d'�quipement lourd,74700,11800,12600,4300,28700,28800,3000,-9500,22300,Strong signs of Shortage,Signes importants de p�nurie,Strong risk of Shortage,Risque important de p�nurie
+  72410,"Automotive service technicians, truck and bus mechanics and mechanical repairers","M�caniciens/m�caniciennes et r�parateurs/r�paratrices de v�hicules automobiles, de camions et d'autobus",141000,7800,24800,8200,40900,51100,9200,-32200,28000,Strong signs of Shortage,Signes importants de p�nurie,Strong risk of Shortage,Risque important de p�nurie
+  72411,"Auto body collision, refinishing and glass technicians and damage repair estimators","Techniciens/techniciennes en collision, en carrosserie, en peinture et en glace de v�hicule automobile et estimateurs/estimatrices de dommages",31600,2500,7400,2100,12000,7000,1600,-500,8100,Strong signs of Shortage,Signes importants de p�nurie,Strong risk of Shortage,Risque important de p�nurie
+  74203,Automotive and heavy truck and equipment parts installers and servicers,Pr�pos�s/pr�pos�es � la pose et � l'entretien des pi�ces m�caniques d'automobiles et de camions et �quipements lourds,16000,600,1700,800,3100,6000,1100,-6200,900,Balance,� l'�quilibre,Balance,� l'�quilibre
+  72410,"Automotive service technicians, truck and bus mechanics and mechanical repairers","M�caniciens/m�caniciennes et r�parateurs/r�paratrices de v�hicules automobiles, de camions et d'autobus",141000,7800,24800,8200,40900,51100,9200,-32200,28000,Strong signs of Shortage,Signes importants de p�nuri
+  72411,"Auto body collision, refinishing and glass technicians and damage repair estimators","Techniciens/techniciennes en collision, en carrosserie, en peinture et en glace de v�hicule automobile et estimateurs/estimatrices de dommages",31600,2500,7400,2100,12000,7000,1600,-500,8100,Strong signs of 
+  74203,Automotive and heavy truck and equipment parts installers and servicers,Pr�pos�s/pr�pos�es � la pose et � l'entretien des pi�ces m�caniques d'automobiles et de camions et �quipements lourds,16000,600,1700,800,3100,6000,1100,-6200,900,Balance,� l'�quilibre,Balance,� l'�quilibre
+## COPS flmc 76058 bytes 540 lines
+  NOC2021_CNP2021,Occupation_Name,Nom_de_la_profession,Future_Labour_Market_Conditions,Conditions_futures_sur_le_march�_du_travail
+  00000,All Occupations,Toutes les professions,N/A,N/D
+  TEER_0,TEER 0: Management occupations,F�ER 0: Professions en gestion,N/A,N/D
+  72401,Heavy-duty equipment mechanics,M�caniciens/m�caniciennes d'�quipement lourd,Strong risk of Shortage,Risque important de p�nurie
+  72410,"Automotive service technicians, truck and bus mechanics and mechanical repairers","M�caniciens/m�caniciennes et r�parateurs/r�paratrices de v�hicules automobiles, de camions et d'autobus",Strong risk of Shortage,Risque important de p�nurie
+  72411,"Auto body collision, refinishing and glass technicians and damage repair estimators","Techniciens/techniciennes en collision, en carrosserie, en peinture et en glace de v�hicule automobile et estimateurs/estimatrices de dommages",Strong risk of Shortage,Risque important de p�nurie
+  74203,Automotive and heavy truck and equipment parts installers and servicers,Pr�pos�s/pr�pos�es � la pose et � l'entretien des pi�ces m�caniques d'automobiles et de camions et �quipements lourds,Balance,� l'�quilibre
+  72410,"Automotive service technicians, truck and bus mechanics and mechanical repairers","M�caniciens/m�caniciennes et r�parateurs/r�paratrices de v�hicules automobiles, de camions et d'autobus",Strong risk of Shortage,Risque important de p�nurie
+  72411,"Auto body collision, refinishing and glass technicians and damage repair estimators","Techniciens/techniciennes en collision, en carrosserie, en peinture et en glace de v�hicule automobile et estimateurs/estimatrices de dommages",Strong risk of Shortage,Risque important de p�nurie
+  74203,Automotive and heavy truck and equipment parts installers and servicers,Pr�pos�s/pr�pos�es � la pose et � l'entretien des pi�ces m�caniques d'automobiles et de camions et �quipements lourds,Balance,� l'�quilibre
+## COPS rlmc 75681 bytes 540 lines
+  NOC2021_CNP2021,Occupation_Name,Nom_de_la_profession,Recent_Labour_Market_Conditions,Conditions_r�centes_sur_le_march�_du_travail
+  00000,All Occupations,Toutes les professions,N/A,N/D
+  TEER_0,TEER 0: Management occupations,F�ER 0: Professions en gestion,N/A,N/D
+  72401,Heavy-duty equipment mechanics,M�caniciens/m�caniciennes d'�quipement lourd,Strong signs of Shortage,Signes importants de p�nurie
+  72410,"Automotive service technicians, truck and bus mechanics and mechanical repairers","M�caniciens/m�caniciennes et r�parateurs/r�paratrices de v�hicules automobiles, de camions et d'autobus",Strong signs of Shortage,Signes importants de p�nurie
+  72411,"Auto body collision, refinishing and glass technicians and damage repair estimators","Techniciens/techniciennes en collision, en carrosserie, en peinture et en glace de v�hicule automobile et estimateurs/estimatrices de dommages",Strong signs of Shortage,Signes importants de p�nurie
+  74203,Automotive and heavy truck and equipment parts installers and servicers,Pr�pos�s/pr�pos�es � la pose et � l'entretien des pi�ces m�caniques d'automobiles et de camions et �quipements lourds,Balance,� l'�quilibre
+  72410,"Automotive service technicians, truck and bus mechanics and mechanical repairers","M�caniciens/m�caniciennes et r�parateurs/r�paratrices de v�hicules automobiles, de camions et d'autobus",Strong signs of Shortage,Signes importants de p�nurie
+  72411,"Auto body collision, refinishing and glass technicians and damage repair estimators","Techniciens/techniciennes en collision, en carrosserie, en peinture et en glace de v�hicule automobile et estimateurs/estimatrices de dommages",Strong signs of Shortage,Signes importants de p�nurie
+  74203,Automotive and heavy truck and equipment parts installers and servicers,Pr�pos�s/pr�pos�es � la pose et � l'entretien des pi�ces m�caniques d'automobiles et de camions et �quipements lourds,Balance,� l'�quilibre
+## COPS employment 95981 bytes 540 lines
+  NOC2021_CNP2021,Occupation_Name,Nom_de_la_profession,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035
+  00000,All Occupations,Toutes les professions,21028700,21083400,21178100,21379300,21620200,21828100,22022900,22215800,22405500,22591800,22771700
+  TEER_0,TEER 0: Management occupations,F�ER 0: Professions en gestion,2043900,2045400,2052800,2068500,2089100,2106400,2122600,2138900,2154900,2171000,2186900
+  TEER_5,TEER 5: Occupations usually require short-term work demonstration and no formal education,F�ER 5: Une formation en cours d'emploi et aucune exigence scolaire particuli�re caract�risent habituellement les professions,2688300,2697200,2706500,2724100,2745300,2765300,2784300,2803000,2820700,2836700,2851200
+  72401,Heavy-duty equipment mechanics,M�caniciens/m�caniciennes d'�quipement lourd,74700,75700,76700,78100,79600,81000,82400,83600,84700,85700,86500
+  72410,"Automotive service technicians, truck and bus mechanics and mechanical repairers","M�caniciens/m�caniciennes et r�parateurs/r�paratrices de v�hicules automobiles, de camions et d'autobus",141000,139700,140600,142200,143700,145000,146100,147100,147900,148500,148800
+  72411,"Auto body collision, refinishing and glass technicians and damage repair estimators","Techniciens/techniciennes en collision, en carrosserie, en peinture et en glace de v�hicule automobile et estimateurs/estimatrices de dommages",31600,31400,31700,32300,32800,33100,33400,33700,33900,34000,34100
+  74203,Automotive and heavy truck and equipment parts installers and servicers,Pr�pos�s/pr�pos�es � la pose et � l'entretien des pi�ces m�caniques d'automobiles et de camions et �quipements lourds,16000,15900,16000,16100,16200,16300,16400,16500,16500,16600,16600
+  TEER_5,TEER 5: Occupations usually require short-term work demonstration and no formal education,F�ER 5: Une formation en cours d'emploi et aucune exigence scolaire particuli�re caract�risent habituellement les professions,2688300,2697200,2706500,2724100,2745300,2765300,2784300,2803000,2820700,28367
+  72410,"Automotive service technicians, truck and bus mechanics and mechanical repairers","M�caniciens/m�caniciennes et r�parateurs/r�paratrices de v�hicules automobiles, de camions et d'autobus",141000,139700,140600,142200,143700,145000,146100,147100,147900,148500,148800
+  72411,"Auto body collision, refinishing and glass technicians and damage repair estimators","Techniciens/techniciennes en collision, en carrosserie, en peinture et en glace de v�hicule automobile et estimateurs/estimatrices de dommages",31600,31400,31700,32300,32800,33100,33400,33700,33900,34000,341
+  74203,Automotive and heavy truck and equipment parts installers and servicers,Pr�pos�s/pr�pos�es � la pose et � l'entretien des pi�ces m�caniques d'automobiles et de camions et �quipements lourds,16000,15900,16000,16100,16200,16300,16400,16500,16500,16600,16600
+## COPS structure 22546 bytes 221 lines
+  ****************************
+  English follows the French
+  ****************************
+  
+  Français
+  ******************
+  Les fichiers
+  ******************
+  Chaque fichier contient les résultats de l'une des composantes de l'offre ou de la demande de main-d'oeuvre du SPPC au niveau national et par profession pour la période 2025 à 2035.
+  Les données débutent en 2025, puis suivent les résultats de la projection pour les années 2026 à 2035.
+  
+  Les fichiers sont les suivants:
+  1. Employment_emploi_2026_2035.csv : les projections annuelles de l'emploi par profession.
+  2. Employment_Growth_croissance_emploi_2026_2035.csv : la variation annuelle de l'emploi projeté par profession.
+  3. Retirements_retraites_2026_2035.csv : les résultats de la projection pour les retraites par profession.
+  4. Other_replacement_autre_remplacement_2026_2035.csv : (autre demande remplacement) les ouvertures d'emploi dues à l'émigration et aux décès en cours d'emploi par profession.
+  5. JO_PE_2026_2035.csv : (Ouvertures_emploi) la sommation des résultats de la projection pour toutes les composantes de la demande (croissance de l'emploi, retraites et autres demandes de remplacement) par profession.
+  6. School_Leavers_Sortants_scolaires_2026_2035.csv : les résultats de la projection pour les sortants scolaires par profession.
+  7. immigration_2026_2035.csv : les résultats de la projection pour l'immigration par profession.
+  8. Other_seekers_autres_chercheurs_2026_2035.csv : la sommation des résultats de la projection pour toutes les autres composantes de l'offre de main-d'oeuvre tels que la mobilité, les étudiants sur le marché du travail, et les ré-entrants sur le marché du travail par profession.
+  9. Job_Seekers_Chercheurs_emploi_2026_2035.csv : la sommation des résultats de la projection pour les composantes de l'offre de main-d’œuvre (sortants scolaires, immigration et autres chercheurs d'emploi) par profession.
+  10. Retirement_rates_Taux_de_retraite_2026_2035.csv : Taux de départ à la retraite par profession en pourcentage de la proportion du nombre projeté de départ à la retraite par l’emploi projeté.
+  11. Summary_sommaire_2026_2035.csv : Ce fichier contient la somme des ouvertures d'emploi et des chercheurs d'emploi pour la période de projection (2026-2035). Pour plus de détails sur la structure de ce fichier, voir plus bas par profession.
+  12. RLMC_CRMT_2026_2035.csv : Évaluation des conditions sur le marché du travail (pénurie, surplus et équilibre) au cours de la période 2023-2025 par profession.
+  13. FLMC_CFMT_2026_2035.csv : Évaluation finale des conditions futures sur le marché du travail (pénurie, surplus et équilibre) (2026-2035) par profession.
+  14. Industrial_AAGR_TCAM_par_industrie_2026_2035.csv : Taux de croissance annuel moyen de l'emploi, du PIB et de la productivité (2025-2035) par industrie.
+  15. Industrial_employment_emploi_par_secteur_2026_2035 : Projection annuelle de l’emploi par industrie.
+  16. Industrial_GDP_PIB_par_secteur_2026_2035 : Projection annuelle du produit intérieur brut (PIB) national par industrie.
+  17. Industrial_employment_Growth_Croissant_du_emploi_par_secteur_2026_2035.csv : Variation annuelle de l’emploi projeté par industrie.
+  18. Industrial_retirements_retraites_par_secteur_2026_2035.csv : La demande de remplacement sous forme de l’estimation des départs à la retraite annuels par industrie.
+  19. Industrial_other_replacement_autre_remplacement_par_secteur_2026_2035.csv : La demande de main-d’oeuvre  provenant de l’émigration et des décès en cours d’emploi par industrie.
+  20. Industrial_JO_PE_par_secteur_2026_2035.csv : la demande de main-d’oeuvre projetée totale (croissance de l’emploi, les départs à la retraite et les autres demandes de remplacement) par profession.
+  21. Population_2026_2035.csv: Projection de la population par sexe et groupe d’âge.
+  22. Participation_rate_Taux_d_activité_2026_2035.csv : Projection du taux de participation par sexe et groupes d’âge.
+  23. Participation_rate_Taux_d_activité_Education_2026_2035.csv : Projection du taux de participation par niveau d’éducation.
+  24. Labour_Force_Population_active_2026_2035.csv : Projection de la population active par sexe et groupe d’âge.
+  25. Labour_Force_Population_Active_Education_2026_2035.csv : Projection de la population active par niveau d’éducation.
+  
+  ******************
+     STRUCTURE
+  ******************
+  Dans chaque fichier, la première rangée contient les titres des colonnes.  
+  
+  À l’exception des fichiers nommés  Summary_sommaire_2026_2035.csv, RLMC_CRMT_2021_2023.csv, FLMC_CFMT_2026_2035.csv et Industrial_AAGR_TCAM_par_industrie_2026_2035.csv; tous les fichiers par profession contiennent 14 ou 15 colonnes, définies de la façon suivante :  
+  
+  Pour les fichiers professionnels (fichiers 1-13),
+  Colonne 1. Code de chaque variable. La première colonne contient le code de chaque groupe professionnel (basé sur la CNP), ainsi que les grandes catégories professionnelles et les catégories Formation, études, expérience et responsabilités (FÉER). 
+  Pour les fichiers industriels (fichiers 14-19), la première colonne contient le code de regroupement des industries du SPPC.
+  Colonne 2. Nom anglais de la variable. Par exemple, dans les fichiers professionnels, elle contient les noms anglais de chaque groupe professionnel. 
+  Colonne 3. Nom français de la variable. Par exemple, dans les fichiers professionnels, elle contient les noms français de chaque groupe professionnel. 
+  Colonne 4. Estimation des données du point le plus récent disponible (2023) au cours de l'année d'élaboration des projections (2024).
+  Colonnes 5 à 14. Chaque colonne contient la projection pour chaque année de la période de projection 2026 - 2035 ( 2026, 2027, 2028, 2029, 2030, 2033, 2032, 2033, 2034, et 2035)
+  
+  
+  Pour les fichiers professionnels (fichiers 15-20),
+  Colonne 1. Code de chaque variable. La première colonne contient le code de regroupement des industries du SPPC.
+  Colonne 2. La définition selon le Système de classification des industries de l'Amérique du Nord (SCIAN)
+  Colonne 3. Nom anglais de la variable. 
+  Colonne 4. Nom français de la variable. 
+  Colonne 5. Estimation des données du point le plus récent disponible (2023) au cours de l'année d'élaboration des projections (2024).
+  Colonnes 6 à 15. Chaque colonne contient la projection pour chaque année de la période de projection 2026 - 2035 (2026, 2027, 2028, 2029, 2030, 2033, 2032, 2033, 2034, et 2035)
+  
+  Les données sont arrondies à la centaine, sauf pour les taux de retraite et de participation qui sont déjà exprimés en pourcentage.  
+  La première rangée contient les titres des colonnes. La structure des colonnes est définie de la façon suivante :   
+  
+  Colonne 1 : Code pour chaque variable. Pour les fichiers professionnels (fichiers 1-13), la première colonne contient le code de chaque profession (basé sur la CNP), ainsi que les grandes catégories professionnelles et la formation, l'éducation, l'expérience et la responsabilité (TEER).
+  Colonne 2 : Le nom anglais de chaque profession et regroupement analysés 
+  Colonne 3 : Le nom français de chaque profession et regroupement analysés  
+  Colonne 4 : Nombre d’emplois en 2023
+  Colonne 5 : Nombre cumulatif des ouvertures d’emploi provenant de la croissance de l'emploi de 2026 à 2035 (l'emploi en 2035 moins l'emploi en 2025)
+  Colonne 6 : Nombre cumulatif des ouvertures d’emploi provenant des départs à la retraite de 2026 à 2035 (somme des années 2026 à 2035)
+  Colonne 7 : Nombre cumulatif des ouvertures d’emploi provenant des autres sources de demande de remplacement de 2026 à 2035 (somme des décès en cours d'emploi et de l'émigration entre 2024 et 2033)
+  Colonne 8 : Nombre cumulatif des ouvertures d'emploi totales (somme des années 2026 à 2035)
+  Colonne 9 : Nombre cumulatif de sortants scolaires de 2026 à 2035 (somme des années 2026 à 2035)
+  Colonne 10 : Nombre cumulatif de nouveaux immigrants joignant le marché du travail de 2026 à 2035 (somme des années 2026 à 2035)
+  Colonne 11 : Nombre cumulatif de chercheurs d'emploi provenant des autres sources de demande de remplacement de 2026 à 2035 (somme des années 2026 à 2035)
+  Colonne 12 : Nombre cumulatif du total de chercheurs d'emploi de 2026 à 2035 (somme de toutes les composantes de l'offre de main-d'œuvre de 2026 à 2035)
+  Colonne 13 : Résultats de l'évaluation des conditions récentes sur le marché du travail (signes importants de pénurie, signes modérés de pénurie, signes importants de surplus, signes modérés de surplus et équilibre) au cours de la période 2023-2025 (en anglais)
+  Colonne 14 : Résultats de l'évaluation des conditions récentes sur le marché du travail (signes importants de pénurie, signes modérés de pénurie, signes importants de surplus, signes modérés de surplus et équilibre) au cours de la période 2023-2025 (en français)
+  Colonne 15 : Évaluation finale des conditions futures sur le marché du travail (risque important de pénurie, risque modéré de pénurie, risque important de surplus, risque modéré de surplus et équilibre) au cours de la période 2026-2035 (en anglais)
+  Colonne 16 : Évaluation finale des conditions futures sur le marché du travail (risque important de pénurie, risque modéré de pénurie, risque important de surplus, risque modéré de surplus et équilibre) au cours de la période 2026-2035 (en français)
+  
+  - RLMC_CRMT_2023-2025.csv: La première rangée contient les titres des colonnes. La structure des colonnes est définie de la façon suivante :   
+  Colonne 1 : Code de la CNP et des regroupements analysés
+  Colonne 2 : Le nom anglais de chaque profession et des regroupements analysés   
+  Colonne 3 : Le nom français de chaque profession et des regroupements analysés  
+  Colonne 4 : Évaluation des conditions récentes sur le marché du travail (signes importants de pénurie, signes modérés de pénurie, signes importants de surplus, signes modérés de surplus et équilibre) au cours de la période 2023-2025 (en anglais)
+  Colonne 5 : Évaluation des conditions récentes sur le marché du travail (signes importants de pénurie, signes modérés de pénurie, signes importants de surplus, signes modérés de surplus et équilibre) au cours de la période 2023-2025 (en français)
+  
+  - FLMC_CFMT_2026_2035.csv: La première rangée contient les titres des colonnes. La structure des colonnes est définie de la façon suivante :   
+  Colonne 1 : Code de la CNP et des regroupements analysés
+  Colonne 2 : Le nom anglais de chaque profession et regroupements analysés    
+  Colonne 3 : Le nom français de chaque profession et regroupements analysés    
+  Colonne 4 : Évaluation finale des conditions futures sur le marché du travail (risque important de pénurie, risque modéré de pénurie, risque important de surplus, risque modéré de surplus et équilibre) au cours de la période 2026-2035 (en anglais)
+  Colonne 5 : Évaluation finale des conditions futures sur le marché du travail (risque important de pénurie, risque modéré de pénurie, risque important de surplus, risque modéré de surplus et équilibre) au cours de la période 2026-2035 (en français)
+  
+  - Industrial_AAGR_TCAM_par_industrie_2026_2035.csv
+  La première rangée contient les titres des colonnes. La structure des colonnes est définie de la façon suivante :   
+  Colonne 1 : code de regroupement des industries du SPPC
+  Colonne 2 : La définition selon le Système de classification des industries de l'Amérique du Nord (SCIAN)  
+  Colonne 3. Nom anglais de la variable 
+  Colonne 4. Nom français de la variable
+  Colonne 5 : Taux de croissance annuel moyen (TCAM) du produit intérieur brute (PIB) entre 2026-2035
+  Colonne 6 : Taux de croissance annuel moyen (TCAM) de l'emploi entre 2026-2035
+  Colonne 7 : Taux de croissance annuel moyen (TCAM) de la productivité (productivité du travail) entre 2026-2035
+  
+  
+  ********************************************************************************************************************************************************
+  ********************************************************************************************************************************************************
+  ********************************************************************************************************************************************************
+  ********************************************************************************************************************************************************
+  ********************************************************************************************************************************************************
+  ********************************************************************************************************************************************************
+  
+  
+  
+  ENGLISH
+  
+  ******************
+     THE FILES
+## OUTLOOK sheet 20252027_OUTLOOK_N21_EN_251208 43861 rows
+  ('NOC_Code', 'NOC Title', 'Outlook', 'Employment Trends', 'Release Date', 'Province', 'Economic Region Code', 'Economic Region Name', 'LANG')
+  ('NOC_00010', 'Legislators', 'Undetermined', '<P>Appointment to this occupation is dependent on an election or a nomination, rather than labour market needs.</P>', datetime.datetime(2025, 11, 17, 0, 0), 'NL', '1000', 'Newfoundland and Labrador', 'EN')
+  ('NOC_00010', 'Legislators', 'Undetermined', '<P>Appointment to this occupation is dependent on an election or a nomination, rather than labour market needs.</P>', datetime.datetime(2025, 11, 17, 0, 0), 'NL', '1010', 'Avalon Peninsula', 'EN')
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', "<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in Newfoundland and Labrador for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment decline will lead to the loss of a few positions.</LI><LI>A moderate number of positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><p>Key contributors to expected job prospects include the province's growing mining industry, and a considerable investment in road infrastructure. Mining and other industrial activity may create opportunities at manufacturers and wholesalers of new and used equipment.</p><P>Here are some key facts about heavy-duty equipment mechanics in Newfoundland and Labrador: <UL><LI
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Avalon Peninsula region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment decline will lead to the loss of a few positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><p>Additional information is available at the provincial level.</p><P>Here are some key facts about heavy-duty equipment mechanics in the Avalon Peninsula region: <UL><LI>Approximately 550 people work in this occupation.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 33%</LI><LI>Other services (except public administra
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the South Coast - Burin Peninsula and Notre Dame - Central Bonavista Bay regions for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment is expected to remain relatively stable.</LI><LI>A moderate number of positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><p>Additional information is available at the provincial level.</p><P>Here are some key facts about heavy-duty equipment mechanics in the South Coast - Burin Peninsula and Notre Dame - Central Bonavista Bay regions: <UL><LI>Approximately 240 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics 
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the West Coast - Northern Peninsula - Labrador region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment is expected to remain relatively stable.</LI><LI>A moderate number of positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><p>Additional information is available at the provincial level.</p><P>Here are some key facts about heavy-duty equipment mechanics in the West Coast - Northern Peninsula - Labrador region: <UL><LI>Approximately 720 people work in this occupation.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Mining and quarrying (
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the South Coast - Burin Peninsula and Notre Dame - Central Bonavista Bay regions for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment is expected to remain relatively stable.</LI><LI>A moderate number of positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><p>Additional information is available at the provincial level.</p><P>Here are some key facts about heavy-duty equipment mechanics in the South Coast - Burin Peninsula and Notre Dame - Central Bonavista Bay regions: <UL><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Other services (except pub
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Good', '<P>The employment outlook will be Good for heavy-duty equipment mechanics (NOC 72401) in Prince Edward Island for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to several new positions.</LI><LI>A moderate number of positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><p><span style="color: rgb(0, 0, 0);">Heavy-duty equipment mechanics continue to be in strong demand across P.E.I., employed in construction, agriculture, manufacturing, and repair/maintenance services. Sustained construction activity—particularly in residential housing, engineering projects, and utility developments—will require ongoing support from mechanics to service heavy machinery. Agr
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Good', "<P>The employment outlook will be Good for heavy-duty equipment mechanics (NOC 72401) in Nova Scotia for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>A moderate number of positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><p>Hiring prospects for this occupation vary across different areas of the province. While there is typically not a large number of job vacancies, employers sometimes struggle to find qualified candidates. Jobseekers with Red Seal certification will have less trouble finding work, and may find that this occupation is sometimes combined with a heavy equipment operator role. The number of 
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Good', '<P>The employment outlook will be Good for heavy-duty equipment mechanics (NOC 72401) in the Cape Breton region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>A moderate number of positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><p>Additional information is available at the provincial level.</p><P>Here are some key facts about heavy-duty equipment mechanics in the Cape Breton region: <UL><LI>Approximately 150 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 25%</LI><LI>Other services (except pub
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Good', '<P>The employment outlook will be Good for heavy-duty equipment mechanics (NOC 72401) in the North Shore region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>A moderate number of positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><p>Additional information is available at the provincial level.</p><P>Here are some key facts about heavy-duty equipment mechanics in the North Shore region: <UL><LI>Approximately 330 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Wholesale trade (NAICS 41): 30%</LI><LI>Other services (except 
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Good', '<P>The employment outlook will be Good for heavy-duty equipment mechanics (NOC 72401) in the Annapolis Valley region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>A moderate number of positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><p>Additional information is available at the provincial level.</p><P>Here are some key facts about heavy-duty equipment mechanics in the Annapolis Valley region: <UL><LI>Approximately 250 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Wholesale trade (NAICS 41): 35%</LI><LI>Other service
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Good', '<P>The employment outlook will be Good for heavy-duty equipment mechanics (NOC 72401) in the Southern region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>A moderate number of positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><p>Additional information is available at the provincial level.</p><P>Here are some key facts about heavy-duty equipment mechanics in the Southern region: <UL><LI>Approximately 70 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Wholesale trade (NAICS 41): 45%</LI><LI>Other services (except public 
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Good', '<P>The employment outlook will be Good for heavy-duty equipment mechanics (NOC 72401) in the Halifax region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>A moderate number of positions will become available due to retirements.</LI><LI>There are a small number of unemployed workers with recent experience in this occupation.</LI></UL><p>Additional information is available at the provincial level.</p><P>Here are some key facts about heavy-duty equipment mechanics in the Halifax region: <UL><LI>Approximately 200 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Wholesale trade (NAICS 41): 28%</LI><LI>Other services (except public admi
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', "<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in New Brunswick for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in New Brunswick: <UL><LI>Approximately 1,650 people work in this occupation.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 25%</LI><LI>Wholesale trade (NAICS 41): 15%</LI><LI>Repair and maintenance (NAICS 811): 11%</LI><LI>Mining and quarrying (NAICS 212-213): 8
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Campbellton - Miramichi region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are several unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the Campbellton - Miramichi region: <UL><LI>Approximately 240 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 37%</LI><LI>Mining and quarrying (NAICS 212-213): 21%</LI><LI>Wholesale trade (NAICS 41): 13%</LI>
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Moncton - Richibucto region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the Moncton - Richibucto region: <UL><LI>Approximately 180 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Wholesale trade (NAICS 41): 35%</LI><LI>Other services (except public administration) (NAICS 81): 18%</LI><LI>Constr
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Saint John - St. Stephen region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the Saint John - St. Stephen region: <UL><LI>Approximately 180 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 37%</LI><LI>Mining and quarrying (NAICS 212-213): 12%</LI><LI>Finance, insurance an
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Fredericton - Oromocto region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the Fredericton - Oromocto region: <UL><LI>Approximately 130 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Wholesale trade (NAICS 41): 28%</LI><LI>Federal government public administration (NAICS 911): 22%</LI><LI>Constr
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Edmundston - Woodstock region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are several unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the Edmundston - Woodstock region: <UL><LI>Approximately 140 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 36%</LI><LI>Transportation and warehousing (NAICS 48-49): 21%</LI><LI>Agriculture (NAICS 111, 112, 1
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', "<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in Quebec for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in Quebec: <UL><LI>Approximately 14,000 people work in this occupation.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 22%</LI><LI>Repair and maintenance (NAICS 811): 16%</LI><LI>Wholesale trade (NAICS 41): 14%</LI><LI>Mining, quarrying, and oil and gas extraction (NAICS
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Gaspésie - Îles-de-la-Madeleine region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>Several positions will become available due to retirements.</LI><LI>There are several unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the Gaspésie - Îles-de-la-Madeleine region: <UL><LI>Approximately 90 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 50%</LI><LI>Mining, quarrying, and oil and gas extraction (NAICS 21): 28%</LI><LI>Ot
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Bas-Saint-Laurent region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the Bas-Saint-Laurent region: <UL><LI>Approximately 410 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Wholesale trade (NAICS 41): 25%</LI><LI>Mining, quarrying, and oil and gas extraction (NAICS 21): 20%</LI><LI>Construction
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Capitale-Nationale region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are a small number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the Capitale-Nationale region: <UL><LI>Approximately 600 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 22%</LI><LI>Other services (except public administration) (NAICS 81): 16%</LI><LI>Wholesale trade 
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Chaudière - Appalaches region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>A moderate number of positions will become available due to retirements.</LI><LI>There are a small number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the Chaudière - Appalaches region: <UL><LI>Approximately 650 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 25%</LI><LI>Wholesale trade (NAICS 41): 20%</LI><LI>Other services (except pub
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Estrie region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the Estrie region: <UL><LI>Approximately 370 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 36%</LI><LI>Wholesale trade (NAICS 41): 14%</LI><LI>Mining, quarrying, and oil and gas extraction (NAICS 21): 14%</LI><
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Centre-du-Québec region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are a small number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the Centre-du-Québec region: <UL><LI>Approximately 440 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 30%</LI><LI>Other services (except public administration) (NAICS 81): 18%</LI><LI>Wholesale trade (NAI
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Montérégie region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are a small number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the Montérégie region: <UL><LI>Approximately 2,160 people work in this occupation.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 20%</LI><LI>Other services (except public administration) (NAICS 81): 17%</LI><LI>Wholesale trade (NAICS 41): 16%</LI><LI>Agri
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the census metropolitan area of Montréal for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a few new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are a small number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the census metropolitan area of Montréal: <UL><LI>Approximately 1,780 people worked in this occupation in May 2021.</LI></UL></P>', datetime.datetime(2025, 12, 3, 0, 0), 'QC', '2440', 'Montreal', 'EN')
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the census metropolitan area of Montréal, including the Laval region, for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a few new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are a small number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the census metropolitan area of Montréal, including the Laval region,: <UL><LI>Approximately 1,780 people worked in this occupation in May 2021.</LI></UL></P>', datetime.datetime(2025, 12, 3, 0, 0), 'QC', '2445', 'Laval', 'EN')
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Lanaudière region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>Not many positions will become available due to retirements.</LI><LI>There are a small number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the Lanaudière region: <UL><LI>Approximately 610 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 26%</LI><LI>Wholesale trade (NAICS 41): 22%</LI><LI>Other services (except public administration) (NAICS 81): 21%<
+  ('NOC_72401', 'Heavy-duty equipment mechanics', 'Moderate', '<P>The employment outlook will be Moderate for heavy-duty equipment mechanics (NOC 72401) in the Laurentides region for the 2025-2027 period.</P><P>The following factors contributed to this outlook:</P><UL><LI>Employment growth will lead to a moderate number of new positions.</LI><LI>A moderate number of positions will become available due to retirements.</LI><LI>There are a moderate number of unemployed workers with recent experience in this occupation.</LI></UL><P>Here are some key facts about heavy-duty equipment mechanics in the Laurentides region: <UL><LI>Approximately 590 people worked in this occupation in May 2021.</LI><LI> Heavy-duty equipment mechanics mainly work in the following sectors: <UL><LI>Construction (NAICS 23): 26%</LI><LI>Wholesale trade (NAICS 41): 24%</LI><LI>Other services (except public administration)
+## STATCAN 98100449 Occupation unit group by labour force status, highest level of education, age and gender: Canada, provinces and territories, census metropolitan areas and census agglomerations with parts
+  dim 1 Geography (174)
+    1 Canada (parent None)
+    2 Newfoundland and Labrador (parent 1)
+    3 Corner Brook (CA), N.L. (parent 2)
+    4 Gander (CA), N.L. (parent 2)
+    5 Grand Falls-Windsor (CA), N.L. (parent 2)
+  dim 2 Highest certificate, diploma or degree (16) (16)
+    1 Total - Highest certificate, diploma or degree (parent None)
+    2 No certificate, diploma or degree (parent 1)
+    3 High (secondary) school diploma or equivalency certificate (parent 1)
+    4 Postsecondary certificate, diploma or degree (parent 1)
+    5 Postsecondary certificate or diploma below bachelor level (parent 4)
+    6 Apprenticeship or trades certificate or diploma (parent 5)
+    7 Non-apprenticeship trades certificate or diploma (parent 6)
+    8 Apprenticeship certificate (parent 6)
+    9 College, CEGEP or other non-university certificate or diploma (parent 5)
+    10 University certificate or diploma below bachelor level (parent 5)
+    11 Bachelor’s degree or higher (parent 4)
+    12 Bachelor's degree (parent 11)
+    13 University certificate or diploma above bachelor level (parent 11)
+    14 Degree in medicine, dentistry, veterinary medicine or optometry (parent 11)
+    15 Master's degree (parent 11)
+    16 Earned doctorate (parent 11)
+  dim 3 Age (15A) (15)
+    1 Total - Age (parent None)
+    2 15 to 24 years (parent 1)
+    3 15 to 19 years (parent 2)
+    4 20 to 24 years (parent 2)
+    5 25 to 64 years (parent 1)
+    6 25 to 54 years (parent 5)
+    7 25 to 34 years (parent 6)
+    8 25 to 29 years (parent 7)
+    9 30 to 34 years (parent 7)
+    10 35 to 44 years (parent 6)
+    11 45 to 54 years (parent 6)
+    12 55 to 64 years (parent 5)
+    13 65 years and over (parent 1)
+    14 65 to 74 years (parent 13)
+    15 75 years and over (parent 13)
+  dim 4 Gender (3) (3)
+    1 Total - Gender (parent None)
+    2 Men+ (parent 1)
+    3 Women+ (parent 1)
+  dim 5 Occupation - Unit group - National Occupational Classification (NOC) 2021 (821A) (821)
+    583 72401 Heavy-duty equipment mechanics (parent 581)
+    590 72410 Automotive service technicians, truck and bus mechanics and mechanical repairers (parent 589)
+    591 72411 Auto body collision, refinishing and glass technicians and damage repair estimators (parent 589)
+    652 74203 Automotive and heavy truck and equipment parts installers and servicers (parent 648)
+    1 Total - Occupation - Unit group - National Occupational Classification (NOC) 2021 (parent None)
+    2 Occupation - not applicable (parent 1)
+    3 All occupations (parent 1)
+    4 0 Legislative and senior management occupations (parent 3)
+    5 00 Legislative and senior managers (parent 4)
+  dim 6 Labour force status (3) (3)
+    1 Total - Labour force status (parent None)
+    2 Employed (parent 1)
+    3 Unemployed (parent 1)
+## STATCAN 98100593 Class of worker by occupation unit group, labour force status, age and gender: Canada, provinces and territories, census metropolitan areas and census agglomerations with parts
+  dim 1 Geography (174)
+    1 Canada (parent None)
+    2 Newfoundland and Labrador (parent 1)
+    3 Corner Brook (CA), N.L. (parent 2)
+    4 Gander (CA), N.L. (parent 2)
+    5 Grand Falls-Windsor (CA), N.L. (parent 2)
+  dim 2 Statistics (3) (3)
+    1 Count (parent None)
+    2 95% confidence interval lower bound, Count (parent None)
+    3 95% confidence interval upper bound, Count (parent None)
+  dim 3 Labour force status (3) (3)
+    1 Total - Labour force status (parent None)
+    2 Employed (parent 1)
+    3 Unemployed (parent 1)
+  dim 4 Age (15A) (15)
+    1 Total - Age (parent None)
+    2 15 to 24 years (parent 1)
+    3 15 to 19 years (parent 2)
+    4 20 to 24 years (parent 2)
+    5 25 to 64 years (parent 1)
+    6 25 to 54 years (parent 5)
+    7 25 to 34 years (parent 6)
+    8 25 to 29 years (parent 7)
+    9 30 to 34 years (parent 7)
+    10 35 to 44 years (parent 6)
+    11 45 to 54 years (parent 6)
+    12 55 to 64 years (parent 5)
+    13 65 years and over (parent 1)
+    14 65 to 74 years (parent 13)
+    15 75 years and over (parent 13)
+  dim 5 Gender (3) (3)
+    1 Total - Gender (parent None)
+    2 Men+ (parent 1)
+    3 Women+ (parent 1)
+  dim 6 Occupation - Unit group - National Occupational Classification (NOC) 2021 (821A) (821)
+    583 72401 Heavy-duty equipment mechanics (parent 581)
+    590 72410 Automotive service technicians, truck and bus mechanics and mechanical repairers (parent 589)
+    591 72411 Auto body collision, refinishing and glass technicians and damage repair estimators (parent 589)
+    652 74203 Automotive and heavy truck and equipment parts installers and servicers (parent 648)
+    1 Total - Occupation - Unit group - National Occupational Classification (NOC) 2021 (parent None)
+    2 Occupation - not applicable (parent 1)
+    3 All occupations (parent 1)
+    4 0 Legislative and senior management occupations (parent 3)
+    5 00 Legislative and senior managers (parent 4)
+  dim 7 Class of worker (7A) (7)
+    1 Total - Class of worker (parent None)
+    2 Class of worker - not applicable (parent 1)
+    3 All classes of workers (parent 1)
+    4 Employee (parent 3)
+    5 Self-employed (parent 3)
+    6 Self-employed (parent 5)
+    7 Unpaid family worker (parent 5)
+## STATCAN 98100412 Employment income statistics by occupation, major field of study and highest level of education: Canada
+  dim 1 Geography (1)
+    1 Canada (parent None)
+  dim 2 Gender (3) (3)
+    1 Total - Gender (parent None)
+    2 Men+ (parent 1)
+    3 Women+ (parent 1)
+  dim 3 Age (4) (4)
+    1 Total - Age (parent None)
+    2 15 to 24 years (parent 1)
+    3 25 to 64 years (parent 1)
+    4 65 years and over (parent 1)
+  dim 4 Highest certificate, diploma or degree (16) (16)
+    1 Total - Highest certificate, diploma or degree (parent None)
+    2 No certificate, diploma or degree (parent 1)
+    3 High (secondary) school diploma or equivalency certificate (parent 1)
+    4 Postsecondary certificate, diploma or degree (parent 1)
+    5 Postsecondary certificate or diploma below bachelor level (parent 4)
+    6 Apprenticeship or trades certificate or diploma (parent 5)
+    7 Non-apprenticeship trades certificate or diploma (parent 6)
+    8 Apprenticeship certificate (parent 6)
+    9 College, CEGEP or other non-university certificate or diploma (parent 5)
+    10 University certificate or diploma below bachelor level (parent 5)
+    11 Bachelor’s degree or higher (parent 4)
+    12 Bachelor's degree (parent 11)
+    13 University certificate or diploma above bachelor level (parent 11)
+    14 Degree in medicine, dentistry, veterinary medicine or optometry (parent 11)
+    15 Master's degree (parent 11)
+    16 Earned doctorate (parent 11)
+  dim 5 Major field of study - Classification of Instructional Programs (CIP) 2021 (63) (63)
+    1 Total - Major field of study - Classification of Instructional Programs (CIP) 2021 (parent None)
+    2 No postsecondary certificate, diploma or degree (parent 1)
+    3 Education (parent 1)
+    4 13. Education (parent 3)
+    5 Visual and performing arts, and communications technologies (parent 1)
+  dim 6 Work activity during the reference year (4A) (4)
+    1 Total - Work activity during the reference year (parent None)
+    2 Did not work (parent 1)
+    3 Worked part year and/or part time (parent 1)
+    4 Worked full year full time (parent 1)
+  dim 7 Occupation - Unit group - National Occupational Classification (NOC) 2021 (821A) (821)
+    583 72401 Heavy-duty equipment mechanics (parent 581)
+    590 72410 Automotive service technicians, truck and bus mechanics and mechanical repairers (parent 589)
+    591 72411 Auto body collision, refinishing and glass technicians and damage repair estimators (parent 589)
+    652 74203 Automotive and heavy truck and equipment parts installers and servicers (parent 648)
+    1 Total - Occupation - Unit group - National Occupational Classification (NOC) 2021 (parent None)
+    2 Occupation - not applicable (parent 1)
+    3 All occupations (parent 1)
+    4 0 Legislative and senior management occupations (parent 3)
+    5 00 Legislative and senior managers (parent 4)
+  dim 8 Employment income statistics (7) (7)
+    1 Total - Employment income statistics (parent None)
+    2 With employment income (parent 1)
+    3 Median employment income ($) (parent 2)
+    4 Average employment income ($) (parent 2)
+    5 With wages, salaries and commissions (parent 1)
+    6 Median wages, salaries and commissions ($) (parent 5)
+    7 Average wages, salaries and commissions ($) (parent 5)
