@@ -215,7 +215,7 @@ function signinCard(info) {
   const err = h('p', { class: 'gate-err', role: 'alert' }, info.error || ''); err.hidden = !info.error;
   const fail = (msg) => { const btn = form.querySelector('button'); btn.disabled = false; btn.textContent = 'Sign in'; err.hidden = false; err.textContent = msg; };
   form.addEventListener('submit', e => { e.preventDefault(); requestCode($('#email').value.trim().toLowerCase(), form.querySelector('button'), fail); });
-  card.append(h('span', { class: 'lp-signin-tag' }, 'Members \u00b7 affiliates \u00b7 buyers'), h('h2', {}, 'Sign in to the hub'), h('p', {}, 'Use your work email, or the email you bought with. We’ll email you a sign-in code. No password needed.'), form, err,
+  card.append(h('span', { class: 'lp-signin-tag' }, 'Members \u00b7 affiliates'), h('h2', {}, 'Sign in to the hub'), h('p', {}, 'Use your work email, or the email you bought with. We’ll email you a sign-in code. No password needed.'), form, err,
     h('p', { class: 'gate-muted' }, 'Not a member? ', h('a', { href: JOIN_URL }, 'Join AIA Canada'), ', ', h('a', { href: AFFILIATE_URL }, 'become an affiliate'), ' or ', h('a', { href: '#plans', onclick: e => { e.preventDefault(); $('#plans').scrollIntoView({ behavior: 'smooth' }); } }, 'buy a report'), '.'));
   if (info.autoSend && info.email) setTimeout(() => requestCode(info.email, form.querySelector('button'), fail), 50);
   return card;
