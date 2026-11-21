@@ -18,59 +18,27 @@ jobs:
         run: |
           set +e
           mkdir -p "$RUNNER_TEMP/out" && cd "$RUNNER_TEMP/out"
-          python3 - <<'PY' 2>&1 | tee py.log
-          import json, urllib.request, re
-          W = "https://www150.statcan.gc.ca/t1/wds/rest/"
-          def post(path, body):
-              req = urllib.request.Request(W + path, data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AIA-Canada-SPARK", "Accept": "application/json"})
-              for i in range(4):
-                  try: return json.load(urllib.request.urlopen(req, timeout=180))
-                  except Exception as e:
-                      err = e; import time; time.sleep(15 * (i + 1))
-              raise err
-          summary = []
-          for pid in [11100065]:
-              try:
-                  m = post("getCubeMetadata", [{"productId": pid}])[0]["object"]
-                  summary.append(f"## {pid} {m.get('cubeTitleEn')} | freq {m.get('frequencyCode')} | {m.get('cubeStartDate')} to {m.get('cubeEndDate')}")
-                  for d in m.get("dimension", []):
-                      mem = d.get("member", [])
-                      summary.append(f"  dim {d['dimensionPositionId']} {d['dimensionNameEn']} ({len(mem)} members)")
-                      for x in mem[:60]: summary.append(f"    {x['memberId']} {x['memberNameEn']} (parent {x.get('parentMemberId')})")
-              except Exception as e:
-                  summary.append(f"## {pid} ERROR {e}")
-          # latest values for every province, to see which are published
-          try:
-              m = post("getCubeMetadata", [{"productId": 11100065}])[0]["object"]
-              dims = m["dimension"]
-              import itertools
-              combos = list(itertools.product(*[[x["memberId"] for x in d["member"]] for d in dims]))[:200]
-              res = post("getDataFromCubePidCoordAndLatestNPeriods", [{"productId": 11100065, "coordinate": ".".join(map(str, list(c) + [0] * (10 - len(c)))), "latestN": 2} for c in combos])
-              for r in res:
-                  o = r.get("object") or {}
-                  summary.append(f"DATA {o.get('coordinate')} -> " + ", ".join(f"{p['refPer'][:7]}={p['value']}" for p in o.get("vectorDataPoint", [])))
-          except Exception as e:
-              summary.append(f"DATA ERROR {e}")
-          open("summary.txt", "w").write("\n".join(summary))
-          # Quebec SAAQ and Alberta open data catalogues
-          for name, url in [("saaq", "https://www.donneesquebec.ca/recherche/api/3/action/package_show?id=vehicules-en-circulation"),
-                            ("ab_fuel", "https://open.alberta.ca/api/3/action/package_show?id=c5eb22a7-f3e6-41ce-8363-17d1ea979bc7"),
-                            ("ab_style", "https://open.alberta.ca/api/3/action/package_show?id=553f5a93-0032-484a-b5d3-bcfd8c47bc11"),
-                            ("ab_muni", "https://open.alberta.ca/api/3/action/package_show?id=d6205817-b04b-4360-8bb0-79eaaecb9df9")]:
-              try:
-                  j = json.load(urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=120))["result"]
-                  open(f"{name}.txt", "w").write("\n".join(f"{r.get('name')} | {r.get('format')} | {r.get('size')} | {r.get('url')}" for r in j["resources"]))
-              except Exception as e:
-                  open(f"{name}.txt", "w").write(f"ERROR {e}")
-          PY
-          for f in saaq ab_fuel ab_style ab_muni; do echo "== $f"; cat $f.txt; echo; done
-          # SAAQ: documentation and the first lines of the newest file
-          DOC=$(grep -i "documentation" saaq.txt | head -1 | awk -F' \\| ' '{print $4}'); curl -sL -A Mozilla/5.0 "$DOC" -o saaq_doc.pdf && pdftotext -layout saaq_doc.pdf saaq_doc.txt || true
-          NEW=$(grep -i "csv" saaq.txt | sort | tail -1 | awk -F' \\| ' '{print $4}'); echo "newest $NEW"; curl -sL -A Mozilla/5.0 -r 0-400000 "$NEW" | head -c 400000 | head -40 > saaq_head.csv || true
-          # Alberta: newest PDF of each kind as text
-          for f in ab_fuel ab_style ab_muni; do U=$(grep -i pdf $f.txt | tail -1 | awk -F' \\| ' '{print $4}'); [ -n "$U" ] && curl -sL -A Mozilla/5.0 "$U" -o $f.pdf && pdftotext -layout $f.pdf $f.pdf.txt || true; done
-          ls -la; exit 0
-          head -c 3000 summary.txt
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+          B=https://www.services.labour.gov.on.ca
+          # Ontario labour market: the new job profile app, its scripts, and the API paths they call
+          curl -sL -A "$UA" "$B/labourmarket-ui/jobProfile?nocCode=72411" -o ui.html; cat ui.html > ui_html.txt
+          for s in $(grep -oE '(src|href)="[^"]+\.(js|json)[^"]*"' ui.html | sed -E 's/^(src|href)="//; s/"$//'); do
+            case "$s" in http*) u="$s";; /*) u="$B$s";; *) u="$B/labourmarket-ui/$s";; esac
+            n=$(basename "${s%%\?*}"); curl -sL -A "$UA" "$u" -o "js_$n"; echo "$u $(wc -c < js_$n)" >> scripts.txt
+          done
+          cat js_* 2>/dev/null | grep -oE '["'"'"'`][^"'"'"'` ]*(api|labourmarket|rest|json|nocCode|jobProfile|download)[^"'"'"'` ]*["'"'"'`]' | sort -u > api_strings.txt
+          # the bulk download files
+          curl -sL -A "$UA" "$B/labourmarket/downloadFiles/" -o dl_index.html
+          curl -sL -A "$UA" "$B/labourmarket/downloadFiles/Data_Dictionary_EN.txt" -o dict.txt
+          curl -sL -A "$UA" "$B/labourmarket/jobProfile/jobProfileFullView.xhtml?nocCode=72411" -o old_profile.html
+          grep -oE 'href="[^"]*(download|\.csv|\.xlsx|\.txt|\.zip)[^"]*"' ui.html old_profile.html dl_index.html | sort -u > links.txt
+          # try likely API routes
+          for path in labourmarket-api/jobProfile/72411 labourmarket-api/api/jobProfile/72411 labourmarket-api/jobProfile?nocCode=72411 labourmarket-ws/jobProfile/72411 labourmarket-ui/api/jobProfile/72411 labourmarket-api/v1/jobProfile/72411; do
+            c=$(curl -s -A "$UA" -o /dev/null -w "%{http_code} %{content_type}" "$B/$path"); echo "$path $c" >> tries.txt; done
+          # test every API-looking string found in the scripts
+          grep -oE '/[A-Za-z0-9_/-]*(api|ws|rest)[A-Za-z0-9_/{}.-]*' api_strings.txt | sort -u | head -60 > api_paths.txt
+          while read p; do q=$(echo "$p" | sed 's/{[^}]*}/72411/g'); c=$(curl -s -A "$UA" -o "resp_$(echo $q | tr '/?=&' '____').json" -w "%{http_code} %{content_type} %{size_download}" "$B$q?nocCode=72411"); echo "$q $c" >> tries.txt; done < api_paths.txt
+          ls -la > listing.txt; exit 0
       - name: Save
         if: always()
         run: |
