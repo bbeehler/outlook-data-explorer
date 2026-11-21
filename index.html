@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>Research Hub | AIA Canada</title>
+<title>SPARK | AIA Canada research and data</title>
 <script src="config.js"></script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -553,6 +553,14 @@ body.is-landing .wrap { max-width: none; padding-top: 0; }
 .ft-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding: 16px 44px; border-top: 1px solid rgba(255,255,255,.15); font-size: 13px; color: #a9bcd6; }
 @media (max-width: 900px) { .ft-in { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 34px 24px 24px; } .ft-brand { grid-column: 1 / -1; } .ft-bottom { padding: 14px 24px; } }
 
+/* ---------- SPARK brand ---------- */
+.brand .name { display: inline-flex; align-items: center; gap: 7px; letter-spacing: .06em; }
+.spark-mark { width: .9em; height: .9em; fill: #e21c47; flex: none; filter: drop-shadow(0 0 6px rgba(226,28,71,.45)); }
+.lp-spark { color: #fff; letter-spacing: .14em; font-weight: 900; }
+.lp-tag { display: inline-block; margin: 0 0 18px; padding: 6px 14px; border-radius: 999px; font-size: 15px; font-weight: 700; color: #fff;
+  background: linear-gradient(90deg, rgba(226,28,71,.95), rgba(226,28,71,.6)); box-shadow: 0 6px 18px rgba(226,28,71,.25); }
+@media (max-width: 640px) { .lp-tag { font-size: 13.5px; } }
+
 @media (max-width: 960px) {
   .wrap { grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .topics, .lcards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -577,8 +585,8 @@ body.is-landing .wrap { max-width: none; padding-top: 0; }
   <div class="mast-in">
     <button class="menu-btn" id="menuBtn" type="button" aria-controls="navPanel" aria-expanded="false" aria-label="Open the menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="lbl">Menu</span></button>
     <div class="brand">
-      <span class="eyebrow">AIA Canada · Research and data</span>
-      <span class="name">Research Hub</span>
+      <span class="eyebrow">AIA Canada · Built for decisions, not just dashboards</span>
+      <span class="name"><svg class="spark-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg>SPARK</span>
     </div>
     <label class="search" for="q">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -592,7 +600,7 @@ body.is-landing .wrap { max-width: none; padding-top: 0; }
 
 <div class="wrap">
   <div class="navpanel" id="navPanel">
-    <div class="nav-head"><b>Research Hub</b><button type="button" class="act" id="navClose">Close</button></div>
+    <div class="nav-head"><b>SPARK</b><button type="button" class="act" id="navClose">Close</button></div>
     <label class="nav-search" for="q2"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q2" type="search" placeholder="Search reports and data" autocomplete="off"></label>
     <nav class="rail" id="rail" aria-label="Sections"></nav>
   </div>
@@ -1162,7 +1170,7 @@ function jump(dsId) {
 }
 
 /* ---------- AI drawer ---------- */
-const RULES = `You are the data assistant inside the AIA Canada Research Hub, a tool for members of the Automotive Industries Association of Canada (AIA Canada). It holds three kinds of data:
+const RULES = `You are the data assistant inside SPARK, AIA Canada's research and data hub, a tool for members of the Automotive Industries Association of Canada (AIA Canada). It holds three kinds of data:
 - AIA Canada research reports (consumer surveys such as the Consumer Behaviour Series), with the report named in each figure's source.
 - The AIA Canada Outlook Study 2025 (released January 2025, prepared with EY; mostly 2019 to 2023, with S&P Global Mobility forecasts to 2030).
 - Economic indicators from Statistics Canada and the Bank of Canada (prices, vehicle registrations, jobs, wages, interest rates), updated twice a month.
@@ -1275,7 +1283,7 @@ const rerender = () => { clearTimeout(rerender.t); rerender.t = setTimeout(rende
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerender);
 new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-const HUB_VERSION = '2026-11-20 19:37';
+const HUB_VERSION = '2026-11-20 20:06';
 /* ---------- AIA Canada Research Hub: sections, research reports, economy, links between sources, report manager ---------- */
 const BASE_TOPICS = TOPICS.filter(t => !['home', 'access'].includes(t.id)).map(t => ({ ...t, group: 'outlook' }));
 let REPORTS = [], ECON = null, CITIES = null;
@@ -1377,7 +1385,7 @@ function render() {
     railButton({ ...TOPICS.find(t => t.id === 'macro'), name: 'Economic indicators' }, 'pub', DS.filter(d => d.topic === 'macro').length),
     CITIES ? railButton(TOPICS.find(t => t.id === 'cities'), 'pub') : null,
     h('a', { class: 'raillink pub', href: 'provinces/' }, h('span', {}, 'Vehicles by province'), h('span', { class: 'count' }, 'Opens page \u2197')));
-  rail.replaceChildren(railButton({ ...TOPICS[0], name: 'Research Hub home' }), h('div', { class: 'ours' }, ours), pub);
+  rail.replaceChildren(railButton({ ...TOPICS[0], name: 'SPARK home' }), h('div', { class: 'ours' }, ours), pub);
   renderProfile();
   const main = $('#main');
   for (const c of main.querySelectorAll('canvas')) { freeChart(c); }
@@ -1436,8 +1444,8 @@ function kpiTiles(which) {
 }
 function renderHome(main) {
   const list = reportList().filter(r => r.kind !== 'economy');
-  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'AIA Canada Research Hub'),
-    h('h1', {}, 'Welcome to the Research Hub'),
+  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'SPARK · Built for decisions, not just dashboards'),
+    h('h1', {}, 'Welcome to SPARK'),
     h('p', {}, 'All of AIA Canada\u2019s research in one place: our consumer research reports and the 2025 Outlook Study, as interactive charts you can explore, copy and ask questions about. Economic, city and provincial vehicle data are under Macro data.')));
   // how to use
   const step = (n, title, text) => h('li', { class: 'howto-step' }, h('span', { class: 'howto-n', 'aria-hidden': 'true' }, n), h('div', {}, h('b', {}, title), h('span', {}, text)));
@@ -1677,7 +1685,7 @@ function pageFoot() {
     h('span', {}, 'S&P Global Mobility materials are the copyrighted property of S&P Global Mobility, represent its data and opinions as of original publication, and should not be used for financial or investment purposes. Replacement rates © IMR Inc. All rights reserved.'));
   if (src === 'report' || src === 'all') f.append(h('span', {}, 'Research reports: © AIA Canada. Charts are built from the figures in each published report; see the full report for methodology and sample details. Member resource: do not redistribute.'));
   if (src === 'macro' || src === 'all') f.append(h('span', {}, `Economic data: Statistics Canada (Statistics Canada Open Licence) and the Bank of Canada. Adapted by AIA Canada; this does not constitute an endorsement by Statistics Canada or the Bank of Canada.${ECON && ECON.built ? ' Last updated ' + ECON.built + '.' : ''}`));
-  f.append(h('span', { class: 'ver' }, `Research Hub version ${typeof HUB_VERSION !== 'undefined' ? HUB_VERSION : ''}`));
+  f.append(h('span', { class: 'ver' }, `SPARK version ${typeof HUB_VERSION !== 'undefined' ? HUB_VERSION : ''}`));
   return f;
 }
 function relatedFor(ds) {
@@ -1691,7 +1699,7 @@ function relatedFor(ds) {
     hits.map(([d]) => h('button', { type: 'button', class: 'rel', onclick: () => { $('#q').value = ''; jump(d.id); } }, h('span', { class: 'ref' }, label(d)), d.title)));
 }
 function aiPack(ds) {
-  return `You are helping me understand data from the AIA Canada Research Hub (source: ${ds.source}). Using only the data below, tell me in plain language: (1) the main takeaway, (2) the biggest change or difference, and (3) what it could mean for an auto care business. Quote numbers exactly and say if something cannot be answered from this data.\n\n${textFor(ds, st(ds).opt[(ds.cube || {}).dims?.[0]])}`;
+  return `You are helping me understand data from SPARK, AIA Canada's research and data hub (source: ${ds.source}). Using only the data below, tell me in plain language: (1) the main takeaway, (2) the biggest change or difference, and (3) what it could mean for an auto care business. Quote numbers exactly and say if something cannot be answered from this data.\n\n${textFor(ds, st(ds).opt[(ds.cube || {}).dims?.[0]])}`;
 }
 function score(ds, q) {
   const words = q.toLowerCase().split(/\W+/).filter(w => w.length > 1);
@@ -2252,9 +2260,10 @@ function renderLanding(box, info = {}) {
   const proof = h('div', { class: 'lp-proof' });
   box.append(h('section', { class: 'lp-hero' },
     h('div', { class: 'lp-hero-copy' },
-      h('span', { class: 'lp-eyebrow' }, 'AIA Canada Research Hub'),
+      h('span', { class: 'lp-eyebrow' }, h('b', { class: 'lp-spark' }, 'SPARK'), ' by AIA Canada'),
       h('h1', {}, 'Know what Canada’s drivers will do ', h('em', {}, 'before your competitors do.')),
-      h('p', { class: 'lp-lead' }, 'The only research built for Canada’s automotive aftermarket: what vehicle owners think, where they take their vehicles, what the market is worth and where it’s heading. Interactive, searchable and ready for your next business decision.'),
+      h('p', { class: 'lp-tag' }, 'Built for decisions, not just dashboards.'),
+      h('p', { class: 'lp-lead' }, 'SPARK is the only research built for Canada’s automotive aftermarket: what vehicle owners think, where they take their vehicles, what the market is worth and where it’s heading. Interactive, searchable and ready for your next business decision.'),
       h('div', { class: 'lp-ctas' },
         h('a', { class: 'btn-ask lp-cta-main', href: '#plans', onclick: go('plans') }, 'Get access'),
         h('a', { class: 'lp-cta-ghost', href: '#reports', onclick: go('reports') }, 'See what’s inside →')),
@@ -2279,7 +2288,7 @@ function renderLanding(box, info = {}) {
   // 3. What you get
   const feat = (icon, t, d) => h('div', { class: 'lp-feat' }, ico(icon), h('h3', {}, t), h('p', {}, d));
   box.append(h('section', { class: 'lp-sec' },
-    h('div', { class: 'lp-sec-head' }, h('span', { class: 'lp-kicker' }, 'Why the Research Hub'), h('h2', {}, 'From finding to decision in minutes')),
+    h('div', { class: 'lp-sec-head' }, h('span', { class: 'lp-kicker' }, 'Why SPARK'), h('h2', {}, 'From finding to decision in minutes')),
     h('div', { class: 'lp-feats' },
       feat('<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>', 'Every chart, interactive', 'Hundreds of charts from AIA Canada’s research. Filter, switch to the table, and copy the numbers straight into your plan or presentation.'),
       feat('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/><path d="M8 11h6M11 8v6"/>', 'Ask the data', 'Ask a question in plain language and get an answer drawn only from the research, with the chart behind every number.'),
@@ -2291,7 +2300,7 @@ function renderLanding(box, info = {}) {
     h('div', { class: 'lp-band-in' },
       h('span', { class: 'lp-band-kicker' }, 'AIA Canada membership'),
       h('h2', {}, 'We keep Canada moving'),
-      h('p', {}, h('span', { id: 'lpVehicles' }, 'AIA Canada members keep Canada’s vehicles on the road.'), ' Membership puts every report in the Research Hub in your hands, free, along with the advocacy, events, training and industry connections that keep your business moving.'),
+      h('p', {}, h('span', { id: 'lpVehicles' }, 'AIA Canada members keep Canada’s vehicles on the road.'), ' Membership puts every report in SPARK in your hands, free, along with the advocacy, events, training and industry connections that keep your business moving.'),
       h('div', { class: 'lp-ctas' }, h('a', { class: 'btn-ask', href: JOIN_URL }, 'Join AIA Canada'), h('a', { class: 'lp-cta-ghost lp-on-dark', href: AFFILIATE_URL }, 'Or become an affiliate →')))));
 
   // 5. Pricing
@@ -2303,10 +2312,10 @@ function renderLanding(box, info = {}) {
         h('a', { class: 'btn-ask', href: JOIN_URL }, 'Become a member'),
         h('p', { class: 'lp-plan-note' }, 'Already a member? ', h('a', { href: '#signin', onclick: e => { e.preventDefault(); $('#email').focus(); $('#email').scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 'Sign in'), '.')),
       h('div', { class: 'lp-plan lp-plan-aff' }, h('span', { class: 'lp-plan-tag lp-tag-ink' }, 'Free access'), h('h3', {}, 'Industry affiliate'), h('p', { class: 'lp-price' }, 'Free', h('span', {}, ' as an affiliate')),
-        h('ul', {}, ['Every report in the Research Hub', 'Join AIA Canada’s Industry Engagement Network', 'Stay connected with the industry'].map(t => h('li', {}, t))),
+        h('ul', {}, ['Every report in SPARK', 'Join AIA Canada’s Industry Engagement Network', 'Stay connected with the industry'].map(t => h('li', {}, t))),
         h('a', { class: 'btn-ask', href: AFFILIATE_URL }, 'Become an affiliate')),
       h('div', { class: 'lp-plan' }, h('h3', {}, 'Single report'), h('p', { class: 'lp-price' }, money(PRICE.report), h('span', {}, ' per report')),
-        h('ul', {}, ['The full report as a PDF, yours to keep', `${PRICE.days} days in the Research Hub with that report`, 'Interactive charts, tables and Ask the data'].map(t => h('li', {}, t))),
+        h('ul', {}, ['The full report as a PDF, yours to keep', `${PRICE.days} days in SPARK with that report`, 'Interactive charts, tables and Ask the data'].map(t => h('li', {}, t))),
         h('a', { class: 'act lp-plan-btn', href: '#reports', onclick: go('reports') }, 'Choose a report ↓')))));
 
   // 6. The reports
@@ -2332,7 +2341,7 @@ function renderLanding(box, info = {}) {
   box.append(h('section', { class: 'lp-sec' }, h('div', { class: 'lp-sec-head' }, h('h2', {}, 'Questions')),
     q('I work for an AIA Canada member. How do I get in?', 'Enter your work email in the sign-in box. We check it against our member records and email you a code. Every report is free for members.'),
     q('How do I get free access as an affiliate?', 'Join AIA Canada’s Industry Engagement Network as an affiliate. Once you’re on our records, sign in with your work email here.'),
-    q('What do I get when I buy a report?', `${PRICE.days} days of access to that report in the Research Hub, starting when you pay: its interactive charts and tables, Ask the data, and the full report as a PDF. Download the PDF during your ${PRICE.days} days; it’s yours to keep.`),
+    q('What do I get when I buy a report?', `${PRICE.days} days of access to that report in SPARK, starting when you pay: its interactive charts and tables, Ask the data, and the full report as a PDF. Download the PDF during your ${PRICE.days} days; it’s yours to keep.`),
     q('How do I sign in after buying?', 'Use the email address you paid with. We email you a sign-in code; there’s no password.'),
     q('Are taxes included?', 'Prices are in Canadian dollars. Applicable sales taxes are shown at checkout.'),
     q('Is payment secure?', 'Payments are handled by Stripe. AIA Canada never sees or stores your card details.'),
@@ -2351,7 +2360,7 @@ function siteFooter() {
         h('address', {}, '180 Elgin St, Suite 1400', h('br'), 'Ottawa, ON K2P 2K3', h('br'),
           h('a', { href: 'tel:+18008082920' }, 'Toll free: 1-800-808-2920'), h('br'), h('a', { href: 'mailto:info@aiacanada.com' }, 'info@aiacanada.com'))),
       col('AIA Canada', [['aiacanada.com', 'https://www.aiacanada.com/'], ['Become a member', JOIN_URL], ['Become an affiliate', AFFILIATE_URL], ['Media kit', 'https://www.aiacanada.com/media/media-kit/']]),
-      col('Research Hub', [['Get access', '#plans'], ['Reports in the hub', '#reports'], ['Sign in', '#signin'], ['Contact us', 'mailto:' + CFG.contactEmail]]),
+      col('SPARK', [['Get access', '#plans'], ['Reports in the hub', '#reports'], ['Sign in', '#signin'], ['Contact us', 'mailto:' + CFG.contactEmail]]),
       col('Our family', [['CCIF', 'https://www.ccif.ca/'], ['I-CAR Canada', 'https://www.i-car.ca/']])),
     h('div', { class: 'ft-bottom' }, h('span', {}, `\u00a9 ${new Date().getFullYear()} Automotive Industries Association of Canada. All rights reserved.`),
       h('a', { href: 'https://aiacanada.com/privacy-policy/' }, 'Privacy policy')));
@@ -2376,7 +2385,7 @@ function signinCard(info) {
   const err = h('p', { class: 'gate-err', role: 'alert' }, info.error || ''); err.hidden = !info.error;
   const fail = (msg) => { const btn = form.querySelector('button'); btn.disabled = false; btn.textContent = 'Sign in'; err.hidden = false; err.textContent = msg; };
   form.addEventListener('submit', e => { e.preventDefault(); requestCode($('#email').value.trim().toLowerCase(), form.querySelector('button'), fail); });
-  card.append(h('span', { class: 'lp-signin-tag' }, 'Members \u00b7 affiliates \u00b7 buyers'), h('h2', {}, 'Sign in to the hub'), h('p', {}, 'Use your work email, or the email you bought with. We’ll email you a sign-in code. No password needed.'), form, err,
+  card.append(h('span', { class: 'lp-signin-tag' }, 'Members \u00b7 affiliates \u00b7 buyers'), h('h2', {}, 'Sign in to SPARK'), h('p', {}, 'Use your work email, or the email you bought with. We’ll email you a sign-in code. No password needed.'), form, err,
     h('p', { class: 'gate-muted' }, 'Not a member? ', h('a', { href: JOIN_URL }, 'Join AIA Canada'), ', ', h('a', { href: AFFILIATE_URL }, 'become an affiliate'), ' or ', h('a', { href: '#plans', onclick: e => { e.preventDefault(); $('#plans').scrollIntoView({ behavior: 'smooth' }); } }, 'buy a report'), '.'));
   if (info.autoSend && info.email) setTimeout(() => requestCode(info.email, form.querySelector('button'), fail), 50);
   return card;
@@ -2463,13 +2472,13 @@ function gate(kind, info = {}) {
   const box = h('section', { class: 'gate', 'aria-live': 'polite' });
   document.body.classList.toggle('is-landing', kind === 'signin' || kind === 'denied');
   if (kind === 'loading') {
-    box.append(h('p', { class: 'gate-muted' }, info.msg || 'Loading the Research Hub…'));
+    box.append(h('p', { class: 'gate-muted' }, info.msg || 'Loading SPARK…'));
   } else if (kind === 'signin') {
     renderLanding(box, info);
   } else if (kind === 'notmember') {
-    const contact = h('a', { href: `mailto:${CFG.contactEmail}?subject=${encodeURIComponent('Research Hub access')}&body=${encodeURIComponent(`Hello,\n\nI would like access to the AIA Canada Research Hub. My work email is ${info.email}.\n\nCompany:\nName:\n`)}` }, CFG.contactEmail);
+    const contact = h('a', { href: `mailto:${CFG.contactEmail}?subject=${encodeURIComponent('SPARK access')}&body=${encodeURIComponent(`Hello,\n\nI would like access to SPARK, AIA Canada\u2019s research and data hub. My work email is ${info.email}.\n\nCompany:\nName:\n`)}` }, CFG.contactEmail);
     box.append(h('h1', {}, 'We couldn\u2019t find a membership, affiliation or purchase for this email'),
-      h('p', {}, h('span', {}, 'We checked '), h('strong', {}, info.email), h('span', {}, ' against AIA Canada\u2019s member records and Research Hub purchases.')),
+      h('p', {}, h('span', {}, 'We checked '), h('strong', {}, info.email), h('span', {}, ' against AIA Canada\u2019s member records and SPARK purchases.')),
       h('p', {}, 'If your company is a member, try the email address AIA Canada has on file for you. Otherwise, you can join or buy access:'),
       h('div', { class: 'chips' }, h('a', { class: 'btn-ask', href: JOIN_URL }, 'Become a member'), h('a', { class: 'act', href: AFFILIATE_URL }, 'Become an affiliate (free access)'),
         h('button', { type: 'button', class: 'act', onclick: () => { gate('signin', { email: info.email }); setTimeout(() => $('#reports').scrollIntoView(), 50); } }, `Buy one report \u00b7 ${money(PRICE.report)}`)),
@@ -2575,7 +2584,7 @@ function remoteSample() {
 /* ---------- access list (admins only) ---------- */
 async function renderAccess(main) {
   main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'Admin'), h('h1', {}, 'Manage access'),
-    h('p', {}, 'People on this list can sign in with their email and see the Research Hub. Removing someone takes effect the next time they load the page.')));
+    h('p', {}, 'People on this list can sign in with their email and see SPARK. Removing someone takes effect the next time they load the page.')));
   const panel = h('section', { class: 'panel' });
   const ta = h('textarea', { id: 'bulk', rows: '4', class: 'bulk', placeholder: 'One or more emails, separated by commas or new lines' });
   const org = h('input', { id: 'bulkOrg', class: 'tsearch', placeholder: 'Organization (optional)' });

@@ -99,7 +99,7 @@ function render() {
     railButton({ ...TOPICS.find(t => t.id === 'macro'), name: 'Economic indicators' }, 'pub', DS.filter(d => d.topic === 'macro').length),
     CITIES ? railButton(TOPICS.find(t => t.id === 'cities'), 'pub') : null,
     h('a', { class: 'raillink pub', href: 'provinces/' }, h('span', {}, 'Vehicles by province'), h('span', { class: 'count' }, 'Opens page \u2197')));
-  rail.replaceChildren(railButton({ ...TOPICS[0], name: 'Research Hub home' }), h('div', { class: 'ours' }, ours), pub);
+  rail.replaceChildren(railButton({ ...TOPICS[0], name: 'SPARK home' }), h('div', { class: 'ours' }, ours), pub);
   renderProfile();
   const main = $('#main');
   for (const c of main.querySelectorAll('canvas')) { freeChart(c); }
@@ -158,8 +158,8 @@ function kpiTiles(which) {
 }
 function renderHome(main) {
   const list = reportList().filter(r => r.kind !== 'economy');
-  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'AIA Canada Research Hub'),
-    h('h1', {}, 'Welcome to the Research Hub'),
+  main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'SPARK · Built for decisions, not just dashboards'),
+    h('h1', {}, 'Welcome to SPARK'),
     h('p', {}, 'All of AIA Canada\u2019s research in one place: our consumer research reports and the 2025 Outlook Study, as interactive charts you can explore, copy and ask questions about. Economic, city and provincial vehicle data are under Macro data.')));
   // how to use
   const step = (n, title, text) => h('li', { class: 'howto-step' }, h('span', { class: 'howto-n', 'aria-hidden': 'true' }, n), h('div', {}, h('b', {}, title), h('span', {}, text)));
@@ -399,7 +399,7 @@ function pageFoot() {
     h('span', {}, 'S&P Global Mobility materials are the copyrighted property of S&P Global Mobility, represent its data and opinions as of original publication, and should not be used for financial or investment purposes. Replacement rates © IMR Inc. All rights reserved.'));
   if (src === 'report' || src === 'all') f.append(h('span', {}, 'Research reports: © AIA Canada. Charts are built from the figures in each published report; see the full report for methodology and sample details. Member resource: do not redistribute.'));
   if (src === 'macro' || src === 'all') f.append(h('span', {}, `Economic data: Statistics Canada (Statistics Canada Open Licence) and the Bank of Canada. Adapted by AIA Canada; this does not constitute an endorsement by Statistics Canada or the Bank of Canada.${ECON && ECON.built ? ' Last updated ' + ECON.built + '.' : ''}`));
-  f.append(h('span', { class: 'ver' }, `Research Hub version ${typeof HUB_VERSION !== 'undefined' ? HUB_VERSION : ''}`));
+  f.append(h('span', { class: 'ver' }, `SPARK version ${typeof HUB_VERSION !== 'undefined' ? HUB_VERSION : ''}`));
   return f;
 }
 function relatedFor(ds) {
@@ -413,7 +413,7 @@ function relatedFor(ds) {
     hits.map(([d]) => h('button', { type: 'button', class: 'rel', onclick: () => { $('#q').value = ''; jump(d.id); } }, h('span', { class: 'ref' }, label(d)), d.title)));
 }
 function aiPack(ds) {
-  return `You are helping me understand data from the AIA Canada Research Hub (source: ${ds.source}). Using only the data below, tell me in plain language: (1) the main takeaway, (2) the biggest change or difference, and (3) what it could mean for an auto care business. Quote numbers exactly and say if something cannot be answered from this data.\n\n${textFor(ds, st(ds).opt[(ds.cube || {}).dims?.[0]])}`;
+  return `You are helping me understand data from SPARK, AIA Canada's research and data hub (source: ${ds.source}). Using only the data below, tell me in plain language: (1) the main takeaway, (2) the biggest change or difference, and (3) what it could mean for an auto care business. Quote numbers exactly and say if something cannot be answered from this data.\n\n${textFor(ds, st(ds).opt[(ds.cube || {}).dims?.[0]])}`;
 }
 function score(ds, q) {
   const words = q.toLowerCase().split(/\W+/).filter(w => w.length > 1);

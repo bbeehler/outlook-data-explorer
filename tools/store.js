@@ -89,9 +89,10 @@ function renderLanding(box, info = {}) {
   const proof = h('div', { class: 'lp-proof' });
   box.append(h('section', { class: 'lp-hero' },
     h('div', { class: 'lp-hero-copy' },
-      h('span', { class: 'lp-eyebrow' }, 'AIA Canada Research Hub'),
+      h('span', { class: 'lp-eyebrow' }, h('b', { class: 'lp-spark' }, 'SPARK'), ' by AIA Canada'),
       h('h1', {}, 'Know what Canada’s drivers will do ', h('em', {}, 'before your competitors do.')),
-      h('p', { class: 'lp-lead' }, 'The only research built for Canada’s automotive aftermarket: what vehicle owners think, where they take their vehicles, what the market is worth and where it’s heading. Interactive, searchable and ready for your next business decision.'),
+      h('p', { class: 'lp-tag' }, 'Built for decisions, not just dashboards.'),
+      h('p', { class: 'lp-lead' }, 'SPARK is the only research built for Canada’s automotive aftermarket: what vehicle owners think, where they take their vehicles, what the market is worth and where it’s heading. Interactive, searchable and ready for your next business decision.'),
       h('div', { class: 'lp-ctas' },
         h('a', { class: 'btn-ask lp-cta-main', href: '#plans', onclick: go('plans') }, 'Get access'),
         h('a', { class: 'lp-cta-ghost', href: '#reports', onclick: go('reports') }, 'See what’s inside →')),
@@ -116,7 +117,7 @@ function renderLanding(box, info = {}) {
   // 3. What you get
   const feat = (icon, t, d) => h('div', { class: 'lp-feat' }, ico(icon), h('h3', {}, t), h('p', {}, d));
   box.append(h('section', { class: 'lp-sec' },
-    h('div', { class: 'lp-sec-head' }, h('span', { class: 'lp-kicker' }, 'Why the Research Hub'), h('h2', {}, 'From finding to decision in minutes')),
+    h('div', { class: 'lp-sec-head' }, h('span', { class: 'lp-kicker' }, 'Why SPARK'), h('h2', {}, 'From finding to decision in minutes')),
     h('div', { class: 'lp-feats' },
       feat('<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>', 'Every chart, interactive', 'Hundreds of charts from AIA Canada’s research. Filter, switch to the table, and copy the numbers straight into your plan or presentation.'),
       feat('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/><path d="M8 11h6M11 8v6"/>', 'Ask the data', 'Ask a question in plain language and get an answer drawn only from the research, with the chart behind every number.'),
@@ -128,7 +129,7 @@ function renderLanding(box, info = {}) {
     h('div', { class: 'lp-band-in' },
       h('span', { class: 'lp-band-kicker' }, 'AIA Canada membership'),
       h('h2', {}, 'We keep Canada moving'),
-      h('p', {}, h('span', { id: 'lpVehicles' }, 'AIA Canada members keep Canada’s vehicles on the road.'), ' Membership puts every report in the Research Hub in your hands, free, along with the advocacy, events, training and industry connections that keep your business moving.'),
+      h('p', {}, h('span', { id: 'lpVehicles' }, 'AIA Canada members keep Canada’s vehicles on the road.'), ' Membership puts every report in SPARK in your hands, free, along with the advocacy, events, training and industry connections that keep your business moving.'),
       h('div', { class: 'lp-ctas' }, h('a', { class: 'btn-ask', href: JOIN_URL }, 'Join AIA Canada'), h('a', { class: 'lp-cta-ghost lp-on-dark', href: AFFILIATE_URL }, 'Or become an affiliate →')))));
 
   // 5. Pricing
@@ -140,10 +141,10 @@ function renderLanding(box, info = {}) {
         h('a', { class: 'btn-ask', href: JOIN_URL }, 'Become a member'),
         h('p', { class: 'lp-plan-note' }, 'Already a member? ', h('a', { href: '#signin', onclick: e => { e.preventDefault(); $('#email').focus(); $('#email').scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 'Sign in'), '.')),
       h('div', { class: 'lp-plan lp-plan-aff' }, h('span', { class: 'lp-plan-tag lp-tag-ink' }, 'Free access'), h('h3', {}, 'Industry affiliate'), h('p', { class: 'lp-price' }, 'Free', h('span', {}, ' as an affiliate')),
-        h('ul', {}, ['Every report in the Research Hub', 'Join AIA Canada’s Industry Engagement Network', 'Stay connected with the industry'].map(t => h('li', {}, t))),
+        h('ul', {}, ['Every report in SPARK', 'Join AIA Canada’s Industry Engagement Network', 'Stay connected with the industry'].map(t => h('li', {}, t))),
         h('a', { class: 'btn-ask', href: AFFILIATE_URL }, 'Become an affiliate')),
       h('div', { class: 'lp-plan' }, h('h3', {}, 'Single report'), h('p', { class: 'lp-price' }, money(PRICE.report), h('span', {}, ' per report')),
-        h('ul', {}, ['The full report as a PDF, yours to keep', `${PRICE.days} days in the Research Hub with that report`, 'Interactive charts, tables and Ask the data'].map(t => h('li', {}, t))),
+        h('ul', {}, ['The full report as a PDF, yours to keep', `${PRICE.days} days in SPARK with that report`, 'Interactive charts, tables and Ask the data'].map(t => h('li', {}, t))),
         h('a', { class: 'act lp-plan-btn', href: '#reports', onclick: go('reports') }, 'Choose a report ↓')))));
 
   // 6. The reports
@@ -169,7 +170,7 @@ function renderLanding(box, info = {}) {
   box.append(h('section', { class: 'lp-sec' }, h('div', { class: 'lp-sec-head' }, h('h2', {}, 'Questions')),
     q('I work for an AIA Canada member. How do I get in?', 'Enter your work email in the sign-in box. We check it against our member records and email you a code. Every report is free for members.'),
     q('How do I get free access as an affiliate?', 'Join AIA Canada’s Industry Engagement Network as an affiliate. Once you’re on our records, sign in with your work email here.'),
-    q('What do I get when I buy a report?', `${PRICE.days} days of access to that report in the Research Hub, starting when you pay: its interactive charts and tables, Ask the data, and the full report as a PDF. Download the PDF during your ${PRICE.days} days; it’s yours to keep.`),
+    q('What do I get when I buy a report?', `${PRICE.days} days of access to that report in SPARK, starting when you pay: its interactive charts and tables, Ask the data, and the full report as a PDF. Download the PDF during your ${PRICE.days} days; it’s yours to keep.`),
     q('How do I sign in after buying?', 'Use the email address you paid with. We email you a sign-in code; there’s no password.'),
     q('Are taxes included?', 'Prices are in Canadian dollars. Applicable sales taxes are shown at checkout.'),
     q('Is payment secure?', 'Payments are handled by Stripe. AIA Canada never sees or stores your card details.'),
@@ -188,7 +189,7 @@ function siteFooter() {
         h('address', {}, '180 Elgin St, Suite 1400', h('br'), 'Ottawa, ON K2P 2K3', h('br'),
           h('a', { href: 'tel:+18008082920' }, 'Toll free: 1-800-808-2920'), h('br'), h('a', { href: 'mailto:info@aiacanada.com' }, 'info@aiacanada.com'))),
       col('AIA Canada', [['aiacanada.com', 'https://www.aiacanada.com/'], ['Become a member', JOIN_URL], ['Become an affiliate', AFFILIATE_URL], ['Media kit', 'https://www.aiacanada.com/media/media-kit/']]),
-      col('Research Hub', [['Get access', '#plans'], ['Reports in the hub', '#reports'], ['Sign in', '#signin'], ['Contact us', 'mailto:' + CFG.contactEmail]]),
+      col('SPARK', [['Get access', '#plans'], ['Reports in the hub', '#reports'], ['Sign in', '#signin'], ['Contact us', 'mailto:' + CFG.contactEmail]]),
       col('Our family', [['CCIF', 'https://www.ccif.ca/'], ['I-CAR Canada', 'https://www.i-car.ca/']])),
     h('div', { class: 'ft-bottom' }, h('span', {}, `\u00a9 ${new Date().getFullYear()} Automotive Industries Association of Canada. All rights reserved.`),
       h('a', { href: 'https://aiacanada.com/privacy-policy/' }, 'Privacy policy')));
@@ -213,7 +214,7 @@ function signinCard(info) {
   const err = h('p', { class: 'gate-err', role: 'alert' }, info.error || ''); err.hidden = !info.error;
   const fail = (msg) => { const btn = form.querySelector('button'); btn.disabled = false; btn.textContent = 'Sign in'; err.hidden = false; err.textContent = msg; };
   form.addEventListener('submit', e => { e.preventDefault(); requestCode($('#email').value.trim().toLowerCase(), form.querySelector('button'), fail); });
-  card.append(h('span', { class: 'lp-signin-tag' }, 'Members \u00b7 affiliates \u00b7 buyers'), h('h2', {}, 'Sign in to the hub'), h('p', {}, 'Use your work email, or the email you bought with. We’ll email you a sign-in code. No password needed.'), form, err,
+  card.append(h('span', { class: 'lp-signin-tag' }, 'Members \u00b7 affiliates \u00b7 buyers'), h('h2', {}, 'Sign in to SPARK'), h('p', {}, 'Use your work email, or the email you bought with. We’ll email you a sign-in code. No password needed.'), form, err,
     h('p', { class: 'gate-muted' }, 'Not a member? ', h('a', { href: JOIN_URL }, 'Join AIA Canada'), ', ', h('a', { href: AFFILIATE_URL }, 'become an affiliate'), ' or ', h('a', { href: '#plans', onclick: e => { e.preventDefault(); $('#plans').scrollIntoView({ behavior: 'smooth' }); } }, 'buy a report'), '.'));
   if (info.autoSend && info.email) setTimeout(() => requestCode(info.email, form.querySelector('button'), fail), 50);
   return card;
