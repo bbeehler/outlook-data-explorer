@@ -18,14 +18,41 @@ jobs:
         run: |
           set +e
           mkdir -p "$RUNNER_TEMP/out" && cd "$RUNNER_TEMP/out"
-          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
-          B=https://www.services.labour.gov.on.ca
-          curl -s -A "$UA" "$B/labourmarket-ui/assets/i18n/en.json" -o en.json
-          for n in 72410 72411 74203 72401 72402 72422 62020 64100 64101 72400 73402 22312 72106 75101; do
-            curl -s -A "$UA" -H "Accept: application/json" "$B/labourmarket/api/jobProfile/$n" | python3 -c "import json,sys
+          python3 - <<'PY' 2>&1 | tee py.log
+          import json, urllib.request, csv, io, re
+          UA = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"}
+          def get(u, n=None):
+              r = urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=300)
+              return r.read(n) if n else r.read()
+          out = []
+          for ds in ["1dc7cdcd-5a1c-450a-9544-2a98a3011d61", "adad580f-76b0-4502-bd05-20c125de9116", "b0e112e9-cf53-4e79-8838-23cd98debe5b"]:
+              try:
+                  j = json.loads(get(f"https://open.canada.ca/data/api/action/package_show?id={ds}"))["result"]
+                  out.append(f"## {ds} {j['title']} | modified {j.get('metadata_modified')}")
+                  for r in j["resources"]:
+                      out.append(f"  {r.get('name')} | {r.get('format')} | {r.get('language')} | {r.get('last_modified') or r.get('created')} | {r.get('url')}")
+                      if str(r.get("format")).upper() == "CSV" and ("en" in str(r.get("language")) or "Eng" in str(r.get("name")) or "EN" in str(r.get("url"))):
+                          try:
+                              raw = get(r["url"])
+                              txt = raw.decode("utf-8-sig", "replace") if raw[:3] == b"\xef\xbb\xbf" or True else raw.decode("latin-1")
+                              lines = txt.splitlines()
+                              out.append(f"    {len(raw)} bytes, {len(lines)} lines")
+                              out += ["    " + l[:400] for l in lines[:3]]
+                              out += ["    " + l[:400] for l in lines if re.search(r"\b(7241[01]|74203|7321|7322)\b", l)][:40]
+                          except Exception as e:
+                              out.append(f"    ERROR {e}")
+              except Exception as e:
+                  out.append(f"## {ds} ERROR {e}")
+          # national projections (COPS) and other candidates
           try:
-              d=json.load(sys.stdin); w=d['nocWrapper']; print('$n', w['nocEnTitle'], '| outlook', w['jobOutlook']['jobOutlookCode'], '| openings', d.get('openingCategoryFormatted'))
-          except Exception as e: print('$n ERR', e)" >> titles.txt; done
+              j = json.loads(get("https://open.canada.ca/data/api/action/package_search?q=Canadian%20Occupational%20Projection%20System%202024&rows=5"))
+              for p in j["result"]["results"]:
+                  out.append(f"## COPS? {p['id']} {p['title']}")
+                  for r in p["resources"][:30]: out.append(f"  {r.get('name')} | {r.get('format')} | {r.get('language')} | {r.get('url')}")
+          except Exception as e:
+              out.append(f"COPS ERROR {e}")
+          open("summary.txt", "w").write("\n".join(out))
+          PY
           ls -la > listing.txt; exit 0
       - name: Save
         if: always()
