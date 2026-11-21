@@ -81,7 +81,7 @@ const FIGURE_TOOL = {
 };
 (FIGURE_TOOL.input_schema.properties.figures.items.properties.tags.items as { enum: string[] }).enum = TAGS;
 
-const RULES = `You are reading pages of an AIA Canada research report so its charts and tables can be shown as interactive charts in SPARK, AIA Canada's research and data hub.
+const RULES = `You are reading pages of an AIA Canada research report so its charts and tables can be shown as interactive charts in the AIA Canada Research Hub.
 Find every chart or table that contains data (numbers). Skip photos, icons, decorative graphics and charts without numbers. Do not invent anything.
 For each, copy the values exactly as printed. Percentages become fractions (45% -> 0.45). If a value is not printed, read it from the chart as carefully as you can and set confidence to medium or low. Never fill gaps with guesses: use null.
 Keep category and series labels as the report words them (shorten only very long labels, keeping the meaning).

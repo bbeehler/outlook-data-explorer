@@ -26,11 +26,11 @@ rep("  if (current === 'home') return renderHome(main);","  if (current === 'hom
 rep("`${DS.length - 1} figures","`${Math.max(DS.length - 1, 0)} figures")
 # ---- Research Hub ----
 rep('<span class="eyebrow">AIA Canada · Outlook Study 2025</span>\n      <span class="name">Outlook Data Explorer</span>',
-    '<span class="eyebrow">AIA Canada · Built for decisions, not just dashboards</span>\n      <span class="name"><svg class="spark-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg>SPARK</span>')
+    '<span class="eyebrow">AIA Canada · Research and data</span>\n      <span class="name">Research Hub</span>')
 rep('placeholder="Find a figure: EV share, technicians, F-150…"', 'placeholder="Search reports and data"')
 rep("  el.append(h('div', { class: 'foot' }, src, acts));", "  const rel = relatedFor(ds); if (rel) el.append(rel);\n  el.append(h('div', { class: 'foot' }, src, acts));")
 i0=t.index("const RULES = `"); j0=t.index("`;", i0)+2
-t=t[:i0]+"""const RULES = `You are the data assistant inside SPARK, AIA Canada's research and data hub, a tool for members of the Automotive Industries Association of Canada (AIA Canada). It holds three kinds of data:
+t=t[:i0]+"""const RULES = `You are the data assistant inside the AIA Canada Research Hub, a tool for members of the Automotive Industries Association of Canada (AIA Canada). It holds three kinds of data:
 - AIA Canada research reports (consumer surveys such as the Consumer Behaviour Series), with the report named in each figure's source.
 - The AIA Canada Outlook Study 2025 (released January 2025, prepared with EY; mostly 2019 to 2023, with S&P Global Mobility forecasts to 2030).
 - Economic indicators from Statistics Canada and the Bank of Canada (prices, vehicle registrations, jobs, wages, interest rates), updated twice a month.
@@ -60,7 +60,7 @@ rep('<div class="brand">', '<button class="menu-btn" id="menuBtn" type="button" 
 rep('<button class="btn-ask" id="askTop" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg>Ask the data</button>',
     '<button class="btn-ask" id="askTop" hidden aria-label="Ask the data"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg><span class="lbl">Ask the data</span></button>')
 rep('<nav class="rail" id="rail" aria-label="Topics"></nav>', '''<div class="navpanel" id="navPanel">
-    <div class="nav-head"><b>SPARK</b><button type="button" class="act" id="navClose">Close</button></div>
+    <div class="nav-head"><b>Research Hub</b><button type="button" class="act" id="navClose">Close</button></div>
     <label class="nav-search" for="q2"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q2" type="search" placeholder="Search reports and data" autocomplete="off"></label>
     <nav class="rail" id="rail" aria-label="Sections"></nav>
   </div>
@@ -95,7 +95,7 @@ head='''<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>SPARK | AIA Canada research and data</title>
+<title>Research Hub | AIA Canada</title>
 <script src="config.js"></script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>

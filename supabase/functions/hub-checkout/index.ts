@@ -1,4 +1,4 @@
-// hub-checkout: starts a Stripe Checkout for the SPARK store. Public (no sign-in needed to buy).
+// hub-checkout: starts a Stripe Checkout for the Research Hub store. Public (no sign-in needed to buy).
 //   { plan: "report", key: "r:<slug>" | "outlook", email? } -> one report, $250 CAD: the report's PDF and 3 days of access in the hub
 //   { action: "status", session_id }                        -> after paying: the email used and whether access is ready
 // Returns { url } to send the buyer to Stripe. The purchase itself is recorded by hub-stripe-webhook.
@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
       const s = await stripe("POST", "checkout/sessions", {
         ...common, mode: "payment", customer_creation: "always", invoice_creation: { enabled: true },
         line_items: [{ quantity: 1, price_data: { currency: CURRENCY, unit_amount: PRICES.report, tax_behavior: "exclusive",
-          product_data: { name: `${name} (AIA Canada research report)`, description: `${ACCESS_DAYS} days of access in SPARK, AIA Canada's research and data hub: the full report as a PDF, interactive charts and Ask the data.` } } }],
+          product_data: { name: `${name} (AIA Canada research report)`, description: `${ACCESS_DAYS} days of access in the AIA Canada Research Hub: the full report as a PDF, interactive charts and Ask the data.` } } }],
         metadata: { plan: "report", report_key: key },
         payment_intent_data: { metadata: { plan: "report", report_key: key } },
       });

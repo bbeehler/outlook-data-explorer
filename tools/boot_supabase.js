@@ -13,13 +13,13 @@ function gate(kind, info = {}) {
   const box = h('section', { class: 'gate', 'aria-live': 'polite' });
   document.body.classList.toggle('is-landing', kind === 'signin' || kind === 'denied');
   if (kind === 'loading') {
-    box.append(h('p', { class: 'gate-muted' }, info.msg || 'Loading SPARK…'));
+    box.append(h('p', { class: 'gate-muted' }, info.msg || 'Loading the Research Hub…'));
   } else if (kind === 'signin') {
     renderLanding(box, info);
   } else if (kind === 'notmember') {
-    const contact = h('a', { href: `mailto:${CFG.contactEmail}?subject=${encodeURIComponent('SPARK access')}&body=${encodeURIComponent(`Hello,\n\nI would like access to SPARK, AIA Canada\u2019s research and data hub. My work email is ${info.email}.\n\nCompany:\nName:\n`)}` }, CFG.contactEmail);
+    const contact = h('a', { href: `mailto:${CFG.contactEmail}?subject=${encodeURIComponent('Research Hub access')}&body=${encodeURIComponent(`Hello,\n\nI would like access to the AIA Canada Research Hub. My work email is ${info.email}.\n\nCompany:\nName:\n`)}` }, CFG.contactEmail);
     box.append(h('h1', {}, 'We couldn\u2019t find a membership, affiliation or purchase for this email'),
-      h('p', {}, h('span', {}, 'We checked '), h('strong', {}, info.email), h('span', {}, ' against AIA Canada\u2019s member records and SPARK purchases.')),
+      h('p', {}, h('span', {}, 'We checked '), h('strong', {}, info.email), h('span', {}, ' against AIA Canada\u2019s member records and Research Hub purchases.')),
       h('p', {}, 'If your company is a member, try the email address AIA Canada has on file for you. Otherwise, you can join or buy access:'),
       h('div', { class: 'chips' }, h('a', { class: 'btn-ask', href: JOIN_URL }, 'Become a member'), h('a', { class: 'act', href: AFFILIATE_URL }, 'Become an affiliate (free access)'),
         h('button', { type: 'button', class: 'act', onclick: () => { gate('signin', { email: info.email }); setTimeout(() => $('#reports').scrollIntoView(), 50); } }, `Buy one report \u00b7 ${money(PRICE.report)}`)),
@@ -125,7 +125,7 @@ function remoteSample() {
 /* ---------- access list (admins only) ---------- */
 async function renderAccess(main) {
   main.append(h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow' }, 'Admin'), h('h1', {}, 'Manage access'),
-    h('p', {}, 'People on this list can sign in with their email and see SPARK. Removing someone takes effect the next time they load the page.')));
+    h('p', {}, 'People on this list can sign in with their email and see the Research Hub. Removing someone takes effect the next time they load the page.')));
   const panel = h('section', { class: 'panel' });
   const ta = h('textarea', { id: 'bulk', rows: '4', class: 'bulk', placeholder: 'One or more emails, separated by commas or new lines' });
   const org = h('input', { id: 'bulkOrg', class: 'tsearch', placeholder: 'Organization (optional)' });
