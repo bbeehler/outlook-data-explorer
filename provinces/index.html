@@ -119,7 +119,7 @@ tr.pick[aria-selected="true"] th, tr.pick[aria-selected="true"] td { background:
 .golink b { font-size: 17px; color: var(--accent); }
 tr.cur th, tr.cur td { background: var(--chip-on); color: var(--chip-on-ink); }
 
-/* Public data pages look different from the Research Hub (teal frame, "Public data" notice) so no one mistakes them for AIA Canada research */
+/* Macro data pages have their own teal look, set apart from the Research Hub reports */
 :root { --mast: #0b4f53; --mast-2: #a5e3e6; --red: #5cc3c8; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --mast: #072f32; } }
 :root[data-theme="dark"] { --mast: #072f32; }
@@ -136,11 +136,10 @@ tr.cur th, tr.cur td { background: var(--chip-on); color: var(--chip-on-ink); }
 <body>
 <div class="edge" aria-hidden="true"></div>
 <header class="mast"><div class="mast-in">
-  <div class="brand"><span class="eyebrow">Public data · Provincial registrations</span><span class="name">Vehicles by Province</span></div>
+  <div class="brand"><span class="eyebrow">Macro data · Provincial registrations</span><span class="name">Vehicles by Province</span></div>
   <a class="back" href="../">AIA Canada Research Hub</a>
 </div></header>
 <div class="wrap">
-  <p class="pubnote" role="note"><span class="pubtag">Public data</span><span>Government open data from Statistics Canada and provincial governments. This is not AIA Canada research. For AIA Canada’s research, go back to the <a href="../">Research Hub</a>.</span></p>
   <div class="head">
     <span class="eyebrow" id="asAt">Statistics Canada and provincial open data</span>
     <h1>What's on the road, province by province</h1>

@@ -183,7 +183,7 @@ body.is-gated .mast-link { display: none; }
 .cnote { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
 @media (max-width: 560px) { .ctable { font-size: 13px; } .ctable th, .ctable td { padding: 7px 6px; } .cpick { max-width: none; } }
 
-/* Public data (government statistics) is set apart from AIA Canada research: its own colour, tag and box */
+/* Macro data is set apart from AIA Canada research: its own colour, tag and box */
 :root { --pub: #0b6b70; --pub-bg: #e8f3f3; --pub-line: #a9d3d4; --pub-ink: #0a4f53; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --pub: #5cc3c8; --pub-bg: #11292c; --pub-line: #2b5a5d; --pub-ink: #a5e3e6; } }
 :root[data-theme="dark"] { --pub: #5cc3c8; --pub-bg: #11292c; --pub-line: #2b5a5d; --pub-ink: #a5e3e6; }
@@ -294,7 +294,7 @@ body.is-gated .mast-link { display: none; }
 .lp-card-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid var(--line-soft); }
 .lp-free { font-size: 13px; font-weight: 700; color: var(--ink); background: var(--chip); padding: 4px 8px; }
 .lp-card .lp-buy { background: #e21c47; border-color: #e21c47; color: #fff; font-weight: 700; padding: 8px 14px; }
-/* questions and public data */
+/* questions */
 .lp-faq { background: var(--surface); border: 1px solid var(--line); padding: 0 18px; }
 .lp-faq summary { cursor: pointer; padding: 16px 0; font-weight: 700; color: var(--ink); }
 .lp-faq p { margin: 0 0 16px; color: var(--ink-2); }
