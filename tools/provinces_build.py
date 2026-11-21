@@ -17,7 +17,7 @@ from pathlib import Path
 OUT = Path(sys.argv[1] if len(sys.argv) > 1 else "provinces/data.json")
 AB_DIR = Path(sys.argv[2]) if len(sys.argv) > 2 else None
 WDS = "https://www150.statcan.gc.ca/t1/wds/rest/"
-UA = {"Content-Type": "application/json", "User-Agent": "Mozilla/5.0 (AIA Canada Research Hub data build)"}
+UA = {"Content-Type": "application/json", "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36 AIA-Canada-SPARK", "Accept": "application/json"}
 PLACES = [("ca", "Canada"), ("nl", "Newfoundland and Labrador"), ("pe", "Prince Edward Island"), ("ns", "Nova Scotia"),
           ("nb", "New Brunswick"), ("qc", "Quebec"), ("on", "Ontario"), ("mb", "Manitoba"), ("sk", "Saskatchewan"),
           ("ab", "Alberta"), ("bc", "British Columbia"), ("yt", "Yukon"), ("nt", "Northwest Territories"), ("nu", "Nunavut")]

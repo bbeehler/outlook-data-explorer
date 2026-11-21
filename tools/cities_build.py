@@ -23,7 +23,7 @@ errors = []
 def post(path, body):
     for attempt in range(4):  # Statistics Canada sometimes drops a connection; try again before giving up
         try:
-            req = urllib.request.Request(WDS + path, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
+            req = urllib.request.Request(WDS + path, data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36 AIA-Canada-SPARK", "Accept": "application/json"})
             return json.load(urllib.request.urlopen(req, timeout=300))
         except Exception:
             if attempt == 3:

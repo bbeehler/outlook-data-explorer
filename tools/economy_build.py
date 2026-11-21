@@ -6,7 +6,7 @@ Valet API, and writes them as figures in the same format as the Outlook figures,
 relates to (so the hub can link them to research findings). Run by the "Economy data" GitHub Action monthly.
 Usage: python3 tools/economy_build.py [output path]
 """
-import json, sys, datetime, urllib.request
+import json, time, sys, datetime, urllib.request
 from collections import OrderedDict
 from pathlib import Path
 
@@ -16,8 +16,14 @@ MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "No
 
 
 def post(path, body):
-    req = urllib.request.Request(WDS + path, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
-    return json.load(urllib.request.urlopen(req, timeout=120))
+    req = urllib.request.Request(WDS + path, data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36 AIA-Canada-SPARK", "Accept": "application/json"})
+    for attempt in range(4):  # Statistics Canada sometimes refuses or drops a request; try again before giving up
+        try:
+            return json.load(urllib.request.urlopen(req, timeout=120))
+        except Exception:
+            if attempt == 3:
+                raise
+            time.sleep(10 * (attempt + 1))
 
 
 def coord(*ids):
@@ -225,6 +231,9 @@ def main():
 
     for fn in [cpi_repair, cpi_ownership, zev_share, new_regs, fleet_fuel, parts_sales, repair_jobs, repair_pay, repair_gdp, unemployment, debt_service, debt_interest, debt_payments, rates, fx]:
         safe(fn)
+    if errors and OUT.exists():  # a table that failed this time keeps its last good figure instead of disappearing
+        have = {f["id"] for f in figs}
+        figs += [f for f in json.loads(OUT.read_text()).get("datasets", []) if f["id"] not in have]
     out = {"datasets": figs, "errors": errors, "built": datetime.date.today().isoformat()}
     if OUT.exists():
         old = json.loads(OUT.read_text())
