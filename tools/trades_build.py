@@ -76,7 +76,7 @@ def wages():
         if not row or not row[0].startswith("NOC_") or code(row[0]) not in want:
             continue
         noc, prov, er, name = code(row[0]), row[3], row[4], row[5]
-        prov = "CA" if prov == "NAT" else prov
+        prov = {"NAT": "CA", "YK": "YT"}.get(prov, prov)
         low, med, high, avg = num(row[7]), num(row[8]), num(row[9]), num(row[10])
         annual = len(row) > 18 and row[18].strip() == "1"
         period = period or (row[16] if len(row) > 16 else None)
@@ -114,11 +114,18 @@ def outlooks():
         m = re.search(r"Approximately ([\d,]+) people work", " ".join(ps))
         rec = {"outlook": r[ix["Outlook"]], "text": ps[:cut], "workers": int(m.group(1).replace(",", "")) if m else None}
         released = released or r[ix["Release Date"]]
+        prov = {"YK": "YT"}.get(prov, prov)
         o = out.setdefault(noc, {}).setdefault(prov, {"regions": {}})
         if erc.endswith("00") and len(erc) == 4:  # 1000 = the whole of Newfoundland and Labrador
             o.update(rec)
         else:
-            o["regions"][ern.replace(" - ", "–").replace("--", "–")] = {k: rec[k] for k in ("outlook", "workers")}
+            o["regions"][ern.replace(" - ", "–").replace("--", "–")] = rec
+    for noc in out.values():  # PEI and the territories are one economic region: use it as the province
+        for o in noc.values():
+            if "outlook" not in o and len(o["regions"]) == 1:
+                o.update(next(iter(o["regions"].values()))); o["regions"] = {}
+            for r in o["regions"].values():
+                r.pop("text", None)
     period = re.search(r"(\d{4}-\d{4})", res[0]["name"])
     return out, {"outlookPeriod": period.group(1) if period else "", "outlookReleased": str(released)[:10] if released else ""}
 
