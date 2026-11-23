@@ -1,4 +1,5 @@
 // hub-stripe-webhook: Stripe tells us about payments here; we record who can open what in hub_entitlements.
+// Only sessions the hub created (metadata.plan) are recorded; other payments on the same Stripe account are ignored.
 // A report purchase gives access to that report for ACCESS_DAYS days (current_period_end). Subscription events are still
 // handled in case any exist, but none are sold.
 // Point a Stripe webhook at https://<project>.supabase.co/functions/v1/hub-stripe-webhook with these events:
@@ -13,12 +14,13 @@ const iso = (t?: number | null) => (t ? new Date(t * 1000).toISOString() : null)
 const periodEnd = (sub: any) => sub?.current_period_end ?? sub?.items?.data?.[0]?.current_period_end ?? null;
 
 async function onCheckout(s: any) {
+  const plan = s.metadata?.plan;
+  if (plan !== "report" && plan !== "subscription") return; // another AIA Canada payment on the same Stripe account: not ours
   const email = String(s.customer_details?.email ?? s.customer_email ?? "").toLowerCase();
   if (!email) throw new Error("checkout without an email");
-  const plan = s.metadata?.plan;
   const base = { email, stripe_customer: s.customer ?? null, stripe_session: s.id, amount_cents: s.amount_total ?? null, currency: s.currency ?? null, updated_at: new Date().toISOString() };
   if (plan === "report") {
-    if (s.payment_status !== "paid") return; // e.g. delayed payment methods; Stripe sends async_payment_succeeded later
+    if (s.payment_status !== "paid" && s.payment_status !== "no_payment_required") return; // delayed methods arrive later as async_payment_succeeded; 100%-off codes need no payment
     await db.from("hub_entitlements").upsert({ ...base, kind: "report", report_key: s.metadata.report_key, status: "active", stripe_payment_intent: s.payment_intent ?? null,
       current_period_end: new Date(Date.now() + ACCESS_DAYS * 864e5).toISOString() }, { onConflict: "stripe_session" });
   } else if (plan === "subscription") {
