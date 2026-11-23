@@ -3,7 +3,7 @@
 //   { action: "status", session_id }                        -> after paying: the email used and whether access is ready
 // Returns { url } to send the buyer to Stripe. The purchase itself is recorded by hub-stripe-webhook.
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { stripe, PRICES, ACCESS_DAYS, CURRENCY, AUTO_TAX, TAX_CODE, cors, ORIGINS } from "./stripe.ts";
+import { stripe, PRICES, ACCESS_DAYS, CURRENCY, AUTO_TAX, TAX_CODE, GST_HST_NO, cors, ORIGINS } from "./stripe.ts";
 
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
       const name = await reportName(key);
       if (!name) return reply({ error: "Unknown report" }, 400);
       const s = await stripe("POST", "checkout/sessions", {
-        ...common, mode: "payment", customer_creation: "always", invoice_creation: { enabled: true },
+        ...common, mode: "payment", customer_creation: "always", invoice_creation: { enabled: true, invoice_data: { custom_fields: [{ name: "GST/HST No.", value: GST_HST_NO }] } },
         line_items: [{ quantity: 1, price_data: { currency: CURRENCY, unit_amount: PRICES.report, tax_behavior: "exclusive",
           product_data: { name: `${name} (AIA Canada research report)`, tax_code: TAX_CODE, description: `${ACCESS_DAYS} days of access in the AIA Canada Research Hub: the full report as a PDF, interactive charts and Ask the data.` } } }],
         metadata: { plan: "report", report_key: key },

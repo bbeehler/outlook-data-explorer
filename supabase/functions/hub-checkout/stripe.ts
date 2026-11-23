@@ -12,6 +12,7 @@ export const STRIPE_VERSION = "2024-06-20";
 // Stripe Tax: GST/HST by the buyer's province (billing address), added on top of the price. Set STRIPE_AUTOMATIC_TAX=false to turn off.
 export const AUTO_TAX = (Deno.env.get("STRIPE_AUTOMATIC_TAX") ?? "true").trim() !== "false";
 export const TAX_CODE = "txcd_10000000"; // General - Electronically Supplied Services
+export const GST_HST_NO = "106739352 RT0001"; // AIA Canada's GST/HST registration, printed on hub receipts
 
 function form(obj: Record<string, unknown>, prefix = "", out: string[] = []): string[] {
   for (const [k, v] of Object.entries(obj)) {
