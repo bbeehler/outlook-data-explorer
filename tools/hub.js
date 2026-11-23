@@ -58,7 +58,7 @@ async function loadHub() {
     { id: 'cities', name: 'Cities', label: 'Economy: Cities', group: 'economy-sec', blurb: 'Population, age, jobs, income, how people get to work and EV adoption for every census metropolitan area, from Statistics Canada.' },
     { id: 'reports', name: 'Research reports', group: 'admin', blurb: '' },
     { id: 'access', name: 'Manage access', group: 'admin', blurb: '' });
-  try { await loadStudio(); } catch { STUDIO.list = []; }
+  try { await loadStudio(); studioPrefetch(); } catch { STUDIO.list = []; }
 }
 
 /* ---------- rail and pages ---------- */

@@ -1391,7 +1391,7 @@ const rerender = () => { clearTimeout(rerender.t); rerender.t = setTimeout(rende
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerender);
 new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-const HUB_VERSION = '2026-11-23 14:30';
+const HUB_VERSION = '2026-11-23 14:39';
 /* ---------- AIA Canada Research Hub: sections, research reports, economy, links between sources, report manager ---------- */
 const BASE_TOPICS = TOPICS.filter(t => !['home', 'access'].includes(t.id)).map(t => ({ ...t, group: 'outlook' }));
 let REPORTS = [], ECON = null, CITIES = null;
@@ -1452,7 +1452,7 @@ async function loadHub() {
     { id: 'cities', name: 'Cities', label: 'Economy: Cities', group: 'economy-sec', blurb: 'Population, age, jobs, income, how people get to work and EV adoption for every census metropolitan area, from Statistics Canada.' },
     { id: 'reports', name: 'Research reports', group: 'admin', blurb: '' },
     { id: 'access', name: 'Manage access', group: 'admin', blurb: '' });
-  try { await loadStudio(); } catch { STUDIO.list = []; }
+  try { await loadStudio(); studioPrefetch(); } catch { STUDIO.list = []; }
 }
 
 /* ---------- rail and pages ---------- */
@@ -2301,14 +2301,50 @@ async function loadSaved() {
   const { data } = await SB.from('hub_saved_reports').select('id,title,config,dataset_id,updated_at').order('updated_at', { ascending: false });
   STUDIO.saved = data || [];
 }
-async function studioData(d) {
+// Data files are gzip-compressed (about a tenth of the size) and kept in the browser's cache after the first download.
+// The cache key is the file path, which changes whenever an admin replaces the data, so a cached copy is never stale.
+const GZ = typeof CompressionStream === 'function' && typeof DecompressionStream === 'function';
+async function gzip(text) { return new Response(new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'))).blob(); }
+async function blobText(blob) {
+  const head = new Uint8Array(await blob.slice(0, 2).arrayBuffer());
+  if (head[0] === 0x1f && head[1] === 0x8b) return new Response(blob.stream().pipeThrough(new DecompressionStream('gzip'))).text();
+  return blob.text();
+}
+const LABCACHE = 'aia-data-studio-v1';
+async function cacheGet(path) { try { const c = await caches.open(LABCACHE); const r = await c.match('/lab-cache/' + path); return r ? r.text() : null; } catch { return null; } }
+async function cachePut(path, text) {
+  try { const c = await caches.open(LABCACHE); await c.put('/lab-cache/' + path, new Response(text, { headers: { 'content-type': 'application/json' } }));
+    // drop copies of files that have since been replaced
+    const keep = new Set(STUDIO.list.map(d => '/lab-cache/' + d.file_path)); for (const req of await c.keys()) if (!keep.has(new URL(req.url).pathname)) c.delete(req); } catch { /* storage unavailable: fine, it just downloads next time */ }
+}
+const LOADING = new Map();
+function studioData(d) {
   const key = d.file_path;
-  if (STUDIO.data.has(key)) return STUDIO.data.get(key);
-  const { data, error } = await SB.storage.from('hub-data').download(d.file_path);
-  if (error || !data) throw new Error('The data for this dataset could not be loaded.');
-  const json = JSON.parse(await data.text());
-  STUDIO.data.set(key, json);
-  return json;
+  if (STUDIO.data.has(key)) return Promise.resolve(STUDIO.data.get(key));
+  if (LOADING.has(key)) return LOADING.get(key);
+  const job = (async () => {
+    let text = await cacheGet(key);
+    if (text == null) {
+      const { data, error } = await SB.storage.from('hub-data').download(d.file_path);
+      if (error || !data) throw new Error('The data for this dataset could not be loaded.');
+      const head = new Uint8Array(await data.slice(0, 2).arrayBuffer());
+      text = await blobText(data);
+      cachePut(key, text);
+      // older uploads were saved uncompressed: an admin opening one compresses it in place for everyone
+      if (IS_ADMIN && GZ && !(head[0] === 0x1f && head[1] === 0x8b)) gzip(text).then(gz => SB.storage.from('hub-data').upload(key, gz, { contentType: 'application/json', upsert: true })).catch(() => {});
+    }
+    const json = JSON.parse(text);
+    STUDIO.data.set(key, json);
+    return json;
+  })();
+  LOADING.set(key, job);
+  job.finally(() => LOADING.delete(key));
+  return job;
+}
+// After sign-in, quietly fetch the datasets in the background so Data Studio opens without a wait.
+function studioPrefetch() {
+  const go2 = () => { for (const d of STUDIO.list.filter(x => x.status === 'published' || IS_ADMIN).slice(0, 4)) studioRaw(d.id).catch(() => {}); };
+  if ('requestIdleCallback' in window) requestIdleCallback(go2, { timeout: 4000 }); else setTimeout(go2, 2500);
 }
 const sNum = v => (typeof v === 'number' ? v : (v === '' || v == null ? null : (isFinite(+String(v).replace(/[,$%\s]/g, '')) ? +String(v).replace(/[,$%\s]/g, '') : null)));
 const sPct = v => v == null ? '—' : `${Math.round(v * 100)}%`;
@@ -2452,7 +2488,7 @@ async function renderReportBuilder(main) {
         h('button', { type: 'button', class: 'act', onclick: () => { if (R.blocks.length && !confirm('Start a new, empty report? Unsaved changes to this one are lost.')) return; STUDIO.report = blankReport(); draftSave(); render(); } }, 'New report'))),
     R.savedId ? h('p', { class: 'lab-meta' }, 'Editing a saved report. Save changes to update it in My reports.') : null),
     blocksBox, addBar('bottom'));
-  if (!R.blocks.length) { R.blocks.push(await defaultBlock(usable[0].id)); draftSave(); }
+  if (!R.blocks.length) { blocksBox.append(h('p', { class: 'loading' }, 'Loading the data\u2026')); R.blocks.push(await defaultBlock(usable[0].id)); draftSave(); blocksBox.replaceChildren(); }
   if (seq !== RSEQ) return;
   for (const b of R.blocks) blocksBox.append(blockCard(b));
 }
@@ -2472,6 +2508,8 @@ function moveBlock(b, dir) {
 }
 async function paintBlock(el, b) {
   for (const c of el.querySelectorAll('canvas')) freeChart(c);
+  const ready = STUDIO.data.has('raw:' + ((STUDIO.list.find(x => x.id === b.ds) || {}).file_path));
+  if (!ready && !el.firstChild) el.append(h('p', { class: 'loading' }, 'Loading the data\u2026'));
   let raw;
   try { raw = await studioRaw(b.ds); } catch (e) { el.replaceChildren(h('p', { class: 'loading' }, e.message)); return; }
   const R = STUDIO.report;
@@ -2838,7 +2876,10 @@ function renderStudioAdmin(main) {
     let slug = existing ? existing.slug : sSlug(title); if (!existing) { let n = 2; const base = slug; while (STUDIO.list.some(x => x.slug === slug)) slug = `${base}-${n++}`; }
     const path = `${slug}/${Date.now()}.json`;
     if (p.kind === 'table') p.meta.columns = p.data.columns.map(c => ({ key: c.key, label: c.label, type: c.type }));
-    const up = await SB.storage.from('hub-data').upload(path, new Blob([JSON.stringify(p.data)], { type: 'application/json' }), { contentType: 'application/json', upsert: true });
+    const text = JSON.stringify(p.data);
+    const body = GZ ? await gzip(text) : new Blob([text], { type: 'application/json' });
+    const up = await SB.storage.from('hub-data').upload(path, body, { contentType: 'application/json', upsert: true });
+    if (!up.error) cachePut(path, text);
     if (up.error) { status.textContent = 'Upload failed: ' + up.error.message; return; }
     const row = { title, description: descIn.value.trim(), source: srcIn.value.trim(), kind: p.kind, file_path: path, original_name: st.file.name, meta: p.meta,
       hidden_from: STUDIO_ROLES.map(r => r[0]).filter(r => hide[r].checked), status: draft.checked ? 'draft' : 'published', updated_at: new Date().toISOString() };
