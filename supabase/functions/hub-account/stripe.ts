@@ -6,6 +6,9 @@ export const PRICES = {
 };
 export const ACCESS_DAYS = Number(Deno.env.get("HUB_REPORT_ACCESS_DAYS") ?? "3"); // days of Research Hub access a purchase gives
 export const CURRENCY = "cad";
+// Pin the API version for the hub's own requests. The AIA Canada account's default is older (2022), which can't do
+// $0 orders (100%-off promotion codes need 2023-08-16 or later). Other integrations on the account are unaffected.
+export const STRIPE_VERSION = "2024-06-20";
 export const AUTO_TAX = (Deno.env.get("STRIPE_AUTOMATIC_TAX") ?? "").trim() === "true"; // turn on once Stripe Tax is set up
 
 function form(obj: Record<string, unknown>, prefix = "", out: string[] = []): string[] {
@@ -22,7 +25,7 @@ function form(obj: Record<string, unknown>, prefix = "", out: string[] = []): st
 export async function stripe(method: "GET" | "POST", path: string, body?: Record<string, unknown>) {
   if (!STRIPE_KEY) throw new Error("STRIPE_SECRET_KEY is not set in Supabase secrets");
   const r = await fetch(`https://api.stripe.com/v1/${path}`, {
-    method, headers: { Authorization: `Bearer ${STRIPE_KEY}`, "Content-Type": "application/x-www-form-urlencoded" },
+    method, headers: { Authorization: `Bearer ${STRIPE_KEY}`, "Content-Type": "application/x-www-form-urlencoded", "Stripe-Version": STRIPE_VERSION },
     body: body ? form(body).join("&") : undefined,
   });
   const j = await r.json();
