@@ -129,18 +129,19 @@ async function renderAccess(main) {
   const panel = h('section', { class: 'panel' });
   const ta = h('textarea', { id: 'bulk', rows: '4', class: 'bulk', placeholder: 'One or more emails, separated by commas or new lines' });
   const org = h('input', { id: 'bulkOrg', class: 'tsearch', placeholder: 'Organization (optional)' });
+  const roleSel = h('select', { class: 'sel', 'aria-label': 'Add as' }, h('option', { value: 'member' }, 'Add as members'), h('option', { value: 'affiliate' }, 'Add as affiliates'));
   const msg = h('p', { class: 'gate-muted', role: 'status' });
   const add = h('button', { type: 'button', class: 'btn-ask', onclick: async () => {
     const emails = [...new Set(ta.value.toLowerCase().split(/[\s,;]+/).map(s => s.trim()).filter(s => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s)))];
     if (!emails.length) { msg.textContent = 'Enter at least one valid email address.'; return; }
     add.disabled = true;
-    const { error } = await SB.from('outlook_access').upsert(emails.map(email => ({ email, organization: org.value.trim(), source: 'manual' })), { onConflict: 'email', ignoreDuplicates: true });
+    const { error } = await SB.from('outlook_access').upsert(emails.map(email => ({ email, organization: org.value.trim(), source: 'manual', role: roleSel.value })), { onConflict: 'email', ignoreDuplicates: true });
     add.disabled = false;
     if (error) { msg.textContent = 'Could not add: ' + error.message; return; }
     ta.value = ''; msg.textContent = `Added ${emails.length} ${emails.length === 1 ? 'address' : 'addresses'}. Send them the page link; they sign in with that email.`;
     list();
   } }, 'Add to list');
-  panel.append(h('h2', {}, 'Add people by hand'), h('p', { class: 'gate-muted' }, 'For staff, partners or anyone not in Insightly as a member contact.'), ta, h('div', { class: 'chips' }, org, add), msg);
+  panel.append(h('h2', {}, 'Add people by hand'), h('p', { class: 'gate-muted' }, 'For staff, partners, Industry Engagement Network affiliates or anyone not in Insightly as a member contact. Affiliates get the same access as members; Data Studio datasets can be hidden from them separately.'), ta, h('div', { class: 'chips' }, org, roleSel, add), msg);
   const listBox = h('section', { class: 'panel' }, h('h2', {}, 'Current list'));
   main.append(panel, listBox);
   const syncBox = h('section', { class: 'panel' });
@@ -288,10 +289,11 @@ async function renderAccess(main) {
   requests();
   let q = '';
   async function list() {
-    const { data, error } = await SB.from('outlook_access').select('email, full_name, organization, added_at, source').order('organization').order('email').limit(10000);
+    const { data, error } = await SB.from('outlook_access').select('email, full_name, organization, added_at, source, role').order('organization').order('email').limit(10000);
     const usage = await SB.from('outlook_ai_log').select('id', { count: 'exact', head: true }).gte('asked_at', new Date(Date.now() - 30 * 864e5).toISOString());
     const nIns = data ? data.filter(r => r.source === 'insightly').length : 0;
-    listBox.replaceChildren(h('h2', {}, `People with access (${data ? data.length : 0}: ${nIns} registered members, ${data ? data.length - nIns : 0} added by hand)`));
+    const nAff = data ? data.filter(r => r.role === 'affiliate').length : 0;
+    listBox.replaceChildren(h('h2', {}, `People with access (${data ? data.length : 0}: ${nIns} registered members, ${data ? data.length - nIns : 0} added by hand, ${nAff} of them affiliates)`));
     if (usage.count != null) listBox.append(h('p', { class: 'gate-muted' }, `${usage.count} AI questions asked in the last 30 days.`));
     if (error) { listBox.append(h('p', {}, 'Could not load the list.')); return; }
     const search = h('input', { id: 'accessSearch', type: 'search', class: 'tsearch', placeholder: 'Find a person or company', value: q });
@@ -310,14 +312,16 @@ async function renderAccess(main) {
             if (e2) { act.disabled = false; toast('Could not remove ' + r.email); } else list();
           } }, 'Remove');
         }
-        return h('tr', {}, h('th', { scope: 'row' }, r.email), h('td', {}, r.full_name), h('td', {}, r.organization), h('td', {}, new Date(r.added_at).toLocaleDateString('en-CA')), h('td', {}, act));
+        const roleCell = r.source === 'insightly' ? 'Member' : h('select', { class: 'sel', 'aria-label': `Role for ${r.email}`, onchange: async e => { const { error: e3 } = await SB.from('outlook_access').update({ role: e.target.value }).eq('email', r.email); if (e3) { toast('Could not change the role'); e.target.value = r.role; } else { r.role = e.target.value; toast('Saved'); } } },
+          h('option', { value: 'member', selected: r.role !== 'affiliate' }, 'Member'), h('option', { value: 'affiliate', selected: r.role === 'affiliate' }, 'Affiliate'));
+        return h('tr', {}, h('th', { scope: 'row' }, r.email), h('td', {}, r.full_name), h('td', {}, r.organization), h('td', {}, roleCell), h('td', {}, new Date(r.added_at).toLocaleDateString('en-CA')), h('td', {}, act));
       }));
       more.textContent = rows.length > 200 ? `Showing 200 of ${rows.length}. Search to narrow the list.` : '';
     };
     const more = h('p', { class: 'gate-muted' });
     search.addEventListener('input', () => { q = search.value; draw(); });
     listBox.append(search, h('div', { class: 'tbl-wrap' }, h('table', {},
-      h('thead', {}, h('tr', {}, ['Email', 'Name', 'Organization', 'Added', ''].map(c => h('th', { scope: 'col' }, c)))), body)), more);
+      h('thead', {}, h('tr', {}, ['Email', 'Name', 'Organization', 'Role', 'Added', ''].map(c => h('th', { scope: 'col' }, c)))), body)), more);
     draw();
   }
   list();

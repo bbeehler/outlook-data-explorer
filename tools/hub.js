@@ -58,6 +58,7 @@ async function loadHub() {
     { id: 'cities', name: 'Cities', label: 'Economy: Cities', group: 'economy-sec', blurb: 'Population, age, jobs, income, how people get to work and EV adoption for every census metropolitan area, from Statistics Canada.' },
     { id: 'reports', name: 'Research reports', group: 'admin', blurb: '' },
     { id: 'access', name: 'Manage access', group: 'admin', blurb: '' });
+  try { await loadStudio(); } catch { STUDIO.list = []; }
 }
 
 /* ---------- rail and pages ---------- */
@@ -100,7 +101,7 @@ function render() {
     CITIES ? railButton(TOPICS.find(t => t.id === 'cities'), 'pub') : null,
     h('a', { class: 'raillink pub', href: 'provinces/' }, h('span', {}, 'Vehicles by province'), h('span', { class: 'count' }, 'Opens page \u2197')),
     h('a', { class: 'raillink pub', href: 'jobs/' }, h('span', {}, 'Auto care jobs'), h('span', { class: 'count' }, 'Opens page \u2197')));
-  rail.replaceChildren(railButton({ ...TOPICS[0], name: 'Research Hub home' }), h('div', { class: 'ours' }, ours), pub);
+  rail.replaceChildren(railButton({ ...TOPICS[0], name: 'Research Hub home' }), h('div', { class: 'ours' }, ours), pub, studioRail() || '');
   renderProfile();
   const main = $('#main');
   for (const c of main.querySelectorAll('canvas')) { freeChart(c); }
@@ -109,6 +110,7 @@ function render() {
   if (q) return renderSearch(main, q);
   if (current === 'access') return IS_ADMIN ? renderAccess(main) : renderHome(main);
   if (current === 'reports') return IS_ADMIN ? renderReportsAdmin(main) : renderHome(main);
+  if (current === 'studio' || current.startsWith('studio:')) return renderStudio(main);
   const t = TOPICS.find(x => x.id === current);
   if (!t || current === 'home') { current = 'home'; return renderHome(main); }
   if (current === 'macro') return renderEconomy(main);

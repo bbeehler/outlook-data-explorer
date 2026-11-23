@@ -87,7 +87,7 @@ rep("  const old = CHARTS.get(canvas); if (old) old.destroy();", "  const old = 
 import datetime, zoneinfo
 VER = datetime.datetime.now(zoneinfo.ZoneInfo('America/Toronto')).strftime('%Y-%m-%d %H:%M')
 i=t.index("(function boot() {"); j=t.index("</script>", i)
-t=t[:i]+f"const HUB_VERSION = '{VER}';\n"+open('tools/hub.js').read()+"\n"+open('tools/store.js').read()+"\n"+open('tools/boot_supabase.js').read()+"\n"+t[j:]
+t=t[:i]+f"const HUB_VERSION = '{VER}';\n"+open('tools/hub.js').read()+"\n"+open('tools/studio.js').read()+"\n"+open('tools/store.js').read()+"\n"+open('tools/boot_supabase.js').read()+"\n"+t[j:]
 rep("@media (max-width: 960px) {",open('tools/extra.css').read()+"\n@media (max-width: 960px) {")
 head='''<!doctype html>
 <html lang="en-CA">
