@@ -629,6 +629,45 @@ body.is-landing .wrap { max-width: none; padding-top: 0; }
   body.labprint .wrap, body.labprint main { display: block !important; padding: 0 !important; margin: 0 !important; }
   body.labprint .labout { border: 0; padding: 0; }
 }
+/* report builder: a title, then blocks people add */
+.labreport { background: var(--lab-bg); border: 1px solid var(--lab-line); padding: 12px 16px; margin-bottom: 16px; }
+.labreport-head { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: flex-end; justify-content: space-between; }
+.labreport-head .labacts { margin: 0; }
+.labtitle { font-size: 18px; font-weight: 700; min-width: min(420px, 100%); }
+.labblocks { display: flex; flex-direction: column; gap: 18px; }
+.labblock { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--lab); padding: 12px 16px 14px; }
+.blkhead { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.blktitle { flex: 1 1 320px; min-width: 0; font: inherit; font-size: 17px; font-weight: 700; color: var(--ink); border: 1px solid transparent; background: transparent; padding: 6px 8px; margin-left: -8px; }
+.blktitle:hover, .blktitle:focus { border-color: var(--lab-line); background: var(--surface); }
+.blktitle::placeholder { color: var(--ink); opacity: 1; }
+.blktools { display: flex; flex-wrap: wrap; gap: 6px; }
+.blktools .act { padding: 5px 10px; }
+.blkctl { background: var(--lab-bg); border: 1px solid var(--lab-line); padding: 12px; margin: 10px 0; display: flex; flex-direction: column; gap: 12px; }
+.labfilters { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.labfilter { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; width: 100%; }
+.labfilter > .sel { max-width: 260px; }
+.labfv { text-align: left; max-width: min(520px, 100%); cursor: pointer; }
+.labfv-panel { flex-basis: 100%; background: var(--surface); border: 1px solid var(--lab-line); padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.labfv-acts { display: flex; flex-wrap: wrap; gap: 6px; }
+.labfv-list { max-height: 260px; overflow: auto; display: flex; flex-direction: column; gap: 4px; }
+.labfv-list .labcheck { align-items: flex-start; }
+.labfv-list .labcheck input { margin-top: 3px; flex: none; }
+.blkout { margin-top: 8px; }
+.blknum { display: flex; flex-direction: column; gap: 4px; padding: 14px 0 6px; }
+.blknum b { font-size: 44px; line-height: 1.1; color: var(--lab-ink); font-variant-numeric: tabular-nums; }
+.blknum span { color: var(--muted); font-size: 14px; }
+.blkfoot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-top: 10px; }
+.blkfoot .lab-src { margin: 0; flex: 1 1 280px; }
+.labtbl td.blktot { font-weight: 700; }
+.labadd { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 18px 0 30px; padding: 12px 14px; border: 1px dashed var(--lab-line); background: var(--lab-bg); }
+.labadd > span { font-weight: 700; color: var(--lab-ink); font-size: 14px; margin-right: 4px; }
+@media (max-width: 640px) { .labtitle { min-width: 0; width: 100%; } .labfilter > .sel { max-width: 100%; } .blknum b { font-size: 34px; } }
+@media print {
+  body.labprint .blkctl, body.labprint .blktools, body.labprint .labadd, body.labprint .labreport-head .labacts, body.labprint .blkfoot .act, body.labprint .topic-head p { display: none !important; }
+  body.labprint .labreport { border: 0; background: none; padding: 0; }
+  body.labprint .labtitle, body.labprint .blktitle { border: 0 !important; padding: 0; background: none; }
+  body.labprint .labblock { break-inside: avoid; border: 0; border-top: 2px solid #6b3fa0; }
+}
 
 @media (max-width: 960px) {
   .wrap { grid-template-columns: minmax(0, 1fr); gap: 16px; }
@@ -1352,7 +1391,7 @@ const rerender = () => { clearTimeout(rerender.t); rerender.t = setTimeout(rende
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerender);
 new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-const HUB_VERSION = '2026-11-23 14:18';
+const HUB_VERSION = '2026-11-23 14:30';
 /* ---------- AIA Canada Research Hub: sections, research reports, economy, links between sources, report manager ---------- */
 const BASE_TOPICS = TOPICS.filter(t => !['home', 'access'].includes(t.id)).map(t => ({ ...t, group: 'outlook' }));
 let REPORTS = [], ECON = null, CITIES = null;
@@ -2244,11 +2283,12 @@ function ensureCanvas(cv) {
   return false;
 }
 
-/* ---------- Data Studio: datasets admins upload (CSV, Excel, survey crosstab exports) and anyone with access turns into their own reports ---------- */
+/* ---------- Data Studio: raw data admins upload (CSV, Excel, survey crosstab exports; APIs later) that anyone with access builds reports from ---------- */
 // Catalogue rows live in hub_datasets; each dataset's parsed data is one JSON file in the private hub-data bucket.
-// Two kinds: 'table' (rows and columns: pick a measure, group, split, filter) and 'survey' (crosstab banner tables:
-// pick a question and a breakdown such as region or age, see % or weighted counts with significance letters).
-const STUDIO = { list: [], data: new Map(), saved: [], cfg: {} };
+// Every dataset is treated as raw rows and columns. A report is a title plus any number of blocks; each block picks its
+// own dataset, visual (bar, column, stacked, line, area, pie, table, number, raw rows), rows, series, value, calculation,
+// filters, sort and top-N. Reports save to hub_saved_reports; the open report is also kept in this browser as a draft.
+const STUDIO = { list: [], data: new Map(), saved: [], report: null };
 const STUDIO_ROLES = [['member', 'Members'], ['affiliate', 'Affiliates'], ['buyer', 'Report buyers']];
 const SHEETJS = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
 
@@ -2276,94 +2316,341 @@ const sCount = v => v == null ? '—' : Math.round(v).toLocaleString('en-CA');
 const sVal = v => v == null ? '—' : Math.abs(v) >= 1000 ? Math.round(v).toLocaleString('en-CA') : (+v.toFixed(2)).toLocaleString('en-CA');
 const sSlug = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'dataset';
 
+/* ---------- raw data: every dataset becomes rows and columns the builder can slice any way ---------- */
+// Tables are stored as rows already. Survey crosstab exports are stored compactly and unrolled here into one row per
+// question x answer x segment, so people can pick questions, answers, breakdowns and segments like any other column.
+const SURVEY_COLS = [
+  { key: 'q', label: 'Question', type: 'category' }, { key: 'code', label: 'Question code', type: 'category' },
+  { key: 'answer', label: 'Answer', type: 'category' }, { key: 'atype', label: 'Answer type', type: 'category' },
+  { key: 'bd', label: 'Breakdown', type: 'category' }, { key: 'seg', label: 'Segment', type: 'category' },
+  { key: 'pct', label: '% of respondents', type: 'number', fmt: 'pct' }, { key: 'wc', label: 'Weighted count', type: 'number' },
+  { key: 'avg', label: 'Average score', type: 'number' }, { key: 'base', label: 'Respondents (unweighted)', type: 'number' },
+  { key: 'wbase', label: 'Weighted base', type: 'number' }, { key: 'sig', label: 'Significance letters', type: 'category' }];
+function surveyToRaw(s) {
+  const rows = [];
+  for (const q of s.questions) {
+    const done = new Set();
+    for (const b of s.banners) {
+      const t = q.t[b.id]; if (!t) continue;
+      const parts = done.has('Total') ? [] : [['Total', 'Total', [1]]];
+      for (const g of b.groups) if (!done.has(g.name)) parts.push([g.name, null, g.cols]);
+      for (const [bd, , cols] of parts) {
+        done.add(bd);
+        for (const c of cols) {
+          const seg = bd === 'Total' ? 'Total' : b.labels[c];
+          const base = t.bu ? t.bu[c] : null, wbase = t.bw ? t.bw[c] : null;
+          for (const r of t.r) rows.push([q.text, q.code, r[0], r[1] ? 'NET' : 'Answer', bd, seg, r[2][c], r[3][c], null, base, wbase, r[4] && r[4][c] && r[4][c] !== '-' ? r[4][c] : '']);
+          if (t.m) rows.push([q.text, q.code, 'Average', 'Average', bd, seg, null, null, t.m[c], base, wbase, '']);
+        }
+      }
+    }
+  }
+  return { columns: SURVEY_COLS, rows };
+}
+async function studioRaw(id) {
+  const d = STUDIO.list.find(x => x.id === id);
+  if (!d) throw new Error('This dataset is no longer available.');
+  const key = 'raw:' + d.file_path;
+  if (STUDIO.data.has(key)) return STUDIO.data.get(key);
+  const json = await studioData(d);
+  const raw = d.kind === 'survey' || json.questions ? surveyToRaw(json) : { columns: json.columns, rows: json.rows };
+  raw.ix = Object.fromEntries(raw.columns.map((c, i) => [c.key, i]));
+  raw.d = d;
+  STUDIO.data.delete(d.file_path); // keep only the unrolled copy
+  STUDIO.data.set(key, raw);
+  return raw;
+}
+
 function studioRail() {
   if (!STUDIO.list.length && !IS_ADMIN) return null;
-  const sub = STUDIO.list.filter(d => d.status === 'published' || IS_ADMIN).slice(0, 10);
   return h('div', { class: 'labdata', role: 'group', 'aria-labelledby': 'labH' },
     h('div', { class: 'lab-h', id: 'labH' }, h('span', { class: 'lab-tag' }, 'Data Studio')),
     railButton({ id: 'studio', name: 'Build a report' }, 'lab', 0),
-    ...sub.map(d => railButton({ id: 'studio:' + d.slug, name: d.title }, 'lab sub', 0)),
+    railButton({ id: 'studio:mine', name: 'My reports' }, 'lab', 0),
     IS_ADMIN ? railButton({ id: 'studio:admin', name: 'Manage data' }, 'lab', 0) : null);
 }
-
-async function renderStudio(main) {
-  const seq = RSEQ;
-  const id = current.slice(7);
-  if (id === 'admin') return IS_ADMIN ? renderStudioAdmin(main) : go('studio');
-  const d = id && STUDIO.list.find(x => x.slug === id);
-  if (!d) return renderStudioLibrary(main);
-  main.append(h('p', { class: 'loading' }, 'Loading the data…'));
-  let data;
-  try { data = await studioData(d); } catch (e) { if (seq === RSEQ) main.replaceChildren(h('p', { class: 'loading' }, e.message)); return; }
-  if (seq !== RSEQ) return;
-  main.replaceChildren();
-  if (d.kind === 'survey') renderSurveyBuilder(main, d, data); else renderTableBuilder(main, d, data);
-}
-
 function studioHead(eyebrow, title, blurb) {
   return h('div', { class: 'topic-head' }, h('span', { class: 'eyebrow labeyebrow' }, eyebrow), h('h1', {}, title), blurb ? h('p', {}, blurb) : null);
 }
 function metaLine(d) {
   const m = d.meta || {};
-  if (d.kind === 'survey') return `${(m.questions || 0).toLocaleString('en-CA')} questions · ${(m.breakdowns || []).length} ways to break them down${m.base ? ` · ${Math.round(m.base).toLocaleString('en-CA')} respondents` : ''}`;
-  return `${(m.rows || 0).toLocaleString('en-CA')} rows · ${(m.columns || []).length} columns`;
-}
-
-async function renderStudioLibrary(main) {
-  const seq = RSEQ;
-  main.append(studioHead('Data Studio', 'Build your own reports', 'Pick a dataset, choose what to look at and how to break it down, and the chart builds as you go. Save a report to come back to it, or download it as a CSV or PDF.'));
-  const vis = STUDIO.list.filter(d => d.status === 'published' || IS_ADMIN);
-  if (IS_ADMIN) main.append(h('div', { class: 'labbar' }, h('span', {}, `${vis.length} dataset${vis.length === 1 ? '' : 's'} in Data Studio.`), h('button', { type: 'button', class: 'btn-ask', onclick: () => go('studio:admin') }, 'Add or manage data')));
-  if (!vis.length) { main.append(h('p', { class: 'loading' }, 'No datasets have been added yet.')); return; }
-  main.append(h('div', { class: 'labgrid' }, vis.map(d => h('a', { class: 'tcard labcard', href: '#', onclick: e => { e.preventDefault(); go('studio:' + d.slug); } },
-    h('span', { class: 'ref' }, d.kind === 'survey' ? 'Survey' : 'Table', d.status === 'draft' ? ' · draft (admins only)' : '', d.hidden_from && d.hidden_from.length && IS_ADMIN ? ` · hidden from ${d.hidden_from.map(r => STUDIO_ROLES.find(x => x[0] === r)[1].toLowerCase()).join(', ')}` : ''),
-    h('b', {}, d.title), d.description ? h('span', { class: 'lab-desc' }, d.description) : null,
-    h('span', { class: 'lab-meta' }, metaLine(d)),
-    h('span', { class: 'lab-meta' }, [d.source, d.updated_at ? 'Updated ' + new Date(d.updated_at).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' }) : ''].filter(Boolean).join(' · '))))));
-  const box = h('section', { class: 'labsaved' }, h('h2', {}, 'My saved reports'), h('p', { class: 'loading' }, 'Loading…'));
-  main.append(box);
-  try { await loadSaved(); } catch { STUDIO.saved = []; }
-  if (seq !== RSEQ) return;
-  const rows = STUDIO.saved.filter(s => STUDIO.list.some(d => d.id === s.dataset_id));
-  box.replaceChildren(h('h2', {}, 'My saved reports'), rows.length ? h('ul', { class: 'labsaved-list' }, rows.map(s => {
-    const d = STUDIO.list.find(x => x.id === s.dataset_id);
-    return h('li', {}, h('a', { href: '#', onclick: e => { e.preventDefault(); STUDIO.cfg[d.slug] = { ...s.config, savedId: s.id, savedTitle: s.title }; go('studio:' + d.slug); } }, s.title),
-      h('span', { class: 'lab-meta' }, ` ${d.title} · ${new Date(s.updated_at).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' })}`),
-      h('button', { type: 'button', class: 'act lab-del', 'aria-label': `Delete ${s.title}`, onclick: async () => { if (!confirm(`Delete the saved report "${s.title}"?`)) return; await SB.from('hub_saved_reports').delete().eq('id', s.id); render(); } }, 'Delete'));
-  })) : h('p', { class: 'lab-meta' }, 'Reports you save in Data Studio appear here.'));
-}
-
-/* ---------- shared builder pieces ---------- */
-function seg(label, opts, val, onPick) {
-  return h('div', { class: 'labseg', role: 'group', 'aria-label': label }, h('span', { class: 'labseg-l' }, label),
-    ...opts.map(([v, l]) => h('button', { type: 'button', 'aria-pressed': String(v === val), onclick: () => onPick(v) }, l)));
+  if (d.kind === 'survey') return `Survey: ${(m.questions || 0).toLocaleString('en-CA')} questions, ${(m.breakdowns || []).length} breakdowns${m.base ? `, ${Math.round(m.base).toLocaleString('en-CA')} respondents` : ''}`;
+  return `${(m.rows || 0).toLocaleString('en-CA')} rows, ${(m.columns || []).length} columns`;
 }
 function labField(label, el) { return h('label', { class: 'labfield' }, h('span', {}, label), el); }
 function labSelect(opts, val, onChange, aria) {
   return h('select', { class: 'sel', 'aria-label': aria || null, onchange: e => onChange(e.target.value) },
     ...opts.map(o => Array.isArray(o) ? h('option', { value: o[0], selected: o[0] === val }, o[1]) : h('optgroup', { label: o.group }, ...o.items.map(i => h('option', { value: i[0], selected: i[0] === val }, i[1])))));
 }
-function studioActions(d, getCfg, csvRows, fileBase) {
+const labColors = n => Array.from({ length: n }, (_, i) => n === 1 ? css('--lab') : colorOf(SLOTS[i % SLOTS.length]));
+
+async function renderStudio(main) {
+  const id = current.slice(7);
+  if (id === 'admin') return IS_ADMIN ? renderStudioAdmin(main) : go('studio');
+  if (id === 'mine') return renderMyReports(main);
+  return renderReportBuilder(main);
+}
+
+/* ---------- the report: a title and any number of blocks ---------- */
+const VIZ = [['bar', 'Bar chart (horizontal)'], ['column', 'Column chart'], ['stacked', 'Stacked columns'], ['stacked100', '100% stacked columns'], ['line', 'Line chart'], ['area', 'Area chart'],
+  ['pie', 'Pie chart'], ['doughnut', 'Doughnut chart'], ['table', 'Table'], ['number', 'Single number'], ['rows', 'Raw data rows']];
+const AGG = [['sum', 'Total'], ['avg', 'Average'], ['min', 'Lowest'], ['max', 'Highest'], ['count', 'Count of rows'], ['distinct', 'Count of different values']];
+let BLK = 0;
+const newId = () => 'b' + Date.now().toString(36) + (BLK++);
+function draftSave() { try { localStorage.setItem('aia-studio-draft', JSON.stringify(STUDIO.report)); } catch { /* private mode */ } }
+function draftLoad() { try { return JSON.parse(localStorage.getItem('aia-studio-draft') || 'null'); } catch { return null; } }
+function blankReport() { return { title: '', blocks: [], savedId: null }; }
+
+async function defaultBlock(dsId, viz) {
+  const raw = await studioRaw(dsId);
+  const C = raw.columns, ix = raw.ix;
+  const b = { id: newId(), ds: dsId, viz: viz || 'column', x: '', series: '', value: '__count', agg: 'count', filters: [], sort: 'data', top: 0, title: '', open: true };
+  if (raw.d.kind === 'survey') {
+    const firstQ = raw.rows.length ? raw.rows[0][ix.q] : '';
+    Object.assign(b, { viz: viz || 'bar', x: 'answer', series: 'seg', value: 'pct', agg: 'avg', filters: [{ col: 'q', vals: [firstQ] }, { col: 'bd', vals: ['Total'] }, { col: 'atype', vals: ['Answer'] }] });
+    if (viz === 'number') Object.assign(b, { x: '', series: '', value: 'base', agg: 'max' }); // respondents for the question
+    return b;
+  }
+  const date = C.find(c => c.type === 'date'), cat = C.find(c => c.type === 'category'), num = C.find(c => c.type === 'number');
+  b.x = (date || cat || {}).key || '';
+  if (num) { b.value = num.key; b.agg = 'sum'; }
+  if (!viz) b.viz = date ? 'line' : 'column';
+  if (viz === 'number') b.x = '';
+  return b;
+}
+
+async function renderReportBuilder(main) {
+  const seq = RSEQ;
+  if (!STUDIO.report) STUDIO.report = draftLoad() || blankReport();
+  const R = STUDIO.report;
+  R.blocks = R.blocks.filter(b => STUDIO.list.some(d => d.id === b.ds));
+  const usable = STUDIO.list.filter(d => d.status === 'published' || IS_ADMIN);
+  main.append(studioHead('Data Studio', 'Build a report', 'Add charts, tables and figures from any dataset. For each one, choose the data, the type of visual, what goes on the rows and in the series, what to calculate, and any filters. Save the report to come back to it, or print it to PDF.'));
+  if (!usable.length) { main.append(h('p', { class: 'loading' }, IS_ADMIN ? 'No data yet. Add a dataset under Manage data.' : 'No data has been added to Data Studio yet.')); return; }
+  const titleIn = h('input', { class: 'sel labtitle', value: R.title, placeholder: 'Untitled report', 'aria-label': 'Report title', oninput: e => { R.title = e.target.value; draftSave(); } });
+  const blocksBox = h('div', { class: 'labblocks' });
+  const addBar = (where) => h('div', { class: 'labadd' + (where ? ' labadd-' + where : '') }, h('span', {}, 'Add'),
+    ...[['column', 'Chart'], ['table', 'Table'], ['number', 'Number'], ['rows', 'Raw data']].map(([v, l]) => h('button', { type: 'button', class: 'act', onclick: async () => {
+      const ds = (R.blocks.at(-1) || {}).ds || usable[0].id;
+      const b = await defaultBlock(ds, v); R.blocks.push(b); draftSave(); blocksBox.append(blockCard(b)); blocksBox.lastChild.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } }, '+ ' + l)));
   const save = async () => {
-    const cfg = getCfg();
-    const title = prompt('Name this report', cfg.savedTitle || '');
+    const title = (R.title || '').trim() || prompt('Name this report', '');
     if (!title) return;
-    const body = { title: title.trim().slice(0, 140), config: { ...cfg, savedId: undefined, savedTitle: undefined }, dataset_id: d.id, updated_at: new Date().toISOString() };
-    const r = cfg.savedId ? await SB.from('hub_saved_reports').update(body).eq('id', cfg.savedId).select('id').single() : await SB.from('hub_saved_reports').insert(body).select('id').single();
+    R.title = title; titleIn.value = title;
+    const config = { title, blocks: R.blocks.map(b => ({ ...b, open: false })) };
+    const body = { title: title.slice(0, 140), config, dataset_id: (R.blocks[0] || {}).ds || null, updated_at: new Date().toISOString() };
+    const r = R.savedId ? await SB.from('hub_saved_reports').update(body).eq('id', R.savedId).select('id').single() : await SB.from('hub_saved_reports').insert(body).select('id').single();
     if (r.error) return toast('The report could not be saved. Try again.');
-    STUDIO.cfg[d.slug] = { ...cfg, savedId: r.data.id, savedTitle: body.title };
-    toast('Saved to My saved reports');
+    R.savedId = r.data.id; draftSave(); toast('Saved to My reports');
+    const btn = $('.labreport-head .btn-ask'); if (btn) btn.textContent = 'Save changes';
   };
-  const csv = () => {
-    const rows = csvRows();
-    const txt = rows.map(r => r.map(c => { const s = c == null ? '' : String(c); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }).join(',')).join('\n');
-    const a = h('a', { href: URL.createObjectURL(new Blob(['﻿' + txt], { type: 'text/csv' })), download: `${fileBase}.csv` }); document.body.append(a); a.click(); a.remove();
-    hubLog && hubLog('studio_csv', null, { dataset: d.slug });
-  };
-  return h('div', { class: 'labacts' },
-    h('button', { type: 'button', class: 'btn-ask', onclick: save }, 'Save report'),
-    h('button', { type: 'button', class: 'act', onclick: csv }, 'Download CSV'),
-    h('button', { type: 'button', class: 'act', onclick: () => { document.body.classList.add('labprint'); window.print(); setTimeout(() => document.body.classList.remove('labprint'), 500); } }, 'Print or save as PDF'));
+  main.append(h('section', { class: 'labreport' },
+    h('div', { class: 'labreport-head' }, labField('Report title', titleIn),
+      h('div', { class: 'labacts' }, h('button', { type: 'button', class: 'btn-ask', onclick: save }, R.savedId ? 'Save changes' : 'Save report'),
+        h('button', { type: 'button', class: 'act', onclick: () => { document.body.classList.add('labprint'); window.print(); setTimeout(() => document.body.classList.remove('labprint'), 500); } }, 'Print or save as PDF'),
+        h('button', { type: 'button', class: 'act', onclick: () => { if (R.blocks.length && !confirm('Start a new, empty report? Unsaved changes to this one are lost.')) return; STUDIO.report = blankReport(); draftSave(); render(); } }, 'New report'))),
+    R.savedId ? h('p', { class: 'lab-meta' }, 'Editing a saved report. Save changes to update it in My reports.') : null),
+    blocksBox, addBar('bottom'));
+  if (!R.blocks.length) { R.blocks.push(await defaultBlock(usable[0].id)); draftSave(); }
+  if (seq !== RSEQ) return;
+  for (const b of R.blocks) blocksBox.append(blockCard(b));
+}
+
+/* ---------- one block ---------- */
+function blockCard(b) {
+  const el = h('section', { class: 'labblock', 'data-id': b.id });
+  paintBlock(el, b);
+  return el;
+}
+function moveBlock(b, dir) {
+  const R = STUDIO.report, i = R.blocks.indexOf(b), j = i + dir;
+  if (j < 0 || j >= R.blocks.length) return;
+  [R.blocks[i], R.blocks[j]] = [R.blocks[j], R.blocks[i]]; draftSave();
+  const box = $('.labblocks'), el = box.querySelector(`[data-id="${b.id}"]`), other = box.querySelector(`[data-id="${R.blocks[i].id}"]`);
+  if (dir < 0) box.insertBefore(el, other); else box.insertBefore(other, el);
+}
+async function paintBlock(el, b) {
+  for (const c of el.querySelectorAll('canvas')) freeChart(c);
+  let raw;
+  try { raw = await studioRaw(b.ds); } catch (e) { el.replaceChildren(h('p', { class: 'loading' }, e.message)); return; }
+  const R = STUDIO.report;
+  const C = raw.columns, label = k => k === '__count' ? 'Rows' : (C.find(c => c.key === k) || {}).label || k;
+  const redo = () => { draftSave(); paintBlock(el, b); };
+  const cats = C.filter(c => c.type !== 'number'), nums = C.filter(c => c.type === 'number');
+  if (b.value !== '__count' && !nums.some(c => c.key === b.value)) b.value = nums[0] ? nums[0].key : '__count';
+  // what this block shows
+  const res = computeBlock(b, raw);
+  const auto = autoTitle(b, raw, label);
+  const head = h('div', { class: 'blkhead' },
+    h('input', { class: 'blktitle', value: b.title, placeholder: auto, 'aria-label': 'Block title', oninput: e => { b.title = e.target.value; draftSave(); } }),
+    h('div', { class: 'blktools' },
+      h('button', { type: 'button', class: 'act', 'aria-expanded': String(!!b.open), onclick: () => { b.open = !b.open; redo(); } }, b.open ? 'Done' : 'Edit'),
+      h('button', { type: 'button', class: 'act', title: 'Move up', 'aria-label': 'Move up', onclick: () => moveBlock(b, -1) }, '↑'),
+      h('button', { type: 'button', class: 'act', title: 'Move down', 'aria-label': 'Move down', onclick: () => moveBlock(b, 1) }, '↓'),
+      h('button', { type: 'button', class: 'act', title: 'Duplicate', onclick: () => { const c = { ...JSON.parse(JSON.stringify(b)), id: newId(), open: true }; R.blocks.splice(R.blocks.indexOf(b) + 1, 0, c); draftSave(); el.after(blockCard(c)); } }, 'Duplicate'),
+      h('button', { type: 'button', class: 'act lab-del', title: 'Remove', onclick: () => { R.blocks.splice(R.blocks.indexOf(b), 1); draftSave(); for (const c of el.querySelectorAll('canvas')) freeChart(c); el.remove(); } }, 'Remove')));
+  const kids = [head];
+  if (b.open) kids.push(blockControls(b, raw, cats, nums, label, redo));
+  kids.push(blockOutput(b, raw, res, label, auto));
+  el.replaceChildren(...kids);
+}
+function autoTitle(b, raw, label) {
+  const qf = raw.d.kind === 'survey' && b.filters.find(f => f.col === 'q' && f.vals.length === 1);
+  if (qf) return qf.vals[0];
+  if (b.viz === 'rows') return `${raw.d.title}: data rows`;
+  const m = b.value === '__count' || b.agg === 'count' ? 'Number of rows' : `${(AGG.find(a => a[0] === b.agg) || [])[1]} ${label(b.value)}`;
+  return `${m}${b.x ? ` by ${label(b.x)}` : ''}${b.series ? ` and ${label(b.series)}` : ''}`;
+}
+function blockControls(b, raw, cats, nums, label, redo) {
+  const ds = STUDIO.list.filter(d => d.status === 'published' || IS_ADMIN);
+  const colOpts = [['', 'None'], ...cats.map(c => [c.key, c.label]), ...nums.map(c => [c.key, c.label + ' (number)'])];
+  const isChart = !['table', 'number', 'rows'].includes(b.viz);
+  const box = h('div', { class: 'blkctl' });
+  box.append(h('div', { class: 'labrow' },
+    labField('Data', labSelect(ds.map(d => [d.id, d.title]), b.ds, async v => { const nb = await defaultBlock(v, b.viz); Object.assign(b, { ...nb, id: b.id, title: '', open: true }); redo(); }, 'Dataset')),
+    labField('Show as', labSelect(VIZ, b.viz, v => { b.viz = v; if (v === 'number') { b.x = ''; b.series = ''; } if ((v === 'pie' || v === 'doughnut') && !b.x) b.x = b.series; redo(); }, 'Visual type'))));
+  if (b.viz !== 'rows') box.append(h('div', { class: 'labrow' },
+    b.viz !== 'number' ? labField(isChart && b.viz !== 'bar' ? 'Categories (x-axis)' : 'Rows', labSelect(colOpts, b.x, v => { b.x = v; if (b.series === v) b.series = ''; redo(); }, 'Rows')) : null,
+    b.viz !== 'number' && b.viz !== 'pie' && b.viz !== 'doughnut' ? labField(b.viz === 'table' ? 'Columns' : 'Series (colours)', labSelect(colOpts.filter(o => !o[0] || o[0] !== b.x), b.series, v => { b.series = v; redo(); }, 'Series')) : null,
+    labField('Value', labSelect([['__count', 'Number of rows'], ...nums.map(c => [c.key, c.label]), ...cats.map(c => [c.key, c.label + ' (count values)'])], b.value, v => {
+      b.value = v; const col = raw.columns.find(c => c.key === v);
+      if (v === '__count') b.agg = 'count'; else if (col && col.type !== 'number') b.agg = 'distinct'; else if (['count', 'distinct'].includes(b.agg)) b.agg = col && col.fmt === 'pct' ? 'avg' : 'sum';
+      redo(); }, 'Value')),
+    b.value !== '__count' ? labField('Calculate', labSelect((raw.columns.find(c => c.key === b.value) || {}).type === 'number' ? AGG : AGG.filter(a => ['count', 'distinct'].includes(a[0])), b.agg, v => { b.agg = v; redo(); }, 'Calculate')) : null,
+    b.viz !== 'number' ? labField('Sort', labSelect([['data', 'As in the data'], ['desc', 'Highest first'], ['asc', 'Lowest first'], ['az', 'A to Z']], b.sort, v => { b.sort = v; redo(); }, 'Sort')) : null,
+    b.viz !== 'number' ? labField('Show', labSelect([['0', 'All'], ['5', 'Top 5'], ['10', 'Top 10'], ['20', 'Top 20'], ['50', 'Top 50']], String(b.top || 0), v => { b.top = +v; redo(); }, 'How many')) : null));
+  // filters
+  const fbox = h('div', { class: 'labfilters' }, h('span', { class: 'labseg-l' }, 'Filters'));
+  b.filters.forEach((f, i) => fbox.append(filterRow(b, raw, f, i, redo)));
+  fbox.append(h('button', { type: 'button', class: 'act', onclick: () => { b.filters.push({ col: (raw.columns.find(c => c.type !== 'number') || raw.columns[0]).key, vals: [], open: true }); redo(); } }, '+ Add filter'));
+  box.append(fbox);
+  return box;
+}
+function distinctVals(raw, col) {
+  const key = 'dv:' + col; if (raw[key]) return raw[key];
+  const i = raw.ix[col], seen = new Map();
+  for (const r of raw.rows) { const v = r[i]; if (v === '' || v == null) continue; const s = String(v); seen.set(s, (seen.get(s) || 0) + 1); }
+  return (raw[key] = [...seen.keys()]);
+}
+function filterRow(b, raw, f, i, redo) {
+  const vals = distinctVals(raw, f.col);
+  const row = h('div', { class: 'labfilter' });
+  const summary = f.vals.length ? (f.vals.length === 1 ? f.vals[0] : `${f.vals.length} selected`) : 'Any value';
+  row.append(labSelect(raw.columns.map(c => [c.key, c.label]), f.col, v => { f.col = v; f.vals = []; f.open = true; redo(); }, 'Filter column'),
+    h('button', { type: 'button', class: 'sel labfv', 'aria-expanded': String(!!f.open), onclick: () => { f.open = !f.open; redo(); } }, String(summary).length > 70 ? String(summary).slice(0, 68) + '…' : summary, ' ▾'),
+    h('button', { type: 'button', class: 'act', 'aria-label': 'Remove filter', onclick: () => { b.filters.splice(i, 1); redo(); } }, '✕'));
+  if (f.open) {
+    const list = h('div', { class: 'labfv-list' });
+    const find = h('input', { type: 'search', class: 'sel', placeholder: `Search ${vals.length.toLocaleString('en-CA')} values`, 'aria-label': 'Search values' });
+    const draw = () => {
+      const q = find.value.trim().toLowerCase();
+      const shown = (q ? vals.filter(v => v.toLowerCase().includes(q)) : vals).slice(0, 300);
+      list.replaceChildren(...shown.map(v => h('label', { class: 'labcheck' }, h('input', { type: 'checkbox', checked: f.vals.includes(v), onchange: e => {
+        f.vals = e.target.checked ? [...f.vals, v] : f.vals.filter(x => x !== v); draftSave(); refreshOut(); } }), ' ' + v)));
+      if (!shown.length) list.append(h('p', { class: 'lab-meta' }, 'No values match.'));
+    };
+    // update the output without rebuilding the open value list
+    const refreshOut = () => { const card = row.closest('.labblock'); const out = card.querySelector('.blkout'); for (const c of out.querySelectorAll('canvas')) freeChart(c); const lbl = k => k === '__count' ? 'Rows' : (raw.columns.find(c => c.key === k) || {}).label || k;
+      out.replaceWith(blockOutput(b, raw, computeBlock(b, raw), lbl, autoTitle(b, raw, lbl))); row.querySelector('.labfv').firstChild.textContent = f.vals.length ? (f.vals.length === 1 ? f.vals[0].slice(0, 68) : `${f.vals.length} selected`) : 'Any value'; card.querySelector('.blktitle').placeholder = autoTitle(b, raw, lbl); };
+    find.addEventListener('input', draw);
+    draw();
+    row.append(h('div', { class: 'labfv-panel' }, find,
+      h('div', { class: 'labfv-acts' }, h('button', { type: 'button', class: 'act', onclick: () => { f.vals = [...new Set([...f.vals, ...vals.filter(v => v.toLowerCase().includes(find.value.trim().toLowerCase()))])]; draftSave(); draw(); refreshOut(); } }, 'Select all shown'),
+        h('button', { type: 'button', class: 'act', onclick: () => { f.vals = []; draftSave(); draw(); refreshOut(); } }, 'Clear'),
+        h('button', { type: 'button', class: 'act', onclick: () => { f.open = false; redo(); } }, 'Done')), list));
+  }
+  return row;
+}
+
+/* ---------- the numbers ---------- */
+function computeBlock(b, raw) {
+  const ix = raw.ix;
+  const fs = b.filters.filter(f => f.vals && f.vals.length && ix[f.col] != null).map(f => [ix[f.col], new Set(f.vals)]);
+  const rows = raw.rows.filter(r => fs.every(([i, s]) => s.has(String(r[i] ?? ''))));
+  if (b.viz === 'rows') return { rows };
+  const xi = b.x ? ix[b.x] : null, si = b.series ? ix[b.series] : null, vi = b.value === '__count' ? null : ix[b.value];
+  const agg = b.value === '__count' ? 'count' : b.agg;
+  const xs = [], ss = [], xseen = new Set(), sseen = new Set(), acc = new Map();
+  for (const r of rows) {
+    const x = xi == null ? 'All' : String(r[xi] ?? ''), s = si == null ? '' : String(r[si] ?? '');
+    if (!xseen.has(x)) { xseen.add(x); xs.push(x); } if (!sseen.has(s)) { sseen.add(s); ss.push(s); }
+    const k = x + '\u0001' + s;
+    let a = acc.get(k); if (!a) acc.set(k, a = { s: 0, n: 0, c: 0, min: Infinity, max: -Infinity, set: null });
+    a.c++;
+    if (vi == null) continue;
+    const raw0 = r[vi];
+    if (agg === 'distinct') { if (raw0 !== '' && raw0 != null) (a.set || (a.set = new Set())).add(String(raw0)); continue; }
+    if (agg === 'count') { if (raw0 !== '' && raw0 != null) a.n++; continue; }
+    const v = typeof raw0 === 'number' ? raw0 : sNum(raw0); if (v == null) continue;
+    a.s += v; a.n++; if (v < a.min) a.min = v; if (v > a.max) a.max = v;
+  }
+  const val = (x, s) => { const a = acc.get(x + '\u0001' + s); if (!a) return null;
+    if (agg === 'count') return vi == null ? a.c : a.n; if (agg === 'distinct') return a.set ? a.set.size : 0; if (!a.n) return null;
+    return agg === 'avg' ? a.s / a.n : agg === 'min' ? a.min : agg === 'max' ? a.max : a.s; };
+  const tot = x => ss.reduce((t, s) => t + (val(x, s) || 0), 0);
+  let X = xs.slice();
+  if (b.sort === 'desc') X.sort((p, q) => tot(q) - tot(p)); else if (b.sort === 'asc') X.sort((p, q) => tot(p) - tot(q)); else if (b.sort === 'az') X.sort((p, q) => p.localeCompare(q, 'en', { numeric: true }));
+  if (b.top) X = (b.sort === 'data' || b.sort === 'az' ? X.slice().sort((p, q) => tot(q) - tot(p)).slice(0, b.top).sort((p, q) => X.indexOf(p) - X.indexOf(q)) : X.slice(0, b.top));
+  const pctCol = vi != null && raw.columns[vi].fmt === 'pct' && !['count', 'distinct'].includes(agg) && agg !== 'sum' || (vi != null && raw.columns[vi].fmt === 'pct' && agg === 'sum');
+  const grand = (() => { if (agg === 'count' || agg === 'distinct' || agg === 'sum') return X.reduce((t, x) => t + tot(x), 0);
+    let s = 0, n = 0, mn = Infinity, mx = -Infinity; for (const a of acc.values()) { s += a.s; n += a.n; mn = Math.min(mn, a.min); mx = Math.max(mx, a.max); } return !n ? null : agg === 'avg' ? s / n : agg === 'min' ? mn : mx; })();
+  return { rows, X, S: ss, val, pct: pctCol, grand, agg };
+}
+const fmtFull = (v, pct) => v == null ? '—' : pct ? `${(v * 100).toFixed(Math.abs(v) < .1 ? 1 : 0)}%` : Math.abs(v) >= 1000 ? Math.round(v).toLocaleString('en-CA') : (+v.toFixed(2)).toLocaleString('en-CA');
+const fmtV = (v, pct) => v == null ? '—' : pct ? `${(v * 100).toFixed(Math.abs(v) < .1 ? 1 : 0)}%` : Math.abs(v) >= 1e6 ? (v / 1e6).toLocaleString('en-CA', { maximumFractionDigits: 1 }) + 'M' : Math.abs(v) >= 1000 ? Math.round(v).toLocaleString('en-CA') : (+v.toFixed(2)).toLocaleString('en-CA');
+
+function blockOutput(b, raw, res, label, auto) {
+  const out = h('div', { class: 'blkout' });
+  const title = b.title || auto;
+  if (b.viz === 'rows') {
+    const C = raw.columns;
+    out.append(h('p', { class: 'lab-meta' }, `${res.rows.length.toLocaleString('en-CA')} rows${res.rows.length > 200 ? ' (first 200 shown; the CSV has them all)' : ''}`),
+      h('div', { class: 'tbl-wrap labtbl' }, h('table', {}, h('thead', {}, h('tr', {}, ...C.map(c => h('th', {}, c.label)))),
+        h('tbody', {}, ...res.rows.slice(0, 200).map(r => h('tr', {}, ...C.map((c, i) => h('td', {}, c.fmt === 'pct' ? fmtV(r[i], true) : r[i] == null ? '' : typeof r[i] === 'number' ? fmtV(r[i]) : String(r[i])))))))));
+    out.append(blockFoot(b, raw, () => [C.map(c => c.label), ...res.rows.map(r => r.map(v => v ?? ''))], title));
+    return out;
+  }
+  const { X, S, val, pct } = res;
+  if (!res.rows.length) { out.append(h('p', { class: 'lab-meta' }, 'No rows match these filters.')); return out; }
+  if (b.viz === 'number') {
+    out.append(h('div', { class: 'blknum' }, h('b', {}, fmtFull(res.grand, pct)), h('span', {}, `${title} · ${res.rows.length.toLocaleString('en-CA')} rows`)));
+    out.append(blockFoot(b, raw, () => [[title], [res.grand ?? '']], title));
+    return out;
+  }
+  const sName = s => s || (b.value === '__count' ? 'Rows' : label(b.value));
+  if (b.viz === 'table') {
+    out.append(h('div', { class: 'tbl-wrap labtbl' }, h('table', {},
+      h('thead', {}, h('tr', {}, h('th', {}, b.x ? label(b.x) : ''), ...S.map(s => h('th', {}, sName(s))), S.length > 1 && ['sum', 'count', 'distinct'].includes(res.agg) && !pct ? h('th', {}, 'Total') : null)),
+      h('tbody', {}, ...X.map(x => h('tr', {}, h('th', {}, x), ...S.map(s => h('td', {}, fmtFull(val(x, s), pct))),
+        S.length > 1 && ['sum', 'count', 'distinct'].includes(res.agg) && !pct ? h('td', { class: 'blktot' }, fmtFull(S.reduce((t, s) => t + (val(x, s) || 0), 0))) : null))))));
+  } else {
+    const box = h('div', { class: 'labchart' }); out.append(box);
+    const pie = b.viz === 'pie' || b.viz === 'doughnut';
+    const horiz = b.viz === 'bar';
+    const stacked = b.viz === 'stacked' || b.viz === 'stacked100';
+    const colors = pie ? labColors(Math.max(2, X.length)) : labColors(S.length);
+    let datasets = S.map((s, k) => ({ label: sName(s), data: X.map(x => val(x, s)), backgroundColor: colors[k], borderColor: colors[k], borderWidth: b.viz === 'line' || b.viz === 'area' ? 2.5 : 0,
+      fill: b.viz === 'area' ? (stacked ? 'origin' : 'origin') : false, pointRadius: b.viz === 'line' ? 2 : 0, tension: .2, maxBarThickness: 40, borderRadius: 2 }));
+    if (b.viz === 'area') datasets.forEach(d => { d.backgroundColor = d.borderColor + '55'; });
+    if (b.viz === 'stacked100') datasets = datasets.map(d => ({ ...d, data: d.data.map((v, i) => { const t = S.reduce((a, s, k) => a + (datasets[k].data[i] || 0), 0); return t ? (v || 0) / t : null; }) }));
+    if (pie) datasets = [{ label: sName(S[0]), data: X.map(x => val(x, S[0])), backgroundColor: X.map((_, i) => colors[i % colors.length]), borderColor: css('--surface') || '#fff', borderWidth: 2 }];
+    const asPct = pct || b.viz === 'stacked100';
+    const height = pie ? 360 : horiz ? Math.max(240, X.length * Math.max(18, Math.min(S.length, 8) * 12) + 90) : 360;
+    labChart(box, { type: pie ? b.viz : (b.viz === 'line' || b.viz === 'area') ? 'line' : 'bar', indexAxis: horiz ? 'y' : 'x', stacked, pie, label: title,
+      tip: v => fmtV(v, asPct), tick: v => asPct ? Math.round(v * 100) + '%' : fmtV(v), max: b.viz === 'stacked100' ? 1 : undefined, data: { labels: X, datasets } }, height);
+    if (pie && S.length > 1) out.append(h('p', { class: 'lab-meta' }, `Pie charts show one series: ${sName(S[0])}. Use a column or bar chart to compare series.`));
+  }
+  out.append(blockFoot(b, raw, () => [[b.x ? label(b.x) : '', ...S.map(sName)], ...X.map(x => [x, ...S.map(s => { const v = val(x, s); return v == null ? '' : +(+v).toFixed(6); })])], title));
+  return out;
+}
+function blockFoot(b, raw, csvRows, title) {
+  const fl = b.filters.filter(f => f.vals.length).map(f => `${(raw.columns.find(c => c.key === f.col) || {}).label}: ${f.vals.length > 3 ? f.vals.length + ' values' : f.vals.join(', ')}`);
+  return h('div', { class: 'blkfoot' }, h('span', { class: 'lab-src' }, `${raw.d.title} · ${raw.d.source || 'AIA Canada'}${fl.length ? ' · Filters: ' + fl.join('; ') : ''}`),
+    h('button', { type: 'button', class: 'act', onclick: () => {
+      const txt = csvRows().map(r => r.map(c => { const s = c == null ? '' : String(c); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }).join(',')).join('\n');
+      const a = h('a', { href: URL.createObjectURL(new Blob(['﻿' + txt], { type: 'text/csv' })), download: `${sSlug(title)}.csv` }); document.body.append(a); a.click(); a.remove();
+    } }, 'Download CSV'));
 }
 function labChart(box, cfg, height) {
   const cv = h('canvas', { role: 'img', 'aria-label': cfg.label || 'Chart' });
@@ -2372,157 +2659,33 @@ function labChart(box, cfg, height) {
   const ink = css('--ink-2'), grid = css('--line-soft') || '#e3e8ef';
   const horiz = cfg.indexAxis === 'y';
   const valAxis = { grid: { color: grid }, ticks: { color: ink, callback: cfg.tick || (v => v) }, beginAtZero: true, stacked: !!cfg.stacked, max: cfg.max };
-  const catAxis = { grid: { display: false }, stacked: !!cfg.stacked, ticks: { color: ink, autoSkip: false, callback: function (v) { const l = this.getLabelForValue(v); return String(l).length > 46 ? String(l).slice(0, 44) + '…' : l; } } };
+  const catAxis = { grid: { display: false }, stacked: !!cfg.stacked, ticks: { color: ink, autoSkip: !horiz, maxRotation: 50, callback: function (v) { const l = String(this.getLabelForValue(v)); return l.length > 40 ? l.slice(0, 38) + '…' : l; } } };
   requestAnimationFrame(() => {
     const ch = new Chart(cv, { type: cfg.type || 'bar', data: cfg.data, options: {
       responsive: true, maintainAspectRatio: false, animation: false, indexAxis: cfg.indexAxis || 'x',
-      plugins: { legend: { display: cfg.data.datasets.length > 1, position: 'bottom', labels: { color: ink, boxWidth: 12 } },
-        tooltip: { callbacks: { label: x => `${x.dataset.label}: ${cfg.tip ? cfg.tip(horiz ? x.parsed.x : x.parsed.y, x) : (horiz ? x.parsed.x : x.parsed.y)}` } } },
-      scales: horiz ? { x: valAxis, y: catAxis } : { x: catAxis, y: valAxis } } });
+      plugins: { legend: { display: cfg.pie || cfg.data.datasets.length > 1, position: 'bottom', labels: { color: ink, boxWidth: 12 } },
+        tooltip: { callbacks: { label: x => `${cfg.pie ? x.label : x.dataset.label}: ${cfg.tip ? cfg.tip(cfg.pie ? x.parsed : horiz ? x.parsed.x : x.parsed.y) : ''}` } } },
+      scales: cfg.pie ? {} : horiz ? { x: valAxis, y: catAxis } : { x: catAxis, y: valAxis } } });
     CHARTS.set(cv, ch);
   });
 }
-const labColors = n => Array.from({ length: n }, (_, i) => n === 1 ? css('--lab') : colorOf(SLOTS[i % SLOTS.length]));
 
-/* ---------- survey builder ---------- */
-function surveyBreakdowns(data, qi) {
-  const q = data.questions[qi];
-  const out = [['total', 'Everyone (total)']];
-  const seen = new Set();
-  for (const b of data.banners) {
-    if (!q.t[b.id]) continue;
-    for (const g of b.groups) { const key = `${b.id}|${g.name}`; if (seen.has(g.name)) continue; seen.add(g.name); out.push([key, g.name]); }
-  }
-  return out;
+/* ---------- my saved reports ---------- */
+async function renderMyReports(main) {
+  const seq = RSEQ;
+  main.append(studioHead('Data Studio', 'My reports', 'Reports you have saved. Open one to keep working on it, or print it.'));
+  const box = h('div', {}, h('p', { class: 'loading' }, 'Loading…')); main.append(box);
+  try { await loadSaved(); } catch { STUDIO.saved = []; }
+  if (seq !== RSEQ) return;
+  if (!STUDIO.saved.length) { box.replaceChildren(h('p', { class: 'lab-meta' }, 'Nothing saved yet.'), h('button', { type: 'button', class: 'btn-ask', onclick: () => go('studio') }, 'Build a report')); return; }
+  box.replaceChildren(h('ul', { class: 'labsaved-list' }, STUDIO.saved.map(s => h('li', {},
+    h('a', { href: '#', onclick: e => { e.preventDefault(); STUDIO.report = { title: s.title, blocks: (s.config.blocks || []).map(b => ({ ...b, open: false })), savedId: s.id }; draftSave(); go('studio'); } }, s.title),
+    h('span', { class: 'lab-meta' }, ` ${(s.config.blocks || []).length} ${(s.config.blocks || []).length === 1 ? 'block' : 'blocks'} · saved ${new Date(s.updated_at).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' })}`),
+    h('button', { type: 'button', class: 'act lab-del', 'aria-label': `Delete ${s.title}`, onclick: async () => { if (!confirm(`Delete the saved report "${s.title}"?`)) return; await SB.from('hub_saved_reports').delete().eq('id', s.id); if (STUDIO.report && STUDIO.report.savedId === s.id) STUDIO.report.savedId = null; render(); } }, 'Delete')))));
 }
-function renderSurveyBuilder(main, d, data) {
-  const cfg = STUDIO.cfg[d.slug] = Object.assign({ q: 0, by: 'total', show: 'pct', nets: false, view: 'chart', find: '' }, STUDIO.cfg[d.slug] || {});
-  if (!data.questions[cfg.q]) cfg.q = 0;
-  const redo = () => { main.replaceChildren(); renderSurveyBuilder(main, d, data); };
-  main.append(h('div', { class: 'labcrumb' }, h('a', { href: '#', onclick: e => { e.preventDefault(); go('studio'); } }, 'Data Studio'), ' / ', d.title));
-  main.append(studioHead('Data Studio · Survey', d.title, d.description || metaLine(d)));
-  // question picker: a filter box over the list of questions
-  const list = data.questions.map((q, i) => [String(i), q.text]);
-  const f = cfg.find.trim().toLowerCase();
-  const shown = f ? list.filter(([, t]) => t.toLowerCase().includes(f)) : list;
-  if (!shown.some(([i]) => +i === cfg.q) && shown.length && f) cfg.q = +shown[0][0];
-  const findBox = h('input', { type: 'search', class: 'sel labfind', placeholder: 'Filter questions, e.g. "warranty" or "Q13"', value: cfg.find, 'aria-label': 'Filter questions' });
-  let ft; findBox.addEventListener('input', () => { clearTimeout(ft); ft = setTimeout(() => { cfg.find = findBox.value; const pos = findBox.selectionStart; redo(); const nb = $('.labfind'); if (nb) { nb.focus(); nb.setSelectionRange(pos, pos); } }, 250); });
-  const bys = surveyBreakdowns(data, cfg.q);
-  if (!bys.some(b => b[0] === cfg.by)) {
-    const name = cfg.by.split('|')[1]; const alt = bys.find(b => b[1] === name); cfg.by = alt ? alt[0] : 'total';
-  }
-  main.append(h('section', { class: 'labctl' },
-    labField(`Question (${shown.length.toLocaleString('en-CA')} of ${list.length.toLocaleString('en-CA')})`, h('div', { class: 'labq' }, findBox,
-      labSelect(shown.length ? shown : [['', 'No questions match']], String(cfg.q), v => { if (v !== '') { cfg.q = +v; redo(); } }, 'Question'))),
-    h('div', { class: 'labrow' },
-      labField('Break down by', labSelect(bys, cfg.by, v => { cfg.by = v; redo(); }, 'Break down by')),
-      seg('Show', [['pct', '% of respondents'], ['n', 'Weighted count']], cfg.show, v => { cfg.show = v; redo(); }),
-      seg('View', [['chart', 'Chart'], ['table', 'Table']], cfg.view, v => { cfg.view = v; redo(); }),
-      h('label', { class: 'labcheck' }, h('input', { type: 'checkbox', checked: cfg.nets, onchange: e => { cfg.nets = e.target.checked; redo(); } }), ' Include NET (combined) answers'))));
-  // the table for this question and breakdown
-  const q = data.questions[cfg.q];
-  let bid, group;
-  if (cfg.by === 'total') { bid = Object.keys(q.t)[0]; group = null; } else { [bid] = cfg.by.split('|'); const b = data.banners.find(x => x.id === bid); group = b.groups.find(g => g.name === cfg.by.split('|')[1]); }
-  const tb = q.t[bid];
-  const banner = data.banners.find(x => x.id === bid);
-  const cols = group ? [1, ...group.cols] : [1]; // column 1 is Total in every banner
-  const colName = i => i === 1 ? 'Total' : banner.labels[i];
-  const rows = tb.r.filter(r => cfg.nets || !r[1]);
-  const val = (r, i) => cfg.show === 'pct' ? r[2][i] : r[3][i];
-  const out = h('section', { class: 'labout', id: 'labout' });
-  const smallBase = i => tb.bu && tb.bu[i] != null && tb.bu[i] < 50;
-  out.append(h('h2', { class: 'labq-title' }, q.text),
-    h('p', { class: 'lab-meta' }, `Respondents: ${cols.map(i => `${group ? colName(i) + ' ' : ''}${sCount(tb.bu ? tb.bu[i] : tb.bw[i])}`).join(' · ')}${cols.some(smallBase) ? ' · † fewer than 50 respondents: read with caution' : ''}`));
-  const tip = cfg.show === 'pct' ? v => sPct(v) : v => sCount(v);
-  if (cfg.view === 'chart') {
-    const box = h('div', { class: 'labchart' }); out.append(box);
-    const colors = group ? [css('--muted-bar') || '#b8c2d1', ...labColors(cols.length - 1)] : labColors(1);
-    labChart(box, { indexAxis: 'y', label: q.text, tip, tick: cfg.show === 'pct' ? v => Math.round(v * 100) + '%' : v => sCount(v), max: cfg.show === 'pct' ? 1 : undefined,
-      data: { labels: rows.map(r => r[0]), datasets: cols.map((i, k) => ({ label: colName(i) + (smallBase(i) ? ' †' : ''), data: rows.map(r => val(r, i)), backgroundColor: colors[k], borderRadius: 2, maxBarThickness: 26 })) } },
-      Math.max(220, rows.length * Math.min(cols.length, 9) * (cols.length > 4 ? 11 : 16) + rows.length * 16 + 80));
-    if (tb.m) out.append(h('p', { class: 'lab-meta' }, `Average: ${cols.map(i => `${group ? colName(i) + ' ' : ''}${sVal(tb.m[i])}`).join(' · ')}`));
-  } else {
-    const hasSig = group && rows.some(r => cols.some(i => r[4] && r[4][i] && r[4][i] !== '-'));
-    out.append(h('div', { class: 'tbl-wrap labtbl' }, h('table', {},
-      h('thead', {}, h('tr', {}, h('th', {}, 'Answer'), ...cols.map(i => h('th', {}, colName(i), group && i !== 1 && banner.letters ? h('span', { class: 'siglet' }, banner.letters[i]) : null, smallBase(i) ? ' †' : '')))),
-      h('tbody', {}, ...rows.map(r => h('tr', { class: r[1] ? 'labnet' : null }, h('th', {}, r[0]), ...cols.map(i => h('td', {}, cfg.show === 'pct' ? sPct(r[2][i]) : sCount(r[3][i]),
-        r[4] && r[4][i] && r[4][i] !== '-' && group && i !== 1 ? h('sup', { class: 'sig' }, r[4][i]) : null)))),
-        tb.m ? h('tr', { class: 'labnet' }, h('th', {}, 'Average'), ...cols.map(i => h('td', {}, sVal(tb.m[i])))) : null,
-        h('tr', { class: 'labbase' }, h('th', {}, 'Respondents (unweighted)'), ...cols.map(i => h('td', {}, sCount(tb.bu ? tb.bu[i] : null)))),
-        h('tr', { class: 'labbase' }, h('th', {}, 'Weighted base'), ...cols.map(i => h('td', {}, sCount(tb.bw ? tb.bw[i] : null))))))));
-    if (hasSig) out.append(h('p', { class: 'lab-meta' }, 'A letter beside a result means it is significantly higher than the column with that letter (shown next to each column name). ',
-      /p\s*<=\s*0?\.05/.test(data.sigNote || '') && /p\s*<=\s*0?\.01/.test(data.sigNote || '') ? 'Lower-case letters: 95% confidence. Upper-case letters: 99% confidence.' : data.sigNote ? `Source note: ${data.sigNote}` : ''));
-  }
-  out.append(h('p', { class: 'lab-src' }, `Source: ${d.source || 'AIA Canada'}${data.caption ? ` · ${data.caption}` : ''}`));
-  main.append(out, studioActions(d, () => ({ ...cfg }),
-    () => [['Answer', ...cols.map(colName)], ...rows.map(r => [r[0], ...cols.map(i => cfg.show === 'pct' ? (r[2][i] == null ? '' : +(r[2][i] * 100).toFixed(1)) : (r[3][i] == null ? '' : Math.round(r[3][i])))]),
-      ...(tb.m ? [['Average', ...cols.map(i => tb.m[i] ?? '')]] : []), ['Respondents (unweighted)', ...cols.map(i => tb.bu ? tb.bu[i] ?? '' : '')], [], [`Question: ${q.text}`], [`Values: ${cfg.show === 'pct' ? '% of respondents' : 'weighted count'}`], [`Source: ${d.source || 'AIA Canada'}`]],
-    sSlug(`${d.slug}-${q.code || 'question'}-${group ? group.name : 'total'}`)));
-}
-
-/* ---------- table builder ---------- */
-function renderTableBuilder(main, d, data) {
-  const C = data.columns;
-  const nums = C.filter(c => c.type === 'number');
-  const cats = C.filter(c => c.type !== 'number');
-  const cfg = STUDIO.cfg[d.slug] = Object.assign({ measure: nums[0] ? nums[0].key : '__count', agg: 'sum', by: (cats.find(c => c.type === 'date') || cats[0] || {}).key || '', split: '', fcol: '', fvals: [], view: 'chart', chart: '' }, STUDIO.cfg[d.slug] || {});
-  const redo = () => { main.replaceChildren(); renderTableBuilder(main, d, data); };
-  const ix = Object.fromEntries(C.map((c, i) => [c.key, i]));
-  const label = k => (C.find(c => c.key === k) || {}).label || k;
-  main.append(h('div', { class: 'labcrumb' }, h('a', { href: '#', onclick: e => { e.preventDefault(); go('studio'); } }, 'Data Studio'), ' / ', d.title));
-  main.append(studioHead('Data Studio · Table', d.title, d.description || metaLine(d)));
-  const distinct = k => { const s = new Map(); for (const r of data.rows) { const v = r[ix[k]]; if (v !== '' && v != null) s.set(String(v), (s.get(String(v)) || 0) + 1); } return [...s.entries()].sort((a, b) => b[1] - a[1]).map(x => x[0]); };
-  const fvals = cfg.fcol ? distinct(cfg.fcol).slice(0, 200) : [];
-  main.append(h('section', { class: 'labctl' }, h('div', { class: 'labrow' },
-    labField('Measure', labSelect([['__count', 'Number of rows'], ...nums.map(c => [c.key, c.label])], cfg.measure, v => { cfg.measure = v; redo(); }, 'Measure')),
-    cfg.measure !== '__count' ? labField('Calculate', labSelect([['sum', 'Total'], ['avg', 'Average'], ['min', 'Lowest'], ['max', 'Highest']], cfg.agg, v => { cfg.agg = v; redo(); }, 'Calculate')) : null,
-    labField('Group by', labSelect([['', 'Nothing (one total)'], ...cats.map(c => [c.key, c.label])], cfg.by, v => { cfg.by = v; redo(); }, 'Group by')),
-    labField('Split by', labSelect([['', 'No split'], ...cats.filter(c => c.key !== cfg.by).map(c => [c.key, c.label])], cfg.split, v => { cfg.split = v; redo(); }, 'Split by'))),
-    h('div', { class: 'labrow' },
-      labField('Filter', labSelect([['', 'No filter'], ...cats.map(c => [c.key, c.label])], cfg.fcol, v => { cfg.fcol = v; cfg.fvals = []; redo(); }, 'Filter column')),
-      cfg.fcol ? h('div', { class: 'labchips', role: 'group', 'aria-label': `Values of ${label(cfg.fcol)}` }, ...fvals.slice(0, 40).map(v => h('button', { type: 'button', class: 'labchip', 'aria-pressed': String(cfg.fvals.includes(v)),
-        onclick: () => { cfg.fvals = cfg.fvals.includes(v) ? cfg.fvals.filter(x => x !== v) : [...cfg.fvals, v]; redo(); } }, v))) : null,
-      seg('View', [['chart', 'Chart'], ['table', 'Table']], cfg.view, v => { cfg.view = v; redo(); }))));
-  // compute
-  const rows = data.rows.filter(r => !cfg.fcol || !cfg.fvals.length || cfg.fvals.includes(String(r[ix[cfg.fcol]])));
-  const byKey = r => cfg.by ? String(r[ix[cfg.by]] ?? '') : 'Total';
-  const spKey = r => cfg.split ? String(r[ix[cfg.split]] ?? '') : '';
-  const isDate = cfg.by && (C[ix[cfg.by]].type === 'date' || /^\d{4}([-/]\d{1,2})?([-/]\d{1,2})?$/.test(byKey(rows[0] || [])));
-  let splits = cfg.split ? (() => { const t = new Map(); for (const r of rows) t.set(spKey(r), (t.get(spKey(r)) || 0) + (cfg.measure === '__count' ? 1 : Math.abs(sNum(r[ix[cfg.measure]]) || 0))); return [...t.entries()].sort((a, b) => b[1] - a[1]).map(x => x[0]); })() : [''];
-  const other = splits.length > 8; if (other) splits = [...splits.slice(0, 7), 'Other'];
-  const acc = new Map();
-  for (const r of rows) {
-    const g = byKey(r); let s = spKey(r); if (other && !splits.slice(0, 7).includes(s)) s = 'Other';
-    const v = cfg.measure === '__count' ? 1 : sNum(r[ix[cfg.measure]]);
-    if (v == null) continue;
-    const k = g + '\u0001' + s; const a = acc.get(k) || { s: 0, n: 0, min: Infinity, max: -Infinity }; a.s += v; a.n++; a.min = Math.min(a.min, v); a.max = Math.max(a.max, v); acc.set(k, a);
-  }
-  const agg = a => !a ? null : cfg.measure === '__count' ? a.n : cfg.agg === 'avg' ? a.s / a.n : cfg.agg === 'min' ? a.min : cfg.agg === 'max' ? a.max : a.s;
-  let groups = [...new Set(rows.map(byKey))];
-  const tot = g => splits.reduce((s, sp) => s + (agg(acc.get(g + '\u0001' + sp)) || 0), 0);
-  groups.sort(isDate ? (a, b) => (a < b ? -1 : a > b ? 1 : 0) : (a, b) => tot(b) - tot(a));
-  if (!isDate && groups.length > 40) groups = groups.slice(0, 40);
-  const mLabel = cfg.measure === '__count' ? 'Number of rows' : `${{ sum: 'Total', avg: 'Average', min: 'Lowest', max: 'Highest' }[cfg.agg]} ${label(cfg.measure)}`;
-  const out = h('section', { class: 'labout', id: 'labout' });
-  out.append(h('h2', { class: 'labq-title' }, `${mLabel}${cfg.by ? ` by ${label(cfg.by)}` : ''}${cfg.split ? `, split by ${label(cfg.split)}` : ''}`),
-    h('p', { class: 'lab-meta' }, `${rows.length.toLocaleString('en-CA')} of ${data.rows.length.toLocaleString('en-CA')} rows${cfg.fcol && cfg.fvals.length ? ` · ${label(cfg.fcol)}: ${cfg.fvals.join(', ')}` : ''}${!isDate && [...new Set(rows.map(byKey))].length > 40 ? ' · top 40 shown' : ''}`));
-  if (cfg.view === 'chart') {
-    const box = h('div', { class: 'labchart' }); out.append(box);
-    const line = isDate && groups.length > 2;
-    const colors = labColors(splits.length);
-    labChart(box, { type: line ? 'line' : 'bar', indexAxis: !line && groups.length > 8 ? 'y' : 'x', stacked: !line && cfg.split && cfg.agg === 'sum', tip: sVal, tick: v => compact ? compact(v) : v, label: mLabel,
-      data: { labels: groups, datasets: splits.map((sp, k) => ({ label: sp || mLabel, data: groups.map(g => agg(acc.get(g + '\u0001' + sp))), backgroundColor: colors[k], borderColor: colors[k], borderWidth: line ? 2.5 : 0, pointRadius: line ? 2 : 0, tension: .2, maxBarThickness: 34 })) } },
-      !line && groups.length > 8 ? Math.max(260, groups.length * 22 + 70) : 340);
-  } else {
-    out.append(h('div', { class: 'tbl-wrap labtbl' }, h('table', {},
-      h('thead', {}, h('tr', {}, h('th', {}, cfg.by ? label(cfg.by) : ''), ...splits.map(sp => h('th', {}, sp || mLabel)))),
-      h('tbody', {}, ...groups.map(g => h('tr', {}, h('th', {}, g), ...splits.map(sp => h('td', {}, sVal(agg(acc.get(g + '\u0001' + sp)))))))))));
-  }
-  out.append(h('p', { class: 'lab-src' }, `Source: ${d.source || 'AIA Canada'}`));
-  main.append(out, studioActions(d, () => ({ ...cfg }),
-    () => [[cfg.by ? label(cfg.by) : '', ...splits.map(sp => sp || mLabel)], ...groups.map(g => [g, ...splits.map(sp => { const v = agg(acc.get(g + '\u0001' + sp)); return v == null ? '' : +(+v).toFixed(4); })]), [], [`Source: ${d.source || 'AIA Canada'}`]],
-    sSlug(`${d.slug}-${cfg.measure}-${cfg.by || 'total'}`)));
+async function openInBuilder(id) {
+  if (!STUDIO.report) STUDIO.report = draftLoad() || blankReport();
+  STUDIO.report.blocks.push(await defaultBlock(id)); draftSave(); go('studio');
 }
 
 /* ---------- importing files (admins) ---------- */
@@ -2684,12 +2847,12 @@ function renderStudioAdmin(main) {
     if (existing && existing.file_path !== path) await SB.storage.from('hub-data').remove([existing.file_path]);
     await loadStudio();
     toast(existing ? 'Dataset updated' : 'Dataset published');
-    go('studio:' + slug);
+    const nd = STUDIO.list.find(x => x.slug === slug); if (nd) openInBuilder(nd.id); else go('studio');
   }
   // existing datasets
   main.append(h('section', { class: 'labctl' }, h('h2', {}, 'Datasets'), STUDIO.list.length ? h('div', { class: 'tbl-wrap labtbl' }, h('table', {},
     h('thead', {}, h('tr', {}, ...['Dataset', 'Type', 'Hidden from', 'Status', 'Updated', ''].map(x => h('th', {}, x)))),
-    h('tbody', {}, ...STUDIO.list.map(d => h('tr', {}, h('th', {}, h('a', { href: '#', onclick: e => { e.preventDefault(); go('studio:' + d.slug); } }, d.title), h('span', { class: 'lab-meta' }, ' ' + d.original_name)),
+    h('tbody', {}, ...STUDIO.list.map(d => h('tr', {}, h('th', {}, h('a', { href: '#', title: 'Add a block on this dataset to the report builder', onclick: e => { e.preventDefault(); openInBuilder(d.id); } }, d.title), h('span', { class: 'lab-meta' }, ' ' + d.original_name)),
       h('td', {}, d.kind === 'survey' ? 'Survey' : 'Table'),
       h('td', {}, h('div', { class: 'labhide-inline' }, ...STUDIO_ROLES.map(([r, l]) => h('label', { class: 'labcheck' }, h('input', { type: 'checkbox', checked: d.hidden_from.includes(r), onchange: async e => {
         const nh = e.target.checked ? [...new Set([...d.hidden_from, r])] : d.hidden_from.filter(x => x !== r);

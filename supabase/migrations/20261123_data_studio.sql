@@ -102,3 +102,8 @@ create or replace function public.hub_access() returns jsonb language sql stable
                            and e.current_period_end > now() group by e.report_key) x), '{}'::jsonb),
     'receipts', exists (select 1 from public.hub_entitlements e where e.email = private.jwt_email() and e.stripe_customer is not null));
 $$;
+
+-- Applied as data_studio_multi_dataset_reports: a saved report holds several blocks, each on any dataset; dataset_id is the first one used.
+alter table public.hub_saved_reports alter column dataset_id drop not null;
+alter table public.hub_saved_reports drop constraint if exists hub_saved_reports_dataset_id_fkey;
+alter table public.hub_saved_reports add constraint hub_saved_reports_dataset_id_fkey foreign key (dataset_id) references public.hub_datasets (id) on delete set null;
