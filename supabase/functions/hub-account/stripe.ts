@@ -9,7 +9,9 @@ export const CURRENCY = "cad";
 // Pin the API version for the hub's own requests. The AIA Canada account's default is older (2022), which can't do
 // $0 orders (100%-off promotion codes need 2023-08-16 or later). Other integrations on the account are unaffected.
 export const STRIPE_VERSION = "2024-06-20";
-export const AUTO_TAX = (Deno.env.get("STRIPE_AUTOMATIC_TAX") ?? "").trim() === "true"; // turn on once Stripe Tax is set up
+// Stripe Tax: GST/HST by the buyer's province (billing address), added on top of the price. Set STRIPE_AUTOMATIC_TAX=false to turn off.
+export const AUTO_TAX = (Deno.env.get("STRIPE_AUTOMATIC_TAX") ?? "true").trim() !== "false";
+export const TAX_CODE = "txcd_10000000"; // General - Electronically Supplied Services
 
 function form(obj: Record<string, unknown>, prefix = "", out: string[] = []): string[] {
   for (const [k, v] of Object.entries(obj)) {

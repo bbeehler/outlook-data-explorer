@@ -144,7 +144,7 @@ function renderLanding(box, info = {}) {
         h('ul', {}, ['Every report in the Research Hub', 'Join AIA Canada’s Industry Engagement Network', 'Stay connected with the industry'].map(t => h('li', {}, t))),
         h('a', { class: 'btn-ask', href: AFFILIATE_URL }, 'Become an affiliate'),
         h('p', { class: 'lp-plan-note' }, 'Already an affiliate? ', h('a', { href: '#signin', onclick: e => { e.preventDefault(); $('#email').focus(); $('#email').scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 'Sign in'), '.')),
-      h('div', { class: 'lp-plan' }, h('h3', {}, 'Single report'), h('p', { class: 'lp-price' }, money(PRICE.report), h('span', {}, ' per report')),
+      h('div', { class: 'lp-plan' }, h('h3', {}, 'Single report'), h('p', { class: 'lp-price' }, money(PRICE.report), h('span', {}, ' + tax per report')),
         h('ul', {}, ['The full report as a PDF, yours to keep', `${PRICE.days} days in the Research Hub with that report`, 'Interactive charts, tables and Ask the data'].map(t => h('li', {}, t))),
         h('a', { class: 'act lp-plan-btn', href: '#reports', onclick: go('reports') }, 'Choose a report ↓')))));
 
@@ -152,7 +152,7 @@ function renderLanding(box, info = {}) {
   const grid = h('div', { class: 'lp-grid' }, h('p', { class: 'gate-muted' }, 'Loading the reports…'));
   box.append(h('section', { class: 'lp-sec', id: 'reports' },
     h('div', { class: 'lp-sec-head' }, h('span', { class: 'lp-kicker' }, 'The research'), h('h2', {}, 'Reports in the hub'),
-      h('p', { class: 'lp-sub' }, 'Free for members and affiliates. Or buy one for ', h('strong', {}, money(PRICE.report)), ` and get the PDF plus ${PRICE.days} days in the hub.`)), grid));
+      h('p', { class: 'lp-sub' }, 'Free for members and affiliates. Or buy one for ', h('strong', {}, money(PRICE.report) + ' + tax'), ` and get the PDF plus ${PRICE.days} days in the hub.`)), grid));
   loadCatalog().then(list => {
     grid.replaceChildren(...list.map(reportCard));
     setProof(list.length, list.reduce((t, r) => t + (r.charts || 0), 62), VEH);
@@ -173,7 +173,7 @@ function renderLanding(box, info = {}) {
     q('How do I get free access as an affiliate?', 'Join AIA Canada’s Industry Engagement Network as an affiliate. Once you’re on our records, sign in with your work email here.'),
     q('What do I get when I buy a report?', `${PRICE.days} days of access to that report in the Research Hub, starting when you pay: its interactive charts and tables, Ask the data, and the full report as a PDF. Download the PDF during your ${PRICE.days} days; it’s yours to keep.`),
     q('How do I sign in after buying?', 'Use the email address you paid with. We email you a sign-in code; there’s no password.'),
-    q('Are taxes included?', 'Prices are in Canadian dollars. Applicable sales taxes are shown at checkout.'),
+    q('Are taxes included?', 'No. Prices are in Canadian dollars, before tax. GST or HST for your province is added at checkout, based on your billing address.'),
     q('Is payment secure?', 'Payments are handled by Stripe. AIA Canada never sees or stores your card details.'),
     h('p', { class: 'gate-muted' }, `Questions? Contact ${CFG.contactEmail}.`)));
   box.append(siteFooter());
@@ -247,7 +247,7 @@ function storeSection() {
   const until = Object.values(ACCESS.until || {}).sort().at(-1);
   const sec = h('section', { class: 'panel storesec', id: 'store' }, h('h2', {}, 'Get more reports'),
     until ? h('p', { class: 'lp-until' }, `Your access ends ${new Date(until).toLocaleString('en-CA', { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })}; download the PDF before then.`) : null,
-    h('p', { class: 'gate-muted' }, `Buy another report for ${money(PRICE.report)} (${PRICE.days} days of access), or get every report free: `, h('a', { href: JOIN_URL }, 'become an AIA Canada member'), ' or ', h('a', { href: AFFILIATE_URL }, 'an Industry Engagement Network affiliate'), '.'),
+    h('p', { class: 'gate-muted' }, `Buy another report for ${money(PRICE.report)} + tax (${PRICE.days} days of access), or get every report free: `, h('a', { href: JOIN_URL }, 'become an AIA Canada member'), ' or ', h('a', { href: AFFILIATE_URL }, 'an Industry Engagement Network affiliate'), '.'),
     h('div', { class: 'chips' }, h('a', { class: 'btn-ask', href: AFFILIATE_URL }, 'Become an affiliate'), h('a', { class: 'act', href: JOIN_URL }, 'Become a member')));
   const grid = h('div', { class: 'lp-grid' });
   sec.append(grid);
