@@ -456,3 +456,17 @@ body.is-landing .wrap { max-width: none; padding-top: 0; }
   body.labprint .labtitle, body.labprint .blktitle { border: 0 !important; padding: 0; background: none; }
   body.labprint .labblock { break-inside: avoid; border: 0; border-top: 2px solid #6b3fa0; }
 }
+/* Data Studio KPIs (admin) */
+.labctl .labchips { margin: 8px 0; align-items: center; }
+.labchip-n { border-color: var(--lab-line); color: var(--lab-ink); }
+.labkpi-f { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; width: 100%; }
+.labkpi-prev { margin: 6px 0 12px; }
+.labkpi-val b { font-size: 26px; color: var(--lab-ink); margin-right: 6px; }
+.labkpi-err { color: #b42318; font-size: 14px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .labkpi-err { color: #f97066; } }
+:root[data-theme="dark"] .labkpi-err { color: #f97066; }
+.labkpi-code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; background: var(--lab-bg); padding: 2px 6px; border-radius: 4px; word-break: break-word; }
+.labkpi-help { margin: 8px 0 12px; font-size: 14px; color: var(--ink-2); }
+.labkpi-help summary { cursor: pointer; font-weight: 600; color: var(--lab-ink); }
+.labkpi-help li { margin: 4px 0; }
+.labtbl .labkpi-code { white-space: normal; display: inline-block; max-width: 300px; text-align: left; }
