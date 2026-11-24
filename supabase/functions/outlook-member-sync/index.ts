@@ -71,12 +71,14 @@ Deno.serve(async (req) => {
 
     const orgs = await pageAll("Organisations", auth);
     const members = new Map<number, string>();
-    const dirOrgs = new Map<number, { org_id: number; name: string; last_membership_year: number; status: string; contacts: number; contacts_with_email: number }>();
+    const dirOrgs = new Map<number, { org_id: number; name: string; last_membership_year: number; status: string; contacts: number; contacts_with_email: number; sales_volume: string }>();
+    // "Sales Volume" custom field (a range such as "Less than $1M"), matched by name so a renamed API name still works
+    const salesVolume = (o: any) => { const c = (o.CUSTOMFIELDS ?? []).find((x: any) => /sales.?volume/i.test(String(x.FIELD_NAME ?? ""))); const v = c?.FIELD_VALUE; return v == null ? "" : String(v).slice(0, 200); };
     for (const o of orgs) {
       const lmy = Math.trunc(Number(cf(o, "Last_Membership_Year__c")) || 0);
       const id = Number(o.ORGANISATION_ID), name = String(o.ORGANISATION_NAME ?? "");
       if (lmy >= minYear) members.set(id, name);
-      if (lmy >= minYear - 1) dirOrgs.set(id, { org_id: id, name, last_membership_year: lmy, status: lmy >= minYear ? "current" : "lapsed", contacts: 0, contacts_with_email: 0 });
+      if (lmy >= minYear - 1) dirOrgs.set(id, { org_id: id, name, last_membership_year: lmy, status: lmy >= minYear ? "current" : "lapsed", contacts: 0, contacts_with_email: 0, sales_volume: salesVolume(o) });
     }
     if (members.size < MIN_MEMBER_ORGS) throw new Error(`Only ${members.size} member organisations found; nothing changed (safety limit ${MIN_MEMBER_ORGS}).`);
 
